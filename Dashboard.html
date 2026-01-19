@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <base target="_top">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>PM Tool - Dashboard</title>
+
+  <style>
+    :root{
+      --bg:#f3f3f3;
+      --card:#fff;
+      --text:#111827;
+      --muted:#6b7280;
+      --border:#e5e7eb;
+      --shadow:0 10px 28px rgba(15,23,42,.10);
+      --shadow2:0 4px 12px rgba(15,23,42,.08);
+      --radius:16px;
+      --radius2:12px;
+      --btn:#111;
+    }
+    *{ box-sizing:border-box; margin:0; padding:0; -webkit-text-size-adjust:100%; }
+    html{ overflow-x:hidden; overflow-y:scroll; }
+    body{
+      font-family:"Segoe UI", Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    header{
+      background:var(--card);
+      padding:15px 25px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      border-bottom:1px solid #ddd;
+      position:sticky;
+      top:0;
+      z-index:100;
+    }
+    header h1{ font-size:22px; font-weight:900; }
+    #userEmail{ font-size:13px; color:#6b7280; font-weight:800; }
+
+    nav{
+      background:var(--bg);
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      max-width:1200px;
+      margin:0 auto 16px auto;
+      padding:18px 25px;
+    }
+    nav button{
+      padding:8px 18px;
+      background:var(--card);
+      border:1px solid #ccc;
+      border-radius:10px;
+      cursor:pointer;
+      font-size:14px;
+      transition:.15s;
+      font-weight:800;
+    }
+    nav button.active{
+      background:var(--btn);
+      color:#fff;
+      border-color:var(--btn);
+    }
+
+    .wrap{
+      max-width:1200px;
+      margin:0 auto 18px auto;
+      padding:0 25px 25px;
+    }
+
+    .dash-grid-top{
+      display:grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap:18px;
+      align-items:start;
+    }
+    .dash-left{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+    .card{
+      background:#fff;
+      border-radius:12px;
+      box-shadow:0 2px 6px rgba(0,0,0,.08);
+      padding:14px 16px;
+      border:1px solid rgba(0,0,0,.06);
+      position:relative;
+      overflow:hidden;
+      min-height:84px;
+    }
+    .card::before{
+      content:"";
+      position:absolute; left:0; top:0; bottom:0;
+      width:4px; background:#111;
+    }
+    .card.all::before{ background:#111827; }
+    .card.ns::before{ background:#f59e0b; }
+    .card.ip::before{ background:#3b82f6; }
+    .card.fn::before{ background:#16a34a; }
+    .card.dy::before{ background:#dc2626; }
+    .card.pending::before{ background:#FFB6C1; }
+
+    .k{ font-size:12px; color:#374151; font-weight:900; margin-bottom:6px; }
+    .v{ font-size:28px; font-weight:900; color:#111827; line-height:1; }
+
+    .panel{
+      background:#fff;
+      border-radius:12px;
+      box-shadow:0 2px 6px rgba(0,0,0,.08);
+      border:1px solid rgba(0,0,0,.06);
+      overflow:hidden;
+    }
+    .panel-h{
+      padding:12px 14px;
+      border-bottom:1px solid #eee;
+      font-weight:900;
+      text-align:center;
+    }
+    .panel-b{ padding:10px 14px 12px; }
+    .filter{
+      display:flex; gap:10px; align-items:center;
+      font-size:12px; color:#6b7280; margin:8px 0 10px;
+      font-weight:800;
+    }
+    .filter input{
+      flex:1;
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid #d1d5db;
+      outline:none;
+      font-size:13px;
+      background:#fff;
+    }
+
+    .table-wrap{
+      max-height:420px;
+      overflow:auto;
+      -webkit-overflow-scrolling:touch;
+      border-top:1px solid #eee;
+      border-radius:10px;
+    }
+    table{ width:100%; border-collapse:collapse; table-layout:fixed; }
+    thead th{
+      position:sticky; top:0;
+      background:#fff; z-index:2;
+    }
+    th, td{
+      padding:10px 8px;
+      border-top:1px solid #eee;
+      font-size:13px;
+      vertical-align:middle;
+    }
+    th{ font-size:11px; color:#6b7280; font-weight:900; text-align:left; }
+    td:last-child, th:last-child{ text-align:right; }
+
+    .pill{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:900;
+      border:1px solid rgba(0,0,0,.08);
+      white-space:nowrap;
+    }
+    .pill.ns{ background:#ffedd5; color:#9a3412; border-color:#fdba74; }
+    .pill.pending{ background:#FFB6C1; color:#7a1f3d; border-color:#FF8FA3; }
+    .pill.ip{ background:#e0f2fe; color:#075985; }
+    .pill.fn{ background:#dcfce7; color:#166534; }
+    .pill.dy{ background:#fee2e2; color:#991b1b; }
+
+    .btn-black{
+      width:100%;
+      border:none;
+      background:#000;
+      color:#fff;
+      padding:10px 12px;
+      border-radius:10px;
+      font-weight:900;
+      cursor:pointer;
+      margin-top:10px;
+    }
+
+    .dash-grid-bottom{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+    }
+    .big{
+      background:#fff;
+      border-radius:12px;
+      border:2px dashed rgba(0,0,0,.12);
+      padding:14px;
+      min-height:150px;
+    }
+    .big-t{ font-weight:900; font-size:13px; margin-bottom:10px; }
+    .big-c{
+      height:110px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      gap:8px;
+      color:#374151;
+      font-weight:800;
+    }
+    .plus{
+      width:44px;height:44px;
+      border-radius:12px;
+      border:1px solid rgba(0,0,0,.15);
+      background:#e5e7eb;
+      font-size:24px;
+      font-weight:900;
+      cursor:pointer;
+      touch-action:manipulation;
+    }
+
+    @media (max-width:1023px){
+      nav{
+        padding:10px;
+        gap:6px;
+        overflow-x:auto;
+        -webkit-overflow-scrolling:touch;
+        max-width:100%;
+        margin:0 0 12px 0;
+      }
+      nav button{
+        padding:7px 11px;
+        font-size:11px;
+        white-space:nowrap;
+        flex-shrink:0;
+      }
+      .wrap{ padding:0 10px 10px; }
+      .dash-grid-top{ grid-template-columns:1fr; gap:10px; }
+      .dash-left{ grid-template-columns:1fr 1fr; gap:8px; }
+      .table-wrap{ max-height:250px; }
+      th, td{ padding:7px 6px; font-size:11px; }
+      .pill{ padding:3px 7px; font-size:9px; gap:3px; }
+      .dash-grid-bottom{ margin-top:10px; gap:10px; display:flex; flex-direction:column; }
+    }
+  </style>
+</head>
+
+<body data-page="Dashboard">
+  <header>
+    <h1>📁 PM Tool</h1>
+    <div id="userEmail"><?= userEmail ? userEmail : "demo.user@pmtool.local" ?></div>
+  </header>
+
+  <nav>
+    <button id="btnDashboard" onclick="go('Dashboard')">Dashboard</button>
+    <button id="btnProjects" onclick="go('Projects')">Projects</button>
+    <button id="btnTodos" onclick="go('Todos')">Todos</button>
+    <button id="btnIntern" onclick="go('Intern')">Intern</button>
+    <button id="btnNotes" onclick="go('Note')">Note</button>
+    <button id="btnMeeting" onclick="go('Meeting')">Meeting</button>
+    <button id="btnAboutPM" onclick="go('AboutPM')">About PM Role</button>
+  </nav>
+
+  <div class="wrap">
+    <div class="dash-grid-top">
+      <div class="dash-left" id="dashCards"></div>
+
+      <div class="panel">
+        <div class="panel-h">Project Status</div>
+        <div class="panel-b">
+          <div style="font-weight:900;font-size:12px;color:#111827;">All Project Status</div>
+
+          <div class="filter">
+            <span>Filter</span>
+            <input id="filterInput" placeholder="ค้นหาชื่อโปรเจกต์/สถานะ" />
+          </div>
+
+          <div id="showing" style="font-size:12px;color:#6b7280;font-weight:800;margin:0 0 10px;">
+            Showing -/-
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Project</th>
+                  <th style="text-align:right;">Status</th>
+                </tr>
+              </thead>
+              <tbody id="rows">
+                <tr><td colspan="2" style="padding:14px;color:#9ca3af;">กำลังโหลด...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <button class="btn-black" onclick="go('Projects')">See All</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-grid-bottom">
+      <div class="big">
+        <div class="big-t">โปรเจคล่าสุด</div>
+        <div class="big-c">
+          <button class="plus" onclick="go('Projects')">+</button>
+          <div style="font-size:12px;">เพิ่มโปรเจค</div>
+        </div>
+      </div>
+
+      <div class="big">
+        <div class="big-t">งานล่าสุด</div>
+        <div class="big-c">
+          <button class="plus" onclick="go('Todos')">+</button>
+          <div style="font-size:12px;">เพิ่มงานใหม่</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ✅ ไม่มี google.script.run / ไม่มี backend ใน script
+    function go(page){
+      // ใช้ location.href ของตัวเอง (กัน sandbox บล็อก window.top)
+      location.href = WEBAPP_URL + "?page=" + encodeURIComponent(page);
+    }
+
+    function setActive(){
+      document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+      const btn = document.getElementById("btnDashboard");
+      if(btn) btn.classList.add("active");
+    }
+
+    function esc(s){
+      return String(s ?? "")
+        .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+    }
+
+    function pill(status){
+      const s = String(status||"").toLowerCase();
+      if (s.includes("n/a")) return `<span class="pill pending">to be announced</span>`;
+      if (s.includes("finished") || s.includes("done") || s.includes("เสร็จ")) return `<span class="pill fn">Finished</span>`;
+      if (s.includes("delayed") || s.includes("ล่าช้า")) return `<span class="pill dy">Delayed</span>`;
+      if (s.includes("not started") || s.includes("ยังไม่เริ่ม")) return `<span class="pill ns">Not Started</span>`;
+      return `<span class="pill ip">In Progress</span>`;
+    }
+
+    function card(title, value, cls){
+      return `
+        <div class="card ${cls}">
+          <div class="k">${esc(title)}</div>
+          <div class="v">${esc(String(value ?? "-"))}</div>
+        </div>
+      `;
+    }
+
+    // ✅ ข้อมูล mock (เอาไว้ให้หน้าไม่ว่าง)
+    const ALL = [
+      {name:"SEO Trade Gold", status:"In Progress"},
+      {name:"PM Tool Dashboard", status:"Finished"},
+      {name:"Car Rental Online", status:"Not Started"},
+      {name:"Durian Smart Farm", status:"Delayed"},
+      {name:"Value Flow & Value Of Time", status:"In Progress"},
+      {name:"Vivart", status:"N/A"},
+      {name:"Simple Expense Tracker", status:"Finished"},
+    ];
+
+    let filtered = ALL.slice();
+
+    function render(){
+      const total = ALL.length;
+      const notStarted = ALL.filter(p=>/not started/i.test(p.status)).length;
+      const inProgress = ALL.filter(p=>/in progress/i.test(p.status)).length;
+      const finished = ALL.filter(p=>/finished|done/i.test(p.status)).length;
+      const delayed = ALL.filter(p=>/delayed/i.test(p.status)).length;
+      const pending = ALL.filter(p=>/n\/a/i.test(p.status)).length;
+
+      const dashCards = document.getElementById("dashCards");
+      if(dashCards){
+        dashCards.innerHTML =
+          card("All Project", total, "all") +
+          card("Not Started", notStarted, "ns") +
+          card("In Progress", inProgress, "ip") +
+          card("Finished", finished, "fn") +
+          card("Delayed", delayed, "dy") +
+          card("to be announced", pending, "pending");
+      }
+
+      const showing = document.getElementById("showing");
+      if(showing) showing.textContent = `Showing ${filtered.length}/${ALL.length}`;
+
+      const tbody = document.getElementById("rows");
+      if(!tbody) return;
+      if(!filtered.length){
+        tbody.innerHTML = `<tr><td colspan="2" style="padding:14px;color:#9ca3af;">ไม่มีข้อมูล</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(p=>`
+        <tr>
+          <td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(p.name)}</td>
+          <td>${pill(p.status)}</td>
+        </tr>
+      `).join("");
+    }
+
+    function bindFilter(){
+      const input = document.getElementById("filterInput");
+      if(!input) return;
+      input.addEventListener("input", () => {
+        const kw = String(input.value||"").toLowerCase().trim();
+        filtered = !kw ? ALL.slice() : ALL.filter(p =>
+          p.name.toLowerCase().includes(kw) || p.status.toLowerCase().includes(kw)
+        );
+        render();
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      setActive();
+      bindFilter();
+      render();
+    });
+  </script>
+</body>
+</html>

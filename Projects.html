@@ -1,0 +1,2610 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PM Tool - Projects (Fixed FULL v3) (No Backend)</title>
+
+  <style>
+    body {
+      --bg: #f3f3f3;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --shadow: 0 10px 28px rgba(15, 23, 42, .10);
+      --shadow2: 0 4px 12px rgba(15, 23, 42, .08);
+      --radius: 16px;
+      --radius2: 12px;
+
+      --btn: #111;
+      --btnHover: #000;
+
+      --orange: #ff6e00;
+      --danger: #ef4444;
+
+      /* ✅ คุมความกว้างคอลัมน์ให้ "เหมือนกัน 100%" ทั้ง header/body */
+      --col-1: 200px;
+      /* ชื่อโปรเจค */
+      --col-2: 130px;
+      /* วันที่เริ่ม */
+      --col-3: 160px;
+      /* วันที่สิ้นสุด */
+      --col-4: 120px;
+      /* ระยะเวลา */
+      --col-5: 220px;
+      /* Mentor */
+      --col-6: 170px;
+      /* หมายเหตุ */
+      --col-7: 150px;
+      /* Figma Link */
+      --col-8: 150px;
+      /* Status */
+      --col-9: 90px;
+      /* Actions */
+
+      /* ✅ จะถูกเติมด้วย JS เพื่อชดเชย scrollbar (Safari/iPad) */
+      --sbw: 0px;
+
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 22px;
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: .2px;
+    }
+
+
+    .back-btn {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fff;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: var(--shadow2);
+    }
+
+    .back-btn:hover {
+      border-color: #cbd5e1
+    }
+
+    /* =========================
+       ✅ FILTER ROW
+       ========================= */
+    .top-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 10px 0 16px;
+      flex-wrap: wrap;
+      flex-direction: row;
+    }
+
+    #projectDropdown {
+      flex: 0 0 auto;
+      min-width: 240px;
+      order: 0;
+    }
+
+    .filters-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      width: 100%;
+      order: 0;
+    }
+
+    .ctrl {
+      position: relative;
+      height: 44px;
+      min-width: 160px;
+    }
+
+    .ctrl-selected {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 0 14px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow2);
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 900;
+      color: #111;
+      white-space: nowrap;
+      width: 100%;
+    }
+
+    .ctrl-selected:hover {
+      border-color: #cbd5e1;
+    }
+
+    .ctrl-items {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-top: 8px;
+      max-height: 360px;
+      overflow-y: auto;
+      display: none;
+      z-index: 100;
+      padding: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .ctrl-items.open {
+      display: block;
+    }
+
+    .ctrl-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 12px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-size: 15px;
+      color: #111;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      background: #fff;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .ctrl-item+.ctrl-item {
+      margin-top: 8px;
+    }
+
+    .ctrl-item:hover {
+      background: #fafafa;
+      border-color: rgba(15, 23, 42, 0.12);
+    }
+
+    .search-ctrl {
+      height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 14px;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow2);
+      flex: 1 1 200px;
+      min-width: 200px;
+    }
+
+    .search-ctrl input {
+      border: none;
+      outline: none;
+      width: 100%;
+      font-size: 13px;
+      font-weight: 800;
+      color: #111;
+      min-width: 0;
+    }
+
+    .btn-clear {
+      height: 44px;
+      padding: 0 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #000;
+      color: #fff;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: var(--shadow2);
+      white-space: nowrap;
+      flex: 0 0 auto;
+      min-width: 130px;
+    }
+
+    .btn-clear:hover {
+      filter: brightness(0.95);
+    }
+
+    .search-hint {
+      font-size: 12px;
+      font-weight: 900;
+      color: #64748b;
+
+      padding-left: 2px;
+    }
+
+    #internHint {
+      display: block !important;
+
+      padding-left: 2px;
+      visibility: hidden;
+      /* ซ่อนไว้แต่ยังกินพื้นที่ */
+    }
+
+    body.in-members #memberSection .table-wrap {
+      overflow-y: scroll !important;
+      overflow-x: hidden !important;
+    }
+
+    .custom-dropdown {
+      position: relative;
+      width: 460px;
+      max-width: 100%;
+    }
+
+    .dropdown-selected {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      font-size: 15px;
+      font-weight: 900;
+      box-shadow: var(--shadow2);
+
+      width: 333px;
+      max-width: 100%;
+    }
+
+    .dropdown-selected:hover {
+      border-color: #cbd5e1
+    }
+
+    .dropdown-items {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 333px;
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-top: 8px;
+      max-height: 360px;
+      overflow-y: auto;
+      display: none;
+      z-index: 100;
+      padding: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .dropdown-items.open {
+      display: block
+    }
+
+    .dd-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 12px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-size: 16px;
+      color: #111;
+      border: 1px solid rgba(15, 23, 42, .06);
+      background: #fff;
+    }
+
+    .dd-item+.dd-item {
+      margin-top: 8px;
+    }
+
+    .dd-item:hover {
+      background: #fafafa;
+      border-color: rgba(15, 23, 42, .12)
+    }
+
+    .dd-left {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      min-width: 0
+    }
+
+    .dd-title {
+      font-weight: 900;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 320px
+    }
+
+    .dd-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex: 0 0 auto
+    }
+
+    .dd-trash {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      border: 1px solid rgba(15, 23, 42, .12);
+      background: #fff;
+      color: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .dd-trash:hover {
+      background: rgba(0, 0, 0, .04);
+      border-color: rgba(15, 23, 42, .22)
+    }
+
+    .dd-trash svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+      fill: currentColor
+    }
+
+    .dd-add-wrap {
+      display: flex;
+      justify-content: center;
+      padding: 14px 0 4px
+    }
+
+    .dd-add {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      border: 2px solid #111;
+      color: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 900;
+      cursor: pointer;
+      background: #fff;
+      box-shadow: var(--shadow2);
+    }
+
+    .dd-add:hover {
+      background: #f7f7f7
+    }
+
+    /* ===== table ===== */
+    .table-wrap {
+      margin-top: 8px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: auto;
+      /* ✅ scroll ทั้งแนวตั้ง/แนวนอน */
+      box-shadow: var(--shadow2);
+      background: #fff;
+      max-height: 100vh;
+      /* ✅ ทำให้ scroll down โผล่ */
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* ✅ ส่วน header ไม่มี scrollbar แนวตั้ง → ต้องชดเชยให้ตรงกับ body */
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      table-layout: fixed;
+    }
+
+    thead th {
+      background: #f8fafc;
+      font-weight: 900;
+      color: #111827;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    th,
+    td {
+      padding: 14px 14px;
+      font-size: 14px;
+      border-bottom: 1px solid rgba(15, 23, 42, .06);
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    tbody tr:nth-child(odd) {
+      background: #fff
+    }
+
+    tbody tr:nth-child(even) {
+      background: #fcfcfd
+    }
+
+    tbody tr:hover {
+      background: #f7fafc
+    }
+
+    /* ✅ เอา width จาก colgroup เป็นหลัก (กัน header/body คำนวณไม่ตรงกัน) */
+    td:nth-child(4),
+    th:nth-child(4),
+    td:nth-child(5),
+    th:nth-child(5),
+    td:nth-child(6),
+    th:nth-child(6),
+    td:nth-child(7),
+    th:nth-child(7) {
+      text-align: center;
+    }
+
+    th:nth-child(8),
+    td:nth-child(8) {
+      text-align: right
+    }
+
+    td:nth-child(1) {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    td:nth-child(6) {
+      white-space: normal !important;
+      overflow: visible !important;
+      text-overflow: clip !important;
+      line-height: 1.35;
+    }
+
+    .note-wrap {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      word-break: break-word;
+      text-align: center;
+    }
+
+    .row-click {
+      cursor: pointer
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 120px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 12px;
+      white-space: nowrap;
+      border: 1px solid rgba(15, 23, 42, .06);
+      box-shadow: 0 10px 18px rgba(15, 23, 42, .06);
+      background: #eef2ff;
+      color: #111;
+    }
+
+    .status.green {
+      background: #d4edda;
+      color: #2e7d32
+    }
+
+    .status.orange {
+      background: #ffe5cc;
+      color: #ff6e00
+    }
+
+    .status.blue {
+      background: #dbeafe;
+      color: #1d4ed8
+    }
+
+    .status.red {
+      background: #fee;
+      color: #d9534f
+    }
+
+    .status.gray {
+      background: #e9ecef;
+      color: #6c757d
+    }
+
+    .actions-cell {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px
+    }
+
+    .icon-btn {
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      color: #111;
+      line-height: 1;
+    }
+
+    .icon-btn:hover {
+      background: #ececec
+    }
+
+    .loading {
+      text-align: center;
+      padding: 36px;
+      color: #94a3b8;
+      font-weight: 800
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #94a3b8
+    }
+
+    .empty-state-icon {
+      font-size: 46px;
+      margin-bottom: 12px;
+      opacity: .7
+    }
+
+    .mentor-cell {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center
+    }
+
+    .mentor-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(15, 23, 42, .10);
+      font-weight: 1000;
+      font-size: 12px;
+      box-shadow: 0 10px 18px rgba(15, 23, 42, .08);
+      white-space: nowrap;
+      max-width: 100%;
+    }
+
+    .mentor-chip.webdev {
+      background: #dcfce7;
+      border-color: rgba(22, 163, 74, .25);
+      color: #166534
+    }
+
+    .mentor-chip.uxui {
+      background: #f3e8ff;
+      border-color: rgba(147, 51, 234, .25);
+      color: #6b21a8
+    }
+
+    .mentor-chip.ba {
+      background: #ffe7cc;
+      border-color: rgba(234, 88, 12, .22);
+      color: #9a3412
+    }
+
+    .mentor-chip.datasci {
+      background: #dbeafe;
+      border-color: rgba(37, 99, 235, .25);
+      color: #1d4ed8
+    }
+
+    .mentor-chip.mentor {
+      background: #fff7ed;
+      border-color: rgba(249, 115, 22, .25);
+      color: #9a3412
+    }
+
+    .mentor-chip.dm {
+      background: #e9ecef;
+      border-color: rgba(108, 117, 125, .25);
+      color: #495057
+    }
+
+    .mentor-chip.ic {
+      background: #fee2e2;
+      border-color: rgba(220, 38, 38, .25);
+      color: #b91c1c
+    }
+
+    .mentor-chip.default {
+      background: #f8fafc;
+      border-color: rgba(15, 23, 42, .10);
+      color: #0f172a
+    }
+
+    #memberSection {
+      display: none;
+      margin-top: 16px
+    }
+
+    .member-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 14px 14px;
+      border-bottom: 1px solid rgba(15, 23, 42, .06);
+      background: #fff;
+    }
+
+    .member-title {
+      font-weight: 1000;
+      font-size: 16px;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .member-title .tag {
+      font-size: 12px;
+      font-weight: 1000;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(15, 23, 42, .10);
+      background: #f8fafc;
+      color: #111;
+    }
+
+    .member-add {
+      height: 42px;
+      border: none;
+      border-radius: 14px;
+      padding: 0 14px;
+      background: var(--btn);
+      color: #fff;
+      font-weight: 1000;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 22px rgba(15, 23, 42, .16);
+    }
+
+    .member-add:hover {
+      background: var(--btnHover)
+    }
+
+    /* =========================
+   ✅ Members table: ล็อกสัดส่วน 3 คอลัมน์ให้พอดีจอ (กันเลื่อนขวา)
+   - ใช้กับทุกขนาดจอ (ละเอียดจะ override เพิ่มใน media อีกที)
+   ========================= */
+    #memberTable {
+      width: 100% !important;
+      table-layout: fixed !important;
+      /* ให้ width ของคอลัมน์เป็นตัวตัดสิน */
+    }
+
+    #memberTable thead th:nth-child(1),
+    #memberTable tbody td:nth-child(1) {
+      width: 45%;
+      text-align: center;
+    }
+
+    #memberTable thead th:nth-child(2),
+    #memberTable tbody td:nth-child(2) {
+      width: 20%;
+      text-align: center;
+    }
+
+    #memberTable thead th:nth-child(3),
+    #memberTable tbody td:nth-child(3) {
+      width: 35%;
+      text-align: center;
+    }
+
+    /* ชิป/ข้อความยาวไม่ดันความกว้าง */
+    #memberTable .name-chip,
+    #memberTable .pos-pill {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* ปุ่ม Edit/Delete ให้บาลานซ์ (เดสก์ท็อป/จอใหญ่) */
+    #memberTable tbody td:nth-child(3) {
+      white-space: nowrap;
+    }
+
+    #memberTable tbody td:nth-child(3) .mini-btn {
+      min-width: 96px;
+      height: 36px;
+      padding: 0 12px;
+      font-weight: 900;
+    }
+
+
+    #memberTable thead th:nth-child(1),
+    #memberTable tbody td:nth-child(1) {
+      width: 33%
+    }
+
+    #memberTable thead th:nth-child(2),
+    #memberTable tbody td:nth-child(2) {
+      width: 220px;
+      text-align: center
+    }
+
+    #memberTable thead th:nth-child(3),
+    #memberTable tbody td:nth-child(3) {
+      width: 210px;
+      text-align: center
+    }
+
+    .mini-btn {
+      height: 36px;
+      border-radius: 12px;
+      border: 1px solid rgba(15, 23, 42, .12);
+      background: #fff;
+      cursor: pointer;
+      font-weight: 400;
+      padding: 0 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, .06);
+      margin: 0 6px;
+      white-space: nowrap;
+    }
+
+    .mini-btn:hover {
+      background: #f7f7f7;
+      border-color: rgba(15, 23, 42, .22)
+    }
+
+    .mini-btn.danger {
+      border-color: rgba(239, 68, 68, .35);
+      color: #b91c1c;
+      background: #fff1f2;
+    }
+
+    .mini-btn.danger:hover {
+      filter: brightness(.98)
+    }
+
+    .pos-pill {
+      display: inline-flex;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(15, 23, 42, .10);
+      background: #eef2ff;
+      font-weight: 1000;
+      font-size: 12px;
+      color: #111;
+      max-width: 100%;
+      justify-content: center;
+      box-shadow: 0 10px 18px rgba(15, 23, 42, .08);
+      white-space: nowrap;
+    }
+
+    .pos-pill.webdev {
+      background: #dcfce7;
+      border-color: rgba(22, 163, 74, .25);
+      color: #166534
+    }
+
+    .pos-pill.uxui {
+      background: #f3e8ff;
+      border-color: rgba(147, 51, 234, .25);
+      color: #6b21a8
+    }
+
+    .pos-pill.ba {
+      background: #ffe7cc;
+      border-color: rgba(234, 88, 12, .22);
+      color: #9a3412
+    }
+
+    .pos-pill.datasci {
+      background: #dbeafe;
+      border-color: rgba(37, 99, 235, .25);
+      color: #1d4ed8
+    }
+
+    .pos-pill.mentor {
+      background: #fff7ed;
+      border-color: rgba(249, 115, 22, .25);
+      color: #9a3412
+    }
+
+    .pos-pill.dm {
+      background: #e9ecef;
+      border-color: rgba(108, 117, 125, .25);
+      color: #495057
+    }
+
+    .pos-pill.ic {
+      background: #fee2e2;
+      border-color: rgba(220, 38, 38, .25);
+      color: #b91c1c
+    }
+
+    .name-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-weight: 1000;
+      font-size: 13px;
+      border: 1px solid rgba(15, 23, 42, .10);
+      background: #f8fafc;
+      color: #0f172a;
+      box-shadow: 0 10px 18px rgba(15, 23, 42, .08);
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .name-chip.webdev {
+      background: #dcfce7;
+      border-color: rgba(22, 163, 74, .25);
+      color: #166534
+    }
+
+    .name-chip.uxui {
+      background: #f3e8ff;
+      border-color: rgba(147, 51, 234, .25);
+      color: #6b21a8
+    }
+
+    .name-chip.ba {
+      background: #ffe7cc;
+      border-color: rgba(234, 88, 12, .22);
+      color: #9a3412
+    }
+
+    .name-chip.datasci {
+      background: #dbeafe;
+      border-color: rgba(37, 99, 235, .25);
+      color: #1d4ed8
+    }
+
+    .name-chip.mentor {
+      background: #fff7ed;
+      border-color: rgba(249, 115, 22, .25);
+      color: #9a3412
+    }
+
+    .name-chip.dm {
+      background: #e9ecef;
+      border-color: rgba(108, 117, 125, .25);
+      color: #495057
+    }
+
+    .name-chip.ic {
+      background: #fee2e2;
+      border-color: rgba(220, 38, 38, .25);
+      color: #b91c1c
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 18px;
+      backdrop-filter: blur(2px);
+    }
+
+    .modal-overlay.show {
+      display: flex
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 640px;
+      background: #ffffff;
+      border-radius: 22px;
+      padding: 0;
+      /* ✅ ย้าย padding ไปที่ส่วนเนื้อหา */
+      box-shadow: 0 18px 60px rgba(0, 0, 0, .28);
+      border: 1px solid rgba(15, 23, 42, .08);
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      /* ✅ ให้ overflow ที่ content wrapper แทน */
+    }
+
+    .modal-title {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 1000;
+      margin: 0;
+      padding: 22px 20px 8px;
+      /* ✅ เพิ่ม padding */
+      color: #111;
+      letter-spacing: .2px;
+      flex-shrink: 0;
+      /* ✅ ไม่ให้หด */
+    }
+
+    /* ✅ เพิ่ม class ใหม่สำหรับ content ที่ scroll ได้ */
+    .modal-content {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 10px 20px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .modal-actions {
+      margin-top: 0;
+      /* ✅ เปลี่ยนจาก 16px */
+      padding: 16px 20px 22px;
+      /* ✅ เพิ่ม padding */
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+      /* ✅ ไม่ให้หด */
+      border-top: 1px solid rgba(15, 23, 42, .06);
+      /* ✅ เพติมเส้นขอบ */
+      background: #fafafa;
+      /* ✅ ไล่สี */
+    }
+
+    .modal-boxdocs {
+      width: 100%;
+      max-width: 740px;
+      background: #ffffff;
+      border-radius: 22px;
+      padding: 22px 20px;
+      box-shadow: 0 18px 60px rgba(0, 0, 0, .28);
+      border: 1px solid rgba(15, 23, 42, .08);
+      max-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .field {
+      margin: 14px 0
+    }
+
+    .label {
+      font-size: 15px;
+      font-weight: 1000;
+      margin-bottom: 8px;
+      color: #111827
+    }
+
+    .input,
+    .select {
+      width: 100%;
+      height: 48px;
+      border-radius: 14px;
+      border: 1px solid rgba(15, 23, 42, .18);
+      background: #fff;
+      padding: 10px 12px;
+      font-size: 15px;
+      font-weight: 800;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, .06);
+    }
+
+    .input:focus,
+    .select:focus {
+      outline: none;
+      border-color: #111;
+      box-shadow: 0 10px 22px rgba(15, 23, 42, .10)
+    }
+
+    .modal-actions {
+      margin-top: 16px;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      flex: 0 0 auto;
+    }
+
+    .modal-actions.left {
+      justify-content: flex-start
+    }
+
+    .preview-actions-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 12px;
+      width: 100%;
+      flex-wrap: nowrap;
+    }
+
+    .preview-actions-bar .left-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex: 0 0 auto;
+    }
+
+    .preview-actions-bar .right-actions {
+      margin-left: auto;
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+    }
+
+    .btn {
+      height: 46px;
+      border-radius: 14px;
+      border: none;
+      font-size: 15px;
+      font-weight: 1000;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 0 16px;
+      box-shadow: 0 10px 22px rgba(15, 23, 42, .16);
+      background: var(--btn);
+      color: #fff;
+    }
+
+    .btn:hover {
+      background: var(--btnHover)
+    }
+
+    .btn.cancel {
+      background: var(--btn);
+      color: #fff
+    }
+
+    .btn.cancel:hover {
+      background: var(--btnHover)
+    }
+
+    .btn.primary {
+      background: var(--btn);
+      color: #fff
+    }
+
+    .btn.primary:hover {
+      background: var(--btnHover)
+    }
+
+    .btn:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+      box-shadow: none
+    }
+
+    .view-card {
+      border: 1px solid rgba(15, 23, 42, .10);
+      border-radius: 16px;
+      padding: 14px;
+      background: #f8fafc;
+      box-shadow: 0 10px 22px rgba(15, 23, 42, .08);
+      font-weight: 900;
+      color: #0f172a;
+      text-align: center;
+      line-height: 1.45;
+      overflow: auto;
+      max-height: 64vh;
+      max-width: 700px;
+    }
+
+    .view-sub {
+      margin-top: 8px;
+      font-weight: 800;
+      color: #64748b;
+      font-size: 13px
+    }
+
+    @media (max-width: 920px) {
+      .preview-actions-bar {
+        flex-wrap: wrap;
+      }
+
+      .preview-actions-bar .right-actions {
+        margin-left: 0;
+      }
+    }
+
+    html {
+      overflow-y: scroll;
+      /* จองพื้นที่ scrollbar ของทั้งหน้า */
+    }
+
+    /* ===== FIX เด้งจากการ search/filter ===== */
+    #projectsTab {
+      overflow-y: scroll !important;
+      /* มี scrollbar ตลอด */
+    }
+
+    html {
+      overflow-y: scroll;
+    }
+
+    #projectsTab {
+      height: calc(100vh - 180px);
+      overflow-y: scroll !important;
+      overflow-x: hidden;
+    }
+
+    /* =========================
+   ✅ MOBILE: ตารางยาวเต็มจอ
+   ========================= */
+    @media (max-width: 768px) {
+      .container {
+        padding: 8px;
+        margin: 0;
+        max-width: 100%;
+        border-radius: 0;
+      }
+
+      .title-row {
+        margin-bottom: 8px;
+      }
+
+      .top-row {
+        margin: 8px 0 10px;
+      }
+
+      .filters-row {
+        margin-bottom: 10px;
+      }
+
+      .table-wrap {
+        max-height: calc(100vh - 200px);
+        /* ✅ เพิ่มความสูงให้เต็มจอมากขึ้น */
+        border-radius: 12px;
+        margin-top: 4px;
+      }
+
+      /* ถ้าอยู่ในหน้า Members */
+      body.in-members #memberSection .table-wrap {
+        max-height: calc(100vh - 140px);
+        /* ✅ เพิ่มความสูงให้เต็มจอมากขึ้น */
+      }
+  </style>
+</head>
+
+<body onload="loadProjects()">
+  <div class="container">
+    <div class="title-row">
+      <div class="title" id="pageTitle">
+        <span class="dot"></span>
+        All Project
+      </div>
+
+      <button class="back-btn" id="btnBackAll" onclick="goBackAll()">
+        <img src="https://img.icons8.com/?size=100&id=bLgaSbZ7m3FK&format=png&color=000000"
+             style="width:16px;height:16px;" alt="Back">
+        ย้อนกลับ
+      </button>
+    </div>
+
+    <div class="top-row" id="topRow">
+      <div class="custom-dropdown" id="projectDropdown">
+        <div class="dropdown-selected" id="dropdownToggle">
+          <span id="selectedProjectText">เลือกโปรเจค</span>
+          <span>▾</span>
+        </div>
+        <div class="dropdown-items" id="dropdownItems">
+          <div class="loading">กำลังโหลด...</div>
+        </div>
+      </div>
+
+      <div class="filters-row" id="sortControls">
+        <div class="ctrl" id="sortByCtrl">
+          <div class="ctrl-selected" onclick="toggleCtrlDropdown('sortByCtrl')">
+            <span id="sortByText">วันที่เริ่มต้น</span>
+            <span>▾</span>
+          </div>
+          <div class="ctrl-items" id="sortByItems">
+            <div class="ctrl-item" onclick="selectSortBy('start', 'วันที่เริ่มต้น')">วันที่เริ่มต้น</div>
+            <div class="ctrl-item" onclick="selectSortBy('end', 'วันที่วางแผนสิ้นสุด')">วันที่วางแผนสิ้นสุด</div>
+            <div class="ctrl-item" onclick="selectSortBy('name', 'ชื่อโปรเจค')">ชื่อโปรเจค</div>
+            <div class="ctrl-item" onclick="selectSortBy('status', 'สถานะ')">สถานะ</div>
+          </div>
+        </div>
+
+        <div class="ctrl" id="sortDirCtrl">
+          <div class="ctrl-selected" onclick="toggleCtrlDropdown('sortDirCtrl')">
+            <span id="sortDirText">ใหม่ → เก่า</span>
+            <span>▾</span>
+          </div>
+          <div class="ctrl-items" id="sortDirItems">
+            <div class="ctrl-item" onclick="selectSortDir('asc', 'ใหม่ → เก่า')">ใหม่ → เก่า</div>
+            <div class="ctrl-item" onclick="selectSortDir('desc', 'เก่า → ใหม่')">เก่า → ใหม่</div>
+          </div>
+        </div>
+
+        <div class="ctrl" id="statusFilterCtrl">
+          <div class="ctrl-selected" onclick="toggleCtrlDropdown('statusFilterCtrl')">
+            <span id="statusFilterText">ทั้งหมด</span>
+            <span>▾</span>
+          </div>
+          <div class="ctrl-items" id="statusFilterItems">
+            <div class="ctrl-item" onclick="selectStatusFilter('all', 'ทั้งหมด')">ทั้งหมด</div>
+            <div class="ctrl-item" onclick="selectStatusFilter('In progress', 'In progress')">In progress</div>
+            <div class="ctrl-item" onclick="selectStatusFilter('Not started', 'Not started')">Not started</div>
+            <div class="ctrl-item" onclick="selectStatusFilter('Overdue', 'Overdue')">Overdue</div>
+            <div class="ctrl-item" onclick="selectStatusFilter('Finished', 'Finished')">Finished</div>
+          </div>
+        </div>
+
+        <div style="min-width:250px;">
+          <div class="search-ctrl">
+            <input id="internSearch" placeholder="ค้นหาสมาชิก (พิมพ์ชื่อ...)" />
+          </div>
+          <span class="search-hint" id="internHint">
+
+          </span>
+        </div>
+
+        <button class="btn-clear" type="button" onclick="clearAllFilters()">ล้างตัวกรอง</button>
+      </div>
+    </div>
+
+    <div id="projectSection">
+      <div class="table-wrap" id="projectTableWrap">
+        <table id="projectTable">
+
+          <colgroup>
+            <col style="width:var(--col-1)">
+            <col style="width:var(--col-2)">
+            <col style="width:var(--col-3)">
+            <col style="width:var(--col-4)">
+            <col style="width:var(--col-5)">
+            <col style="width:var(--col-6)">
+            <col style="width:var(--col-7)">
+            <col style="width:var(--col-8)">
+            <col style="width:var(--col-9)">
+          </colgroup>
+
+          <thead>
+            <tr>
+              <th>ชื่อโปรเจค</th>
+              <th>วันที่เริ่มต้น</th>
+              <th>วันที่วางแผนสิ้นสุดโครงการ</th>
+              <th>ระยะเวลาโครงการ (วัน)</th>
+              <th>Mentor</th>
+              <th>หมายเหตุ</th>
+              <th>Figma Link</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="projectTableBody">
+            <tr>
+              <td colspan="9" class="loading">กำลังโหลดข้อมูล...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="memberSection">
+      <div class="table-wrap">
+        <div class="member-top">
+          <div class="member-title">
+            <span>Members</span>
+            <span class="tag" id="memberProjectTag">-</span>
+          </div>
+          <button class="member-add" onclick="openMemberAdd()">
+            <img src="https://img.icons8.com/?size=100&id=bDKqvw7V0ANQ&format=png&color=000000"
+                 style="width:18px;height:18px;" alt="Add">
+            Add Member
+          </button>
+        </div>
+
+        <table id="memberTable">
+          <thead>
+            <tr>
+              <th>ชื่อ</th>
+              <th>ตำแหน่ง</th>
+              <th>จัดการ</th>
+            </tr>
+          </thead>
+          <tbody id="memberTableBody">
+            <tr>
+              <td colspan="3" class="loading">เลือกโปรเจคเพื่อดูสมาชิก</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Project Modal -->
+  <div id="addModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-title">Add Project</div>
+
+      <!-- ✅ ห่อ fields ด้วย modal-content -->
+      <div class="modal-content">
+        <div class="field">
+          <div class="label">ชื่อโปรเจค</div>
+          <input id="add_name" class="input" placeholder="">
+        </div>
+
+        <div class="field">
+          <div class="label">วันที่เริ่มต้น</div>
+          <input id="add_start" type="date" class="input">
+        </div>
+
+        <div class="field">
+          <div class="label">วันที่วางแผนสิ้นสุดโครงการ</div>
+          <input id="add_end" type="date" class="input">
+        </div>
+
+        <div class="field">
+          <div class="label">หมายเหตุ</div>
+          <input id="add_note" class="input" placeholder="">
+        </div>
+
+        <div class="field">
+          <div class="label">Figma Link</div>
+          <input id="add_figma" class="input" placeholder="https://figma.com/...">
+        </div>
+
+        <div class="field">
+          <div class="label">สถานะ</div>
+          <select id="add_status" class="select">
+          <option value="ยังไม่เริ่มงาน">ยังไม่เริ่มงาน</option>
+          <option value="อยู่ในกำหนด">อยู่ในกำหนด</option>
+          <option value="ช้ากว่ากำหนด">ช้ากว่ากำหนด</option>
+          <option value="เสร็จแล้ว">เสร็จแล้ว</option>
+        </select>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn primary" id="btnAddSave" onclick="submitAdd()">
+        <img src="https://img.icons8.com/?size=100&id=XpyLr4ervzGM&format=png&color=000000"
+             style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" alt="Add">
+        Add Project
+      </button>
+        <button class="btn cancel" onclick="closeAdd()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Project Modal -->
+  <div id="editModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-title">Edit Project</div>
+
+      <!-- ✅ ห่อ fields ด้วย modal-content -->
+      <div class="modal-content">
+        <div class="field">
+          <div class="label">ชื่อโปรเจค</div>
+          <input id="edit_name" class="input" placeholder="">
+        </div>
+
+        <div class="field">
+          <div class="label">วันที่เริ่มต้น</div>
+          <input id="edit_start" type="date" class="input">
+        </div>
+
+        <div class="field">
+          <div class="label">วันที่วางแผนสิ้นสุดโครงการ</div>
+          <input id="edit_end" type="date" class="input">
+        </div>
+
+        <div class="field">
+          <div class="label">หมายเหตุ</div>
+          <input id="edit_note" class="input" placeholder="">
+        </div>
+
+        <div class="field">
+          <div class="label">Figma Link</div>
+          <input id="edit_figma" class="input" placeholder="https://figma.com/...">
+        </div>
+
+        <div class="field">
+          <div class="label">สถานะ</div>
+          <select id="edit_status" class="select">
+          <option value="ยังไม่เริ่มงาน">ยังไม่เริ่มงาน</option>
+          <option value="อยู่ในกำหนด">อยู่ในกำหนด</option>
+          <option value="ช้ากว่ากำหนด">ช้ากว่ากำหนด</option>
+          <option value="เสร็จแล้ว">เสร็จแล้ว</option>
+        </select>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn primary" id="btnEditSave" onclick="submitEdit()">
+        <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000"
+             style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" alt="Edit">
+        Edit Project
+      </button>
+        <button class="btn cancel" onclick="closeEdit()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ View Modal -->
+  <div id="viewModal" class="modal-overlay">
+    <div class="modal-boxdocs">
+      <div class="modal-title">Project Preview</div>
+      <div class="view-card" id="viewContent">-</div>
+    </div>
+  </div>
+
+  <!-- ✅ Member Modal -->
+  <div id="memberModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-title" id="memberModalTitle">Add Member</div>
+
+      <div class="field">
+        <div class="label">ชื่อ</div>
+        <input id="m_name" class="input" placeholder="เช่น กิ๊ฟ">
+      </div>
+
+      <div class="field">
+        <div class="label">ตำแหน่ง</div>
+        <input id="m_pos" class="input" placeholder="เช่น BA / UXUI / web dev / mentor">
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn primary" id="btnMemberSave" onclick="submitMemberModal()">
+          <img src="https://img.icons8.com/?size=100&id=IoxdKD291KHp&format=png&color=000000"
+               style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" alt="Save">
+          Save
+        </button>
+        <button class="btn cancel" onclick="closeMemberModal()">Cancel</button>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function byId(id){ return document.getElementById(id); }
+
+    const TRASH_SVG = `
+      <img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000"
+           style="width:18px;height:18px;" alt="Delete">
+    `;
+
+    window.__proj = window.__proj || {
+      list: [],
+      selectedId: "all",
+      selectedRow: null,
+      selectedProjectName: "",
+      tableRows: [],
+      mentorMap: {},
+      peopleMap: {},
+      sortBy: "start",
+      sortDir: "asc",
+      statusFilter: "all",
+      memberMode: "add",
+      memberEditOldTag: "",
+      internSearch: "",
+    };
+
+    /* =========================
+       ✅ Local "DB" (No backend)
+       ========================= */
+    const LS_KEY = "PMTOOL_PROJECTS_DB_V1";
+
+    function uid(prefix="p"){
+      return prefix + "_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+    }
+    function todayISO(){
+      const d = new Date();
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth()+1).padStart(2,"0");
+      const dd = String(d.getDate()).padStart(2,"0");
+      return `${yyyy}-${mm}-${dd}`;
+    }
+    function formatDMY(iso){
+      const s = String(iso||"").trim();
+      if (!s) return "-";
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+      const [y,m,d] = s.split("-");
+      return `${Number(d)}/${Number(m)}/${y}`;
+    }
+    function daysBetween(startISO, endISO){
+      const a = Date.parse(startISO||"");
+      const b = Date.parse(endISO||"");
+      if (Number.isNaN(a) || Number.isNaN(b)) return "-";
+      const diff = Math.round((b-a)/(1000*60*60*24));
+      return diff >= 0 ? diff : "-";
+    }
+
+    function loadDB(){
+      try{
+        const raw = localStorage.getItem(LS_KEY);
+        if (raw){
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.projects)) return parsed;
+        }
+      }catch(e){}
+      // seed demo
+      const seed = {
+        projects: [
+          {
+            id: uid("p"),
+            name: "Demo Project A",
+            startISO: todayISO(),
+            endISO: "",
+            note: "ตัวอย่างโปรเจค (แก้/ลบได้)",
+            status: "อยู่ในกำหนด",
+            mentors: ["mentor", "webdev"],
+            preview: "Project Preview\n- เป้าหมาย\n- ขอบเขตงาน\n- Timeline",
+            members: [
+              { tag: uid("m"), name: "Gift", position: "BA" },
+              { tag: uid("m"), name: "Ton", position: "UXUI" },
+            ],
+          },
+          {
+            id: uid("p"),
+            name: "Demo Project B",
+            startISO: todayISO(),
+            endISO: "",
+            note: "ใส่หมายเหตุได้ยาวๆ",
+            status: "ยังไม่เริ่มงาน",
+            mentors: ["datasci"],
+            preview: "",
+            members: [],
+          }
+        ]
+      };
+      saveDB(seed);
+      return seed;
+    }
+    function saveDB(db){
+      localStorage.setItem(LS_KEY, JSON.stringify(db));
+    }
+    function getProjectByName(name){
+      const db = loadDB();
+      return db.projects.find(p => String(p.name||"").trim() === String(name||"").trim()) || null;
+    }
+    function getProjectById(id){
+      const db = loadDB();
+      return db.projects.find(p => String(p.id) === String(id)) || null;
+    }
+
+    /* =========================
+       ✅ smart wrap
+       ========================= */
+    function wrapTextSmart(text, maxLen = 60) {
+      const s = String(text ?? "");
+      if (!s) return "";
+      const parts = s.split(/\r?\n/);
+      const out = [];
+      for (const part of parts) {
+        const line = String(part ?? "");
+        const trimmed = line.trim();
+        if (!trimmed) { out.push(""); continue; }
+        if (/\s/.test(line)) {
+          const words = line.split(/\s+/).filter(Boolean);
+          let cur = "";
+          for (const w of words) {
+            const cand = cur ? (cur + " " + w) : w;
+            if (cand.length > maxLen) {
+              if (cur) out.push(cur);
+              if (w.length > maxLen) {
+                for (let i = 0; i < w.length; i += maxLen) out.push(w.slice(i, i + maxLen));
+                cur = "";
+              } else {
+                cur = w;
+              }
+            } else {
+              cur = cand;
+            }
+          }
+          if (cur) out.push(cur);
+          continue;
+        }
+        for (let i = 0; i < line.length; i += maxLen) out.push(line.slice(i, i + maxLen));
+      }
+      return out.join("\n");
+    }
+
+    function loadProjects() {
+      try { bindEventsOnce(); } catch(e){}
+      try { bindInternSearchOnce(); } catch(e){}
+      fetchProjects();
+      requestAnimationFrame(adjustHeaderForScrollbar);
+      window.addEventListener("resize", () => requestAnimationFrame(adjustHeaderForScrollbar), { passive: true });
+    }
+
+    function adjustHeaderForScrollbar(){
+      // ในเวอร์ชันนี้ใช้ table-wrap เดียว → คำนวณจากมันแทน
+      const body = document.querySelector(".table-wrap");
+      if (!body) return;
+      const sbw = Math.max(0, body.offsetWidth - body.clientWidth);
+      document.body.style.setProperty("--sbw", sbw + "px");
+    }
+
+    let __bound = false;
+    function bindEventsOnce() {
+      if (__bound) return;
+      __bound = true;
+
+      document.addEventListener("click", (e) => {
+        const dd = byId("projectDropdown");
+        const items = byId("dropdownItems");
+        if (!dd || !items) return;
+
+        const isToggle = e.target.closest("#dropdownToggle");
+        if (isToggle) { items.classList.toggle("open"); return; }
+        if (!dd.contains(e.target)) items.classList.remove("open");
+
+        ["sortByCtrl", "sortDirCtrl", "statusFilterCtrl"].forEach(id => {
+          const ctrl = byId(id);
+          if (ctrl && !ctrl.contains(e.target)) {
+            const ctrlItems = ctrl.querySelector(".ctrl-items");
+            if (ctrlItems) ctrlItems.classList.remove("open");
+          }
+        });
+      }, true);
+
+      ["addModal","editModal","memberModal","viewModal"].forEach(id=>{
+        const el = byId(id);
+        if (!el) return;
+        el.addEventListener("click", (e)=>{
+          if (e.target === el){
+            if (id === "addModal") closeAdd();
+            if (id === "editModal") closeEdit();
+            if (id === "memberModal") closeMemberModal();
+            if (id === "viewModal") closeView();
+          }
+        });
+      });
+    }
+
+    function toggleCtrlDropdown(ctrlId) {
+      const ctrl = byId(ctrlId);
+      if (!ctrl) return;
+      const items = ctrl.querySelector(".ctrl-items");
+      if (!items) return;
+
+      ["sortByCtrl", "sortDirCtrl", "statusFilterCtrl"].forEach(id => {
+        if (id !== ctrlId) {
+          const other = byId(id);
+          if (other) {
+            const otherItems = other.querySelector(".ctrl-items");
+            if (otherItems) otherItems.classList.remove("open");
+          }
+        }
+      });
+
+      items.classList.toggle("open");
+    }
+
+    function selectSortBy(value, text) {
+      window.__proj.sortBy = value;
+      byId("sortByText").textContent = text;
+      byId("sortByItems").classList.remove("open");
+      applySortFilterAndRender();
+    }
+
+    function selectSortDir(value, text) {
+      window.__proj.sortDir = value;
+      byId("sortDirText").textContent = text;
+      byId("sortDirItems").classList.remove("open");
+      applySortFilterAndRender();
+    }
+
+    function selectStatusFilter(value, text) {
+      window.__proj.statusFilter = value;
+      byId("statusFilterText").textContent = text;
+      byId("statusFilterItems").classList.remove("open");
+      applySortFilterAndRender();
+    }
+
+    let __internBound = false;
+    function bindInternSearchOnce(){
+      if (__internBound) return;
+      __internBound = true;
+
+      const input = byId("internSearch");
+      if (!input) return;
+
+      const run = () => {
+        window.__proj.internSearch = String(input.value || "").trim();
+        byId("internHint").style.visibility = window.__proj.internSearch ? "visible" : "hidden";
+        applySortFilterAndRender();
+      };
+      input.addEventListener("input", run);
+    }
+
+    /* =========================
+       ✅ "fetch" without backend
+       ========================= */
+    function fetchProjects() {
+      const items = byId("dropdownItems");
+      const tbody = byId("projectTableBody");
+      if (items) items.innerHTML = `<div class="loading">กำลังโหลด...</div>`;
+      if (tbody) tbody.innerHTML = `<tr><td colspan="9" class="loading">กำลังโหลดข้อมูล...</td></tr>`;
+
+      const db = loadDB();
+      // dropdown list = db.projects
+      window.__proj.list = db.projects.map(p => ({ id: p.id, name: p.name }));
+      renderDropdown();
+
+      window.__proj.selectedId = "all";
+      byId("selectedProjectText").textContent = "All Project";
+      goBackAll();
+    }
+
+    function renderDropdown() {
+      const items = byId("dropdownItems");
+      if (!items) return;
+
+      const list = window.__proj.list;
+      const wrap = document.createElement("div");
+
+      wrap.appendChild(ddRow({
+        name: "All Project",
+        deletable: false,
+        onClick: () => {
+          byId("selectedProjectText").textContent = "All Project";
+          items.classList.remove("open");
+          goBackAll();
+        }
+      }));
+
+      list.forEach(p => {
+        const pid = String(p.id || "");
+        const pname = String(p.name || "-");
+        wrap.appendChild(ddRow({
+          name: pname,
+          deletable: true,
+          onClick: () => {
+            window.__proj.selectedId = pid;
+            byId("selectedProjectText").textContent = pname;
+            items.classList.remove("open");
+            openMembers(pname);
+          },
+          onDelete: () => handleDeleteProject(pid, pname)
+        }));
+      });
+
+      const addWrap = document.createElement("div");
+      addWrap.className = "dd-add-wrap";
+      addWrap.innerHTML = `<div class="dd-add" title="เพิ่มโปรเจค">＋</div>`;
+      addWrap.addEventListener("click", (e) => { e.stopPropagation(); openAdd(); });
+      wrap.appendChild(addWrap);
+
+      items.innerHTML = "";
+      items.appendChild(wrap);
+    }
+
+    function ddRow({ name, deletable, onClick, onDelete }) {
+      const row = document.createElement("div");
+      row.className = "dd-item";
+
+      const left = document.createElement("div");
+      left.className = "dd-left";
+      left.innerHTML = `<div class="dd-title" title="${escapeHtml(name)}">${escapeHtml(name)}</div>`;
+      left.addEventListener("click", (e) => { e.stopPropagation(); onClick && onClick(); });
+
+      const actions = document.createElement("div");
+      actions.className = "dd-actions";
+
+      if (deletable) {
+        const del = document.createElement("button");
+        del.type = "button";
+        del.className = "dd-trash";
+        del.innerHTML = TRASH_SVG;
+        del.title = "ลบโปรเจค";
+        del.addEventListener("click", (e) => { e.stopPropagation(); onDelete && onDelete(); });
+        actions.appendChild(del);
+      }
+
+      row.appendChild(left);
+      row.appendChild(actions);
+      return row;
+    }
+
+    function handleDeleteProject(pid, pname) {
+      if (!confirm(`ต้องการลบโปรเจค "${pname}" ใช่ไหม?`)) return;
+      const db = loadDB();
+      db.projects = db.projects.filter(p => String(p.id) !== String(pid));
+      saveDB(db);
+      fetchProjects();
+      goBackAll();
+    }
+
+    function fetchAllProjectsTable() {
+      const db = loadDB();
+      const rows = db.projects.map(p => ({
+        id: p.id,
+        name: p.name,
+        startISO: p.startISO || "",
+        endISO: p.endISO || "",
+        start: formatDMY(p.startISO || ""),
+        end: formatDMY(p.endISO || ""),
+        days: daysBetween(p.startISO || "", p.endISO || ""),
+        note: p.note || "",
+        status: p.status || "-",
+            figma: p.figma || "",  // ✅ เพิ่มบรรทัดนี้
+
+        rowIndex: p.id, // ใช้ id แทน rowIndex
+      }));
+
+      window.__proj.tableRows = rows;
+
+      const names = rows.map(r => String(r.name || "").trim()).filter(Boolean);
+      window.__proj.mentorMap = fetchMentorsForProjects(names); // local
+      window.__proj.peopleMap = fetchPeopleMapForProjects(names); // local
+
+      applySortFilterAndRender();
+      requestAnimationFrame(adjustHeaderForScrollbar);
+    }
+
+    function normalizeKey(s){
+      return String(s || "")
+        .replace(/[\u200B-\u200D\uFEFF]/g, "")
+        .trim()
+        .replace(/\s+/g, " ")
+        .toLowerCase();
+    }
+
+    // local mentor map from db.projects[].mentors
+    function fetchMentorsForProjects(projectNames) {
+      const db = loadDB();
+      const map = {};
+      projectNames.forEach(name => {
+        const p = getProjectByName(name);
+        const key = normalizeKey(name);
+        map[key] = p && Array.isArray(p.mentors) ? p.mentors : [];
+      });
+      return map;
+    }
+
+    // local people map from db.projects[].members (names)
+    function fetchPeopleMapForProjects(projectNames){
+      const db = loadDB();
+      const map = {};
+      projectNames.forEach(name => {
+        const p = getProjectByName(name);
+        const key = normalizeKey(name);
+        const arr = (p && Array.isArray(p.members)) ? p.members.map(m => m.name).filter(Boolean) : [];
+        map[key] = arr;
+      });
+      return map;
+    }
+
+    function applySortFilterAndRender(){
+      const rows = Array.isArray(window.__proj.tableRows) ? [...window.__proj.tableRows] : [];
+      if (!rows.length) { renderEmpty("ไม่มีข้อมูลโปรเจค"); requestAnimationFrame(adjustHeaderForScrollbar); return; }
+
+      const f = window.__proj.statusFilter || "all";
+      let filtered = rows;
+      if (f !== "all"){
+        filtered = rows.filter(r => mapStatusLabel(r.status) === f);
+      }
+
+      const q = normalizeKey(window.__proj.internSearch || "");
+      if (q){
+        const peopleMap = window.__proj.peopleMap || {};
+        filtered = filtered.filter(r => {
+          const key = normalizeKey(r.name);
+          const arr = Array.isArray(peopleMap[key]) ? peopleMap[key] : [];
+          return arr.some(n => normalizeKey(n).includes(q));
+        });
+      }
+
+      const sortBy = window.__proj.sortBy || "start";
+      const dir = (window.__proj.sortDir || "asc") === "desc" ? -1 : 1;
+      const compareText = (a,b) => String(a||"").localeCompare(String(b||""), "th", { sensitivity:"base" });
+
+      filtered.sort((ra, rb) => {
+        if (sortBy === "name") return dir * compareText(ra.name, rb.name);
+        if (sortBy === "status") return dir * compareText(mapStatusLabel(ra.status), mapStatusLabel(rb.status));
+        if (sortBy === "end") return dir * (parseDateToMs(ra, "end") - parseDateToMs(rb, "end"));
+        return dir * (parseDateToMs(ra, "start") - parseDateToMs(rb, "start"));
+      });
+
+      renderTableWithCachedMentors(filtered, window.__proj.mentorMap || {});
+      requestAnimationFrame(adjustHeaderForScrollbar);
+    }
+
+    function parseDateToMs(row, which){
+      const iso = which === "end" ? (row.endISO || "") : (row.startISO || "");
+      const s = String(iso || "").trim();
+      if (s) {
+        const t = Date.parse(s);
+        if (!Number.isNaN(t)) return t;
+      }
+
+      const disp = which === "end" ? (row.end || "") : (row.start || "");
+      const d = String(disp || "").trim();
+      if (!d || d === "-") return 0;
+
+      if (/^\d{4}-\d{2}-\d{2}/.test(d)){
+        const t = Date.parse(d);
+        return Number.isNaN(t) ? 0 : t;
+      }
+
+      const m = d.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+      if (m){
+        const dd = Number(m[1]), mm = Number(m[2]) - 1, yy = Number(m[3]);
+        const t = new Date(yy, mm, dd).getTime();
+        return Number.isNaN(t) ? 0 : t;
+      }
+
+      const t2 = Date.parse(d);
+      return Number.isNaN(t2) ? 0 : t2;
+    }
+
+    function positionClassFromTag(tagText){
+      const s = normalizeKey(tagText);
+      if (s.includes("web") || s.includes("dev")) return "webdev";
+      if (s.includes("ux") || s.includes("ui")) return "uxui";
+      if (s === "ba" || s.includes("-ba") || s.includes("business")) return "ba";
+      if (s.includes("data") || s.includes("sci") || s.includes("ds")) return "datasci";
+      if (s.includes("mentor") || s.includes("พี่เลี้ยง")) return "mentor";
+      if (s.includes("-dm") || s.includes("delivery") || s.includes("manager")) return "dm";
+      if (s.includes("-ic") || s.includes("ic")) return "ic";
+      return "default";
+    }
+
+    function renderMentorChips(mentorTags){
+      if (!mentorTags.length) return `<div style="opacity:.7;font-weight:900;">-</div>`;
+      return `<div class="mentor-cell">${
+        mentorTags.map(t=>{
+          const cls = positionClassFromTag(t);
+          return `<span class="mentor-chip ${cls}" title="${escapeHtml(t)}">${escapeHtml(t)}</span>`;
+        }).join("")
+      }</div>`;
+    }
+
+    
+function renderFigmaLink(figma) {
+  const url = String(figma || "").trim();
+  if (!url || url === "-") {
+    return `<span style="opacity:.7;font-weight:900;">-</span>`;
+  }
+  return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" 
+    style="color:#111;font-weight:900;text-decoration:none;display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:8px;background:#f8fafc;border:1px solid rgba(15,23,42,.1);"
+    onclick="event.stopPropagation();">
+    <img src="https://img.icons8.com/?size=100&id=zfHRZ6i1Wg0U&format=png&color=000000" style="width:16px;height:16px;" alt="Figma">
+    Figma
+  </a>`;
+}
+
+function renderTableWithCachedMentors(rows, mentorMap) {
+      const tbody = byId("projectTableBody");
+      if (!tbody) return;
+
+      if (!rows.length) { renderEmpty("ไม่พบข้อมูลตามเงื่อนไขที่เลือก"); return; }
+
+      tbody.innerHTML = "";
+      rows.forEach(r => {
+        const tr = document.createElement("tr");
+        tr.className = "row-click";
+
+        const pName = String(r.name || "").trim();
+        const key = normalizeKey(pName);
+        const mentorTags = (mentorMap && Array.isArray(mentorMap[key])) ? mentorMap[key] : [];
+
+        tr.innerHTML = `
+          <td title="${escapeHtml(r.name)}"><b>${escapeHtml(r.name)}</b></td>
+          <td>${escapeHtml(r.start || "-")}</td>
+          <td>${escapeHtml(r.end || "-")}</td>
+          <td>${escapeHtml(String(r.days ?? "-"))}</td>
+          <td style="text-align:center;">${renderMentorChips(mentorTags)}</td>
+          <td title="${escapeHtml(r.note || "-")}"><div class="note-wrap">${escapeHtml(r.note || "-")}</div></td>
+          <td>${renderFigmaLink(r.figma)}</td>
+          <td>${statusPill(r.status)}</td>
+          <td>
+            <div class="actions-cell">
+              <button class="icon-btn" title="ดูรายละเอียด"
+                onclick='openView(${JSON.stringify(r).replace(/</g,"\\u003c")}); event.stopPropagation();'
+                style="background:none;border:none;cursor:pointer;font-size:20px;">
+                👁️
+              </button>
+
+              <button class="icon-btn" title="แก้ไข"
+                onclick='openEdit(${JSON.stringify(r).replace(/</g,"\\u003c")}); event.stopPropagation();'
+                style="background:none;border:none;cursor:pointer;font-size:20px;">
+                ✏️
+              </button>
+            </div>
+          </td>
+        `;
+
+        tr.addEventListener("click", () => openMembers(r.name));
+        tbody.appendChild(tr);
+      });
+    }
+
+    /* =========================
+       ✅ Preview (No backend)
+       - เก็บ preview ใน localStorage ต่อโปรเจค
+       ========================= */
+    function openView(row){
+      var name = String((row && row.name) ? row.name : "-");
+      var start = String((row && row.start) ? row.start : "-");
+      var end = String((row && row.end) ? row.end : "-");
+
+      var noteRaw = String((row && row.note) ? row.note : "-");
+      var note = wrapTextSmart(noteRaw, 60);
+
+      window.__outlineProjectName = name;
+      window.__outlineCache = "";
+
+      var html = ''
+        + '<div class="view-head">'
+        +   '<div>'
+        +     '<div class="view-title">' + escapeHtml(name) + '</div>'
+        +     '<div class="view-meta">Start: ' + escapeHtml(start) + ' • End: ' + escapeHtml(end) + '</div>'
+        +   '</div>'
+        + '</div>'
+        + '<div class="view-note">' + escapeHtml(note) + '</div>'
+        + '<div class="outline-wrap">'
+        +   '<div class="outline-head">'
+        +     '<div class="label">Project Preview</div>'
+        +   '</div>'
+        +   '<div id="outlineBox" class="outline-box">กำลังโหลด...</div>'
+        +   '<textarea id="outlineEditor" class="outline-editor" style="display:none;margin-top:5px" rows="16" cols="88"></textarea>'
+        +   '<div class="preview-actions-bar">'
+        +     '<div class="left-actions">'
+        +       '<button class="btn small" id="btnOutlineEdit" onclick="startOutlineEdit()">Edit</button>'
+        +       '<button class="btn small primary" id="btnOutlineSave" onclick="saveOutlineEdit()" style="display:none;">Save</button>'
+        +     '</div>'
+        +     '<div class="right-actions">'
+        +       '<button class="btn cancel" onclick="closeView()">Close</button>'
+        +     '</div>'
+        +   '</div>'
+        + '</div>';
+
+      byId("viewContent").innerHTML = html;
+      byId("viewModal").classList.add("show");
+
+      loadPreviewForCurrentProject();
+    }
+
+    function closeView(){
+      try{ cancelOutlineEdit(); }catch(e){}
+      byId("viewModal").classList.remove("show");
+    }
+
+    function loadPreviewForCurrentProject(){
+      var name = String(window.__outlineProjectName || "").trim();
+      var box = document.getElementById("outlineBox");
+      if (!box) return;
+
+      const p = getProjectByName(name);
+      const contentRaw = (p && typeof p.preview === "string") ? p.preview : "";
+      const content = wrapTextSmart(contentRaw || "", 85);
+
+      window.__outlineCache = content;
+
+      if (content && content.trim()){
+        box.innerHTML = '<div class="outline-html">' + formatOutlineTextToHtml(content) + '</div>';
+      } else {
+        box.innerHTML = '<pre class="outline-pre">(ว่าง)</pre>';
+      }
+
+      var btn = document.getElementById("btnOutlineEdit");
+      if (btn) btn.disabled = false;
+    }
+
+    function startOutlineEdit(){
+      var box = document.getElementById("outlineBox");
+      var ta = document.getElementById("outlineEditor");
+      if (!box || !ta) return;
+
+      ta.value = String(window.__outlineCache || "");
+      box.style.display = "none";
+      ta.style.display = "block";
+
+      var e = document.getElementById("btnOutlineEdit");
+      var s = document.getElementById("btnOutlineSave");
+      if (e) e.style.display = "none";
+      if (s) s.style.display = "inline-block";
+    }
+
+    function cancelOutlineEdit(){
+      var box = document.getElementById("outlineBox");
+      var ta = document.getElementById("outlineEditor");
+      if (!box || !ta) return;
+
+      ta.style.display = "none";
+      box.style.display = "block";
+
+      var e = document.getElementById("btnOutlineEdit");
+      var s = document.getElementById("btnOutlineSave");
+      if (e) e.style.display = "inline-block";
+      if (s) s.style.display = "none";
+    }
+
+    function saveOutlineEdit(){
+      var name = String(window.__outlineProjectName || "").trim();
+      var ta = document.getElementById("outlineEditor");
+      var box = document.getElementById("outlineBox");
+      var btnSave = document.getElementById("btnOutlineSave");
+      if (!name || !ta || !box) return;
+
+      var newText = String(ta.value || "");
+      if (btnSave) btnSave.disabled = true;
+
+      const db = loadDB();
+      const p = db.projects.find(x => String(x.name||"").trim() === name);
+      if (p){
+        p.preview = newText;
+        saveDB(db);
+      }
+
+      if (btnSave) btnSave.disabled = false;
+
+      newText = wrapTextSmart(newText, 85);
+      window.__outlineCache = newText;
+      box.innerHTML = '<div class="outline-html">' + formatOutlineTextToHtml(newText) + '</div>';
+      cancelOutlineEdit();
+    }
+
+    function statusPill(status) {
+      const raw = String(status || "").trim();
+      const mapped = mapStatusLabel(raw);
+      const cls = statusClass(mapped);
+      return `<span class="status ${cls}">${escapeHtml(mapped || "-")}</span>`;
+    }
+
+    function mapStatusLabel(s) {
+      const t = String(s || "").trim().toLowerCase();
+      if (t.includes("เสร็จ") || t.includes("finished") || t.includes("done") || t.includes("complete")) return "Finished";
+      if (t.includes("ช้ากว่า") || t.includes("overdue") || t.includes("late") || t.includes("delay")) return "Overdue";
+      if (t.includes("ยังไม่เริ่ม") || t.includes("not started") || t.includes("notstart")) return "Not started";
+      if (t.includes("อยู่ในกำหนด") || t.includes("in progress") || t.includes("progress") || t.includes("on time")) return "In progress";
+      return s || "-";
+    }
+
+    function statusClass(label) {
+      const t = String(label || "").toLowerCase();
+      if (t.includes("finished")) return "green";
+      if (t.includes("overdue")) return "red";
+      if (t.includes("not started")) return "orange";
+      if (t.includes("in progress")) return "blue";
+      return "gray";
+    }
+
+    function renderEmpty(msg) {
+      const tbody = byId("projectTableBody");
+      if (!tbody) return;
+      tbody.innerHTML = `
+        <tr><td colspan="9">
+          <div class="empty-state">
+            <div class="empty-state-icon">📋</div>
+            <div style="font-size:16px;margin-bottom:6px;font-weight:900;">${escapeHtml(msg)}</div>
+          </div>
+        </td></tr>
+      `;
+    }
+
+    function openMembers(projectName) {
+      const name = String(projectName || "").trim();
+      if (!name) return;
+
+      document.body.classList.add("in-members");
+
+      window.__proj.selectedProjectName = name;
+
+      byId("pageTitle").innerHTML = `<span class="dot"></span>${escapeHtml(name)}`;
+      byId("btnBackAll").style.display = "inline-flex";
+
+      byId("projectSection").style.display = "none";
+      byId("memberSection").style.display = "block";
+      byId("topRow").style.display = "none";
+
+      byId("memberProjectTag").textContent = name;
+
+      fetchPeopleTable(name);
+    }
+
+    function goBackAll() {
+      document.body.classList.remove("in-members");
+
+      window.__proj.selectedProjectName = "";
+      byId("pageTitle").innerHTML = `<span class="dot"></span> All Project`;
+      byId("btnBackAll").style.display = "none";
+
+      byId("memberSection").style.display = "none";
+      byId("projectSection").style.display = "block";
+      byId("topRow").style.display = "flex";
+
+      fetchAllProjectsTable();
+    }
+
+    function fetchPeopleTable(projectName) {
+      const tbody = byId("memberTableBody");
+      if (tbody) tbody.innerHTML = `<tr><td colspan="3" class="loading">กำลังโหลดสมาชิก...</td></tr>`;
+
+      const p = getProjectByName(projectName);
+      const rows = p && Array.isArray(p.members) ? p.members : [];
+      renderPeopleTable({ projectName, rows });
+    }
+
+    function positionPillClass(pos){
+      const p = normalizeKey(pos);
+      if (p.includes("web") || p.includes("dev")) return "webdev";
+      if (p.includes("ux") || p.includes("ui")) return "uxui";
+      if (p === "ba" || p.includes("business")) return "ba";
+      if (p.includes("data") || p.includes("sci") || p.includes("ds")) return "datasci";
+      if (p.includes("mentor") || p.includes("พี่เลี้ยง")) return "mentor";
+      if (p === "dm" || p.includes("delivery") || p.includes("manager")) return "dm";
+      if (p === "ic" || p.includes("ic")) return "ic";
+      return "";
+    }
+
+    function renderPeopleTable(res){
+      const tbody = byId("memberTableBody");
+      if (!tbody) return;
+
+      const rows = Array.isArray(res.rows) ? res.rows : [];
+      if (!rows.length){
+        tbody.innerHTML = `<tr><td colspan="3" class="loading">ยังไม่มีสมาชิก</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = "";
+      rows.forEach(r=>{
+        const tag = String(r.tag || "");
+        const name = String(r.name || "");
+        const pos = String(r.position || "");
+        const cls = positionPillClass(pos);
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><span class="name-chip ${cls}" title="${escapeHtml(name||"-")}">${escapeHtml(name||"-")}</span></td>
+          <td style="text-align:center;">
+            <span class="pos-pill ${cls}">${escapeHtml(pos || "-")}</span>
+          </td>
+          <td style="text-align:center;">
+            <button class="mini-btn" onclick='openMemberEdit(${JSON.stringify({tag,name,position:pos}).replace(/</g,"\\u003c")})'>✏️ Edit</button>
+            <button class="mini-btn danger" onclick='deleteMemberTag(${JSON.stringify({tag,name}).replace(/</g,"\\u003c")})'>🗑️ Delete</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function openMemberAdd(){
+      if (!window.__proj.selectedProjectName){
+        alert("ยังไม่ได้เลือกโปรเจค");
+        return;
+      }
+      window.__proj.memberMode = "add";
+      window.__proj.memberEditOldTag = "";
+
+      byId("memberModalTitle").textContent = "Add Member";
+      byId("m_name").value = "";
+      byId("m_pos").value = "";
+      byId("memberModal").classList.add("show");
+    }
+
+    function openMemberEdit(row){
+      if (!window.__proj.selectedProjectName){
+        alert("ยังไม่ได้เลือกโปรเจค");
+        return;
+      }
+      window.__proj.memberMode = "edit";
+      window.__proj.memberEditOldTag = String(row.tag || "");
+
+      byId("memberModalTitle").textContent = "Edit Member";
+      byId("m_name").value = String(row.name || "");
+      byId("m_pos").value = String(row.position || "");
+      byId("memberModal").classList.add("show");
+    }
+
+    function closeMemberModal(){ byId("memberModal").classList.remove("show"); }
+
+    function submitMemberModal(){
+      const projectName = window.__proj.selectedProjectName;
+      if (!projectName) return;
+
+      const name = byId("m_name").value.trim();
+      const pos = byId("m_pos").value.trim();
+      if (!name){ alert("กรอกชื่อ"); return; }
+      if (!pos){ alert("กรอกตำแหน่ง"); return; }
+
+      const btn = byId("btnMemberSave");
+      btn.disabled = true;
+
+      const db = loadDB();
+      const p = db.projects.find(x => String(x.name||"").trim() === String(projectName||"").trim());
+      if (!p){
+        btn.disabled = false;
+        alert("ไม่พบโปรเจค");
+        return;
+      }
+
+      if (!Array.isArray(p.members)) p.members = [];
+
+      if (window.__proj.memberMode === "add"){
+        p.members.push({ tag: uid("m"), name, position: pos });
+        saveDB(db);
+
+        btn.disabled = false;
+        closeMemberModal();
+        fetchPeopleTable(projectName);
+
+        fetchAllProjectsTable();
+        openMembers(projectName);
+        return;
+      }
+
+      const oldTag = window.__proj.memberEditOldTag;
+      const m = p.members.find(x => String(x.tag) === String(oldTag));
+      if (m){
+        m.name = name;
+        m.position = pos;
+        saveDB(db);
+      }
+
+      btn.disabled = false;
+      closeMemberModal();
+      fetchPeopleTable(projectName);
+      fetchAllProjectsTable();
+      openMembers(projectName);
+    }
+
+    function deleteMemberTag(row){
+      const projectName = window.__proj.selectedProjectName;
+      if (!projectName) return;
+
+      const tag = String(row.tag || "");
+      if (!tag) return;
+
+      if (!confirm(`ลบ "${row.name}" ใช่ไหม?`)) return;
+
+      const db = loadDB();
+      const p = db.projects.find(x => String(x.name||"").trim() === String(projectName||"").trim());
+      if (!p || !Array.isArray(p.members)) return;
+
+      p.members = p.members.filter(m => String(m.tag) !== String(tag));
+      saveDB(db);
+
+      fetchPeopleTable(projectName);
+      fetchAllProjectsTable();
+      openMembers(projectName);
+    }
+
+    function openAdd() {
+      var _di = byId("dropdownItems");
+      if (_di && _di.classList) _di.classList.remove("open");
+      byId("addModal").classList.add("show");
+      byId("add_name").value = "";
+      byId("add_start").value = "";
+      byId("add_end").value = "";
+      byId("add_note").value = "";
+      byId("add_status").value = "อยู่ในกำหนด";
+    }
+    function closeAdd() { byId("addModal").classList.remove("show"); }
+
+    function submitAdd() {
+      const name = byId("add_name").value.trim();
+      const start = byId("add_start").value || "";
+      const end = byId("add_end").value || "";
+      const note = byId("add_note").value.trim();
+        const figma = byId("add_figma").value.trim();  // ✅ เพิ่มบรรทัดนี้
+
+      const status = byId("add_status").value;
+      if (!name) { alert("กรอกชื่อโปรเจค"); return; }
+
+      const btn = byId("btnAddSave");
+      btn.disabled = true;
+
+      const db = loadDB();
+      const exist = db.projects.some(p => String(p.name||"").trim().toLowerCase() === name.toLowerCase());
+      if (exist){
+        btn.disabled = false;
+        alert("มีชื่อโปรเจคนี้อยู่แล้ว");
+        return;
+      }
+
+      db.projects.push({
+        id: uid("p"),
+        name,
+        startISO: start,
+        endISO: end,
+        note,
+            figma,  // ✅ เพิ่มบรรทัดนี้
+
+        status,
+        mentors: [],
+        preview: "",
+        members: []
+      });
+      saveDB(db);
+
+      btn.disabled = false;
+      closeAdd();
+      fetchProjects();
+      goBackAll();
+    }
+
+    function openEdit(row) {
+      window.__proj.selectedRow = row;
+      byId("editModal").classList.add("show");
+
+      byId("edit_name").value = row.name || "";
+      byId("edit_start").value = (row.startISO && /^\d{4}-\d{2}-\d{2}$/.test(row.startISO)) ? row.startISO : (row.startISO||"");
+      byId("edit_end").value = (row.endISO && /^\d{4}-\d{2}-\d{2}$/.test(row.endISO)) ? row.endISO : (row.endISO||"");
+
+      byId("edit_note").value = row.note || "";
+        byId("edit_figma").value = row.figma || "";  // ✅ เพิ่มบรรทัดนี้
+
+      byId("edit_status").value = row.status || "อยู่ในกำหนด";
+    }
+
+    function closeEdit() { byId("editModal").classList.remove("show"); }
+
+    function submitEdit() {
+      const row = window.__proj.selectedRow;
+      if (!row) return;
+
+      const name = byId("edit_name").value.trim();
+      const start = byId("edit_start").value || "";
+      const end = byId("edit_end").value || "";
+      const note = byId("edit_note").value.trim();
+        const figma = byId("edit_figma").value.trim();  // ✅ เพิ่มบรรทัดนี้
+
+      const status = byId("edit_status").value;
+
+      if (!name) { alert("กรอกชื่อโปรเจค"); return; }
+
+      const btn = byId("btnEditSave");
+      btn.disabled = true;
+
+      const db = loadDB();
+      const p = db.projects.find(x => String(x.id) === String(row.rowIndex));
+      if (!p){
+        btn.disabled = false;
+        alert("ไม่พบโปรเจค");
+        return;
+      }
+
+      // กันชื่อซ้ำกับโปรเจคอื่น
+      const dup = db.projects.some(x => x !== p && String(x.name||"").trim().toLowerCase() === name.toLowerCase());
+      if (dup){
+        btn.disabled = false;
+        alert("ชื่อโปรเจคซ้ำกับรายการอื่น");
+        return;
+      }
+
+      const oldName = p.name;
+
+      p.name = name;
+      p.startISO = start;
+      p.endISO = end;
+      p.note = note;
+        p.figma = figma;  // ✅ เพิ่มบรรทัดนี้
+      p.status = status;
+
+      saveDB(db);
+
+      // ถ้าเปลี่ยนชื่อ แล้วกำลังอยู่ใน member view ของชื่อเดิม → sync
+      if (window.__proj.selectedProjectName && window.__proj.selectedProjectName === oldName){
+        window.__proj.selectedProjectName = name;
+        byId("memberProjectTag").textContent = name;
+        byId("pageTitle").innerHTML = `<span class="dot"></span>${escapeHtml(name)}`;
+      }
+
+      btn.disabled = false;
+      closeEdit();
+      fetchProjects();
+      goBackAll();
+    }
+
+    function clearAllFilters() {
+      window.__proj.sortBy = "start";
+      window.__proj.sortDir = "asc";
+      window.__proj.statusFilter = "all";
+      window.__proj.internSearch = "";
+
+      if (byId("sortByText")) byId("sortByText").textContent = "วันที่เริ่มต้น";
+      if (byId("sortDirText")) byId("sortDirText").textContent = "ใหม่ → เก่า";
+      if (byId("statusFilterText")) byId("statusFilterText").textContent = "ทั้งหมด";
+
+      if (byId("internSearch")) byId("internSearch").value = "";
+      const hint = byId("internHint");
+      if (hint) hint.style.visibility = 'hidden';
+
+      var _di2 = byId("dropdownItems");
+      if (_di2 && _di2.classList) _di2.classList.remove("open");
+
+      const memberSection = byId("memberSection");
+      const isInMemberView = memberSection && getComputedStyle(memberSection).display !== "none";
+      if (isInMemberView) {
+        byId("selectedProjectText").textContent = "All Project";
+        window.__proj.selectedId = "all";
+        goBackAll();
+        return;
+      }
+
+      applySortFilterAndRender();
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function formatOutlineTextToHtml(text){
+      var lines = String(text||"").split(/\r?\n/);
+      var htmlOut = "";
+      var inList = false;
+      for (var i=0;i<lines.length;i++){
+        var line = lines[i];
+        var t = line.replace(/\s+$/,"");
+        if (!t){
+          if (inList){ htmlOut += "</ul>"; inList=false; }
+          continue;
+        }
+        var isBullet = /^\s*(?:[-•*]|\[[ xX]?\])\s+/.test(t);
+        if (isBullet){
+          if (!inList){ htmlOut += "<ul>"; inList=true; }
+          var item = t.replace(/^\s*(?:[-•*]|\[[ xX]?\])\s+/,"");
+          htmlOut += "<li>" + escapeHtml(item) + "</li>";
+        } else {
+          if (inList){ htmlOut += "</ul>"; inList=false; }
+          htmlOut += "<p>" + escapeHtml(t) + "</p>";
+        }
+      }
+      if (inList) htmlOut += "</ul>";
+      return htmlOut || "<p>-</p>";
+    }
+  </script>
+</body>
+
+</html>

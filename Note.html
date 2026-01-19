@@ -1,0 +1,2104 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Notes Board</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #f3f3f3;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 25px;
+      background: #fff;
+      border-radius: 10px;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #333;
+      display: flex;
+      align-items: center;
+    }
+
+    .notes-board-wrapper {
+      margin-bottom: 20px;
+    }
+
+    .notes-section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      padding: 8px 16px;
+      background: #e8e8e8;
+      border-radius: 8px;
+      display: inline-block;
+      color: #555;
+    }
+
+    .notes-boards {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      padding: 10px 0;
+    }
+
+    .notes-column {
+      min-width: 320px;
+      width: 320px;
+      border-radius: 16px;
+      padding: 18px;
+      color: white;
+    }
+
+    .notes-col-red {
+      background: linear-gradient(135deg, #8B4A52 0%, #6B3842 100%);
+    }
+
+    .notes-col-blue {
+      background: linear-gradient(135deg, #2C3E6F 0%, #1E2A4A 100%);
+    }
+
+    .notes-col-green {
+      background: linear-gradient(135deg, #3E5132 0%, #2E3C27 100%);
+    }
+
+    .notes-column-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 15px;
+      font-weight: 500;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .notes-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .notes-status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .notes-dot-red {
+      background: #FF6B6B;
+    }
+
+    .notes-dot-blue {
+      background: #80B7FF;
+    }
+
+    .notes-dot-green {
+      background: #85E889;
+    }
+
+    .notes-count {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 13px;
+    }
+
+    .notes-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .notes-card:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .notes-card-title {
+      font-size: 15px;
+      margin-bottom: 12px;
+      line-height: 1.5;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .notes-card-actions {
+      display: flex;
+      gap: 8px;
+      opacity: 0.7;
+    }
+
+    .notes-card-actions i {
+      cursor: pointer;
+      transition: opacity 0.2s;
+      font-size: 14px;
+      font-style: normal;
+    }
+
+    .notes-card-actions i:hover {
+      opacity: 1;
+    }
+
+    .notes-date-range {
+      font-size: 12px;
+      opacity: 0.85;
+      margin-bottom: 10px;
+    }
+
+    .notes-tag {
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      display: inline-block;
+      font-weight: 500;
+    }
+
+    .notes-new-page {
+      margin-top: 8px;
+      padding: 14px;
+      border: 1px dashed rgba(255, 255, 255, 0.4);
+      border-radius: 10px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      opacity: 0.8;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .notes-new-page:hover {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.7);
+      transform: translateY(-2px);
+    }
+
+    /* Calendar */
+    .notes-calendar-section {
+      margin-top: 20px;
+    }
+
+    .notes-calendar-title {
+      font-size: 18px;
+      font-weight: 600;
+      padding: 8px 16px;
+      background: #e8e8e8;
+      border-radius: 8px;
+      display: inline-block;
+      margin-bottom: 16px;
+      color: #555;
+    }
+
+    .calendar-container {
+      background: #fafafa;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .calendar-month {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .calendar-nav {
+      display: flex;
+      gap: 10px;
+    }
+
+    .calendar-nav button {
+      padding: 8px 16px;
+      border: 1px solid #ddd;
+      background: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .calendar-nav button:hover {
+      background: #f5f5f5;
+      border-color: #bbb;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+    }
+
+    .calendar-day-header {
+      text-align: center;
+      font-weight: 600;
+      font-size: 14px;
+      color: #666;
+      padding: 12px 0;
+      background: #f9f9f9;
+      border-radius: 6px;
+    }
+
+    .calendar-day {
+      min-height: 90px;
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      background: #fff;
+    }
+
+    .calendar-day:hover {
+      background: #f9f9f9;
+      border-color: #ccc;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .calendar-day.other-month {
+      opacity: 0.3;
+      background: #fafafa;
+    }
+
+    .calendar-day.today {
+      border: 2px solid #4A90E2;
+      background: #F0F7FF;
+    }
+
+    .calendar-day-number {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #333;
+    }
+
+    .calendar-note-item {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .calendar-note-item:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    .calendar-note-red {
+      background: #FFE0E0;
+      color: #8B4A52;
+    }
+
+    .calendar-note-blue {
+      background: #E0EEFF;
+      color: #2C3E6F;
+    }
+
+    .calendar-note-green {
+      background: #E0FFE0;
+      color: #3E5132;
+    }
+
+    .calendar-tooltip {
+      position: fixed;
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease;
+      max-width: 250px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .calendar-tooltip.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      background-color: #8B4A52;
+      margin: 5% auto;
+      padding: 30px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 450px;
+      color: white;
+    }
+
+    .modal-header {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 25px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      margin-bottom: 8px;
+      opacity: 0.9;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 1px dashed rgba(255, 255, 255, 0.4);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      font-size: 14px;
+    }
+
+    .form-group input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 25px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: white;
+      color: #8B4A52;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+
+    /* Add Note Form Inline */
+    .add-note-form {
+      margin-top: 12px;
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      animation: slideDown 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .form-input-wrapper {
+      position: relative;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: rgba(139, 74, 82, 0.3);
+      border: 2px dashed rgba(255, 255, 255, 0.4);
+      border-radius: 10px;
+      transition: all 0.2s ease;
+    }
+
+    .form-input-wrapper:focus-within {
+      border-color: rgba(255, 255, 255, 0.7);
+      background: rgba(139, 74, 82, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .form-input-icon {
+      font-size: 20px;
+      opacity: 0.9;
+      flex-shrink: 0;
+    }
+
+    .form-input {
+      flex: 1;
+      padding: 0;
+      margin: 0;
+      border: none;
+
+      font-size: 14px;
+      outline: none;
+    }
+
+    .form-input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .form-input[type="text"],
+.form-input[type="date"],
+.form-input[type="text"]::placeholder {
+  background: transparent;
+  color: white;
+}
+
+.form-input {
+  background: transparent;
+  color: white;
+}
+
+.form-input option {
+  background: #2C3E6F;
+  color: white;
+  padding: 8px;
+}
+
+.form-input option:checked {
+  background: #1E2A4A;
+  color: white;
+}
+
+    .form-title-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding: 12px 14px;
+      background: rgba(139, 74, 82, 0.3);
+      border: 2px dashed rgba(255, 255, 255, 0.4);
+      border-radius: 10px;
+    }
+
+    .form-title-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .form-title-actions {
+      display: flex;
+      gap: 12px;
+      font-size: 18px;
+      opacity: 0.8;
+    }
+
+    .form-title-actions span {
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .form-title-actions span:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .form-btn {
+      flex: 1;
+      padding: 11px 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.3s, height 0.3s;
+    }
+
+    .form-btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .form-btn span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .form-btn-save {
+      background: white;
+      color: #8B4A52;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .form-btn-save:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-btn-save:active {
+      transform: translateY(0);
+    }
+
+    .form-btn-cancel {
+      background: rgba(255, 255, 255, 0.25);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .form-btn-cancel:hover {
+      background: rgba(255, 255, 255, 0.35);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* ===================== MOBILE RESPONSIVE STYLES ==================== */
+
+/* Mobile - Default */
+@media screen and (max-width: 768px) {
+  body {
+    font-size: 16px !important;
+    background: #f3f3f3 !important;
+  }
+
+  .container {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 16px !important;
+    background: #fff !important;
+    border-radius: 0 !important;
+    min-height: 100vh !important;
+  }
+
+  /* ========== TITLE ========== */
+  .title {
+    font-size: 22px !important;
+    font-weight: 800 !important;
+    margin-bottom: 20px !important;
+    color: #333 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+
+  .title img {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  /* ========== SECTION TITLE ========== */
+  .notes-section-title {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    margin-bottom: 16px !important;
+    padding: 12px 16px !important;
+    background: #e8e8e8 !important;
+    border-radius: 10px !important;
+    display: inline-block !important;
+    color: #555 !important;
+  }
+
+  /* ========== BOARD - FULL WIDTH ========== */
+  .notes-boards {
+    display: flex !important;
+    gap: 14px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding: 12px 0 !important;
+    scroll-behavior: smooth !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .notes-boards::-webkit-scrollbar {
+    height: 6px !important;
+  }
+
+  .notes-boards::-webkit-scrollbar-track {
+    background: #f0f0f0 !important;
+    border-radius: 3px !important;
+  }
+
+  .notes-boards::-webkit-scrollbar-thumb {
+    background: #ccc !important;
+    border-radius: 3px !important;
+  }
+
+  /* ========== COLUMN ========== */
+  .notes-column {
+    min-width: 340px !important;
+    width: 340px !important;
+    border-radius: 16px !important;
+    padding: 20px !important;
+    color: white !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* ========== COLUMN HEADER ========== */
+  .notes-column-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    margin-bottom: 16px !important;
+    padding-bottom: 12px !important;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3) !important;
+  }
+
+  .notes-header-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+
+  .notes-status-dot {
+    width: 14px !important;
+    height: 14px !important;
+    border-radius: 50% !important;
+    flex-shrink: 0 !important;
+  }
+
+  .notes-count {
+    background: rgba(255, 255, 255, 0.3) !important;
+    padding: 4px 12px !important;
+    border-radius: 12px !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+  }
+
+  /* ========== NOTE CARD ========== */
+  .notes-card {
+    background: rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(10px) !important;
+    padding: 16px !important;
+    border-radius: 12px !important;
+    margin-bottom: 12px !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+  }
+
+  .notes-card:hover {
+    transform: translateY(-2px) !important;
+    background: rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  .notes-card-title {
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    margin-bottom: 12px !important;
+    line-height: 1.5 !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  .notes-card-actions {
+    display: flex !important;
+    gap: 8px !important;
+    opacity: 0.8 !important;
+    font-size: 16px !important;
+  }
+
+  .notes-card-actions i {
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+    flex-shrink: 0 !important;
+  }
+
+  .notes-card-actions i:active {
+    transform: scale(1.15) !important;
+    opacity: 1 !important;
+  }
+
+  .notes-date-range {
+    font-size: 13px !important;
+    opacity: 0.9 !important;
+    margin-bottom: 10px !important;
+    font-weight: 500 !important;
+  }
+
+  .notes-tag {
+    padding: 6px 14px !important;
+    border-radius: 6px !important;
+    font-size: 13px !important;
+    display: inline-block !important;
+    font-weight: 600 !important;
+  }
+
+  /* ========== NEW PAGE BUTTON ========== */
+  .notes-new-page {
+    margin-top: 10px !important;
+    padding: 14px !important;
+    border: 2px dashed rgba(255, 255, 255, 0.4) !important;
+    border-radius: 10px !important;
+    display: flex !important;
+    gap: 8px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    opacity: 0.85 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+  }
+
+  .notes-new-page:active {
+    opacity: 1 !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-color: rgba(255, 255, 255, 0.7) !important;
+    transform: scale(0.98) !important;
+  }
+
+  .notes-new-page img {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  /* ========== ADD NOTE FORM ========== */
+  .add-note-form {
+    margin-top: 12px !important;
+    padding: 18px !important;
+    background: rgba(255, 255, 255, 0.25) !important;
+    backdrop-filter: blur(10px) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    animation: slideDown 0.3s ease !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .form-title-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 12px !important;
+    padding: 12px 14px !important;
+    background: rgba(139, 74, 82, 0.3) !important;
+    border: 2px dashed rgba(255, 255, 255, 0.4) !important;
+    border-radius: 10px !important;
+  }
+
+  .form-title-wrapper img {
+    width: 18px !important;
+    height: 18px !important;
+    margin-right: 8px !important;
+  }
+
+  .form-title-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex: 1 !important;
+  }
+
+  .form-input-wrapper {
+    position: relative !important;
+    margin-bottom: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 12px 14px !important;
+    background: rgba(139, 74, 82, 0.3) !important;
+    border: 2px dashed rgba(255, 255, 255, 0.4) !important;
+    border-radius: 10px !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .form-input-wrapper:focus-within {
+    border-color: rgba(255, 255, 255, 0.7) !important;
+    background: rgba(139, 74, 82, 0.4) !important;
+  }
+
+  .form-input-wrapper img {
+    width: 18px !important;
+    height: 18px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .form-input {
+    flex: 1 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    color: white !important;
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    outline: none !important;
+  }
+
+  .form-input::placeholder {
+    color: rgba(255, 255, 255, 0.7) !important;
+  }
+
+  .form-input option {
+    background: #2C3E6F !important;
+    color: white !important;
+    padding: 10px !important;
+  }
+
+  .form-actions {
+    display: flex !important;
+    gap: 10px !important;
+    margin-top: 14px !important;
+  }
+
+  .form-btn {
+    flex: 1 !important;
+    padding: 13px 16px !important;
+    border: none !important;
+    border-radius: 10px !important;
+    cursor: pointer !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    transition: all 0.2s ease !important;
+    position: relative !important;
+    overflow: hidden !important;
+    height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .form-btn-save {
+    background: white !important;
+    color: #8B4A52 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  .form-btn-save:active {
+    transform: scale(0.98) !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .form-btn-cancel {
+    background: rgba(255, 255, 255, 0.25) !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  }
+
+  .form-btn-cancel:active {
+    background: rgba(255, 255, 255, 0.35) !important;
+    transform: scale(0.98) !important;
+  }
+
+  /* ========== CALENDAR SECTION ========== */
+  .notes-calendar-section {
+    margin-top: 30px !important;
+  }
+
+  .notes-calendar-title {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    padding: 12px 16px !important;
+    background: #e8e8e8 !important;
+    border-radius: 10px !important;
+    display: inline-block !important;
+    margin-bottom: 16px !important;
+    color: #555 !important;
+  }
+
+  .calendar-container {
+    background: #fafafa !important;
+    border: 1px solid #eee !important;
+    border-radius: 12px !important;
+    padding: 16px !important;
+  }
+
+  .calendar-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 18px !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+  }
+
+  .calendar-month {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: #333 !important;
+    flex: 1 !important;
+  }
+
+  .calendar-nav {
+    display: flex !important;
+    gap: 8px !important;
+  }
+
+  .calendar-nav button {
+    padding: 10px 16px !important;
+    border: 1px solid #ddd !important;
+    background: #fff !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #555 !important;
+  }
+
+  .calendar-nav button:active {
+    background: #f0f0f0 !important;
+    border-color: #999 !important;
+  }
+
+  .calendar-grid {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .calendar-day-header {
+    text-align: center !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    color: #666 !important;
+    padding: 12px 0 !important;
+    background: #f9f9f9 !important;
+    border-radius: 6px !important;
+  }
+
+  .calendar-day {
+    min-height: 100px !important;
+    border: 1px solid #e5e5e5 !important;
+    border-radius: 8px !important;
+    padding: 10px !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+    position: relative !important;
+    background: #fff !important;
+  }
+
+  .calendar-day:active {
+    background: #f9f9f9 !important;
+    border-color: #ccc !important;
+    transform: scale(0.98) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .calendar-day.other-month {
+    opacity: 0.3 !important;
+    background: #fafafa !important;
+  }
+
+  .calendar-day.today {
+    border: 2px solid #4A90E2 !important;
+    background: #F0F7FF !important;
+  }
+
+  .calendar-day-number {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    margin-bottom: 6px !important;
+    color: #333 !important;
+  }
+
+  .calendar-note-item {
+    font-size: 12px !important;
+    padding: 5px 8px !important;
+    border-radius: 4px !important;
+    margin-bottom: 4px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    font-weight: 600 !important;
+  }
+
+  .calendar-note-item:active {
+    transform: scale(0.97) !important;
+  }
+
+  /* ========== MODAL ========== */
+  .modal {
+    display: none !important;
+    position: fixed !important;
+    z-index: 1000 !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: rgba(0, 0, 0, 0.6) !important;
+    overflow-y: auto !important;
+  }
+
+  .modal-content {
+    background-color: #8B4A52 !important;
+    margin: 10% auto !important;
+    padding: 28px !important;
+    border-radius: 16px !important;
+    width: 95% !important;
+    max-width: 500px !important;
+    color: white !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  .modal-header {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    margin-bottom: 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+  }
+
+  .modal-header img {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .form-group {
+    margin-bottom: 18px !important;
+  }
+
+  .form-group label {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    margin-bottom: 8px !important;
+    opacity: 0.95 !important;
+  }
+
+  .form-group label img {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .form-group input,
+  .form-group select {
+    width: 100% !important;
+    padding: 12px 14px !important;
+    border: 2px dashed rgba(255, 255, 255, 0.4) !important;
+    border-radius: 10px !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: white !important;
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s !important;
+  }
+
+  .form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus {
+    outline: none !important;
+    border-color: rgba(255, 255, 255, 0.7) !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+  }
+
+  .form-group select option {
+    background: #2C3E6F !important;
+    color: white !important;
+  }
+
+  .modal-buttons {
+    display: flex !important;
+    gap: 12px !important;
+    margin-top: 24px !important;
+  }
+
+  .btn {
+    flex: 1 !important;
+    padding: 13px 16px !important;
+    border: none !important;
+    border-radius: 10px !important;
+    cursor: pointer !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    transition: all 0.2s ease !important;
+    height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .btn-primary {
+    background: white !important;
+    color: #8B4A52 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  .btn-primary:active {
+    transform: scale(0.98) !important;
+  }
+
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  }
+
+  .btn-secondary:active {
+    background: rgba(255, 255, 255, 0.3) !important;
+  }
+
+  /* ========== TOOLTIP ========== */
+  .calendar-tooltip {
+    position: fixed !important;
+    background: rgba(0, 0, 0, 0.9) !important;
+    color: white !important;
+    padding: 12px 16px !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+    z-index: 9999 !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: opacity 0.2s ease !important;
+    max-width: 280px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  .calendar-tooltip.show {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+}
+
+/* Small Mobile - Extra Small */
+@media screen and (max-width: 480px) {
+  .container {
+    padding: 12px !important;
+  }
+
+  .title {
+    font-size: 20px !important;
+  }
+
+  .notes-section-title {
+    font-size: 16px !important;
+  }
+
+  .notes-column {
+    min-width: 310px !important;
+    width: 310px !important;
+    padding: 16px !important;
+  }
+
+  .notes-column-header {
+    font-size: 14px !important;
+  }
+
+  .notes-card-title {
+    font-size: 14px !important;
+  }
+
+  .notes-tag {
+    font-size: 12px !important;
+    padding: 5px 10px !important;
+  }
+
+  .modal-content {
+    padding: 20px !important;
+    margin: 15% auto !important;
+  }
+
+  .notes-calendar-title {
+    font-size: 16px !important;
+  }
+
+  .calendar-month {
+    font-size: 16px !important;
+  }
+}
+
+/* Landscape Mode */
+@media screen and (max-width: 900px) and (orientation: landscape) {
+  .container {
+    padding: 12px !important;
+  }
+
+  .notes-column {
+    min-width: 320px !important;
+  }
+
+  .calendar-grid {
+    gap: 6px !important;
+  }
+
+  .calendar-day {
+    min-height: 80px !important;
+  }
+
+  .modal-content {
+    margin: 5% auto !important;
+  }
+}
+
+  </style>
+</head>
+
+<body>
+  <div id="notesTab">
+    <div class="container">
+      <div class="title">
+        <img src="https://img.icons8.com/?size=100&id=l52olADrZLoa&format=png&color=000000"
+          style="width:30px;height:30px;vertical-align:middle;margin-right:4px;" alt="All Notes">
+        All Notes
+      </div>
+
+      <div class="notes-board-wrapper">
+        <div class="notes-section-title">Board View</div>
+
+        <div class="notes-boards">
+          <!-- Column 1: Not Started -->
+          <div class="notes-column notes-col-red">
+            <div class="notes-column-header">
+              <div class="notes-header-left">
+                <div class="notes-status-dot notes-dot-red"></div>
+                <span>Not Started</span>
+                <span class="notes-count" id="notStartedCount">0</span>
+              </div>
+            </div>
+
+            <div id="notStartedColumn"></div>
+
+            <div class="notes-new-page" onclick="toggleAddForm('Not Started', this)">
+              <img src="https://img.icons8.com/?size=100&id=XpyLr4ervzGM&format=png&color=000000" style="width:16px;height:16px;margin-right:6px;vertical-align:middle;" alt="plus"> New page
+            </div>
+            <div class="add-note-form" id="addFormNotStarted" style="display: none;">
+              <div class="form-title-wrapper">
+                <div class="form-title-left">
+                  <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" style="width:18px;height:18px;vertical-align:middle;" alt="edit">
+                  <input type="text" class="form-input" placeholder="New Title" id="titleNotStarted">
+                </div>
+              </div>
+
+              <div class="form-input-wrapper">
+                <img src="https://img.icons8.com/?size=100&id=tWKODv40VPFu&format=png&color=000000" style="width:18px;height:18px;vertical-align:middle;" alt="calendar">
+                <input type="date" class="form-input" id="dateNotStarted">
+              </div>
+
+              <div class="form-input-wrapper">
+                <img src="https://img.icons8.com/?size=100&id=t6KCtQfLNjCU&format=png&color=000000" style="width:18px;height:18px;vertical-align:middle;" alt="tag">
+                <input type="text" class="form-input" placeholder="Add Tag" id="tagNotStarted">
+              </div>
+
+              <div class="form-actions">
+                <button class="form-btn form-btn-save" onclick="saveQuickNote('Not Started')"><span>Save</span></button>
+                <button class="form-btn form-btn-cancel" onclick="cancelAddForm('addFormNotStarted')"><span>Cancel</span></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2: In Progress -->
+          <div class="notes-column notes-col-blue">
+            <div class="notes-column-header">
+              <div class="notes-header-left">
+                <div class="notes-status-dot notes-dot-blue"></div>
+                <span>In progress</span>
+                <span class="notes-count" id="inProgressCount">0</span>
+              </div>
+            </div>
+
+            <div id="inProgressColumn"></div>
+
+            <div class="notes-new-page" onclick="toggleAddForm('In progress', this)">
+              <img src="https://img.icons8.com/?size=100&id=XpyLr4ervzGM&format=png&color=000000" style="width:16px;height:16px;margin-right:6px;vertical-align:middle;" alt="plus"> New page
+            </div>
+
+            <div class="add-note-form" id="addFormInprogress" style="display: none;">
+              <div class="form-title-wrapper">
+                <div class="form-title-left">
+                  <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" style="width:18px;height:18px;vertical-align:middle;" alt="edit">
+                  <input type="text" class="form-input" placeholder="New Title" id="titleInprogress">
+                </div>
+
+              </div>
+
+              <div class="form-input-wrapper">
+                <img src="https://img.icons8.com/?size=100&id=tWKODv40VPFu&format=png&color=000000" style="width:18px;height:18px;vertical-align:middle;" alt="calendar">
+                <input type="date" class="form-input" id="dateInprogress">
+              </div>
+
+              <div class="form-input-wrapper">
+                <img src="https://img.icons8.com/?size=100&id=t6KCtQfLNjCU&format=png&color=000000" style="width:18px;height:18px;vertical-align:middle;" alt="tag">
+                <input type="text" class="form-input" placeholder="Add Tag" id="tagInprogress">
+              </div>
+
+              <div class="form-actions">
+                <button class="form-btn form-btn-save" onclick="saveQuickNote('In progress')"><span>Save</span></button>
+                <button class="form-btn form-btn-cancel" onclick="cancelAddForm('addFormInprogress')"><span>Cancel</span></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 3: Done -->
+          <div class="notes-column notes-col-green">
+            <div class="notes-column-header">
+              <div class="notes-header-left">
+                <div class="notes-status-dot notes-dot-green"></div>
+                <span>Done</span>
+                <span class="notes-count" id="doneCount">0</span>
+              </div>
+            </div>
+
+            <div id="doneColumn"></div>
+
+            <div class="notes-new-page" onclick="toggleAddForm('Done', this)">
+              <img src="https://img.icons8.com/?size=100&id=XpyLr4ervzGM&format=png&color=000000" style="width:16px;height:16px;margin-right:6px;vertical-align:middle;" alt="plus"> New page
+            </div>
+            <div class="add-note-form" id="addFormDone" style="display: none;">
+              <div class="form-title-wrapper">
+                <div class="form-title-left">
+                  <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" style="width:18px;height:18px;vertical-align:middle;" alt="edit">
+                  <input type="text" class="form-input" placeholder="New Title" id="titleDone">
+                </div>
+
+              </div>
+
+              <div class="form-input-wrapper">
+                <img src="https://img.icons8.com/?size=100&id=tWKODv40VPFu&format=png&color=000000" style="width:18px;height:18px;vertical-align:middle;" alt="calendar">
+                <input type="date" class="form-input" id="dateDone">
+              </div>
+
+              <div class="form-input-wrapper">
+                <img src="https://img.icons8.com/?size=100&id=t6KCtQfLNjCU&format=png&color=000000" style="width:18px;height:18px;vertical-align:middle;" alt="tag">
+                <input type="text" class="form-input" placeholder="Add Tag" id="tagDone">
+              </div>
+
+              <div class="form-actions">
+                <button class="form-btn form-btn-save" onclick="saveQuickNote('Done')"><span>Save</span></button>
+                <button class="form-btn form-btn-cancel" onclick="cancelAddForm('addFormDone')"><span>Cancel</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calendar Section -->
+      <div class="notes-calendar-section">
+        <div class="notes-calendar-title">Calendar</div>
+
+        <div class="calendar-container">
+          <div class="calendar-header">
+            <div class="calendar-month" id="calendarMonth">December 2025</div>
+            <div class="calendar-nav">
+              <button onclick="previousMonth()">← Prev</button>
+              <button onclick="nextMonth()">Next →</button>
+            </div>
+          </div>
+
+          <div class="calendar-grid" id="calendarGrid">
+            <div class="loading">Loading calendar...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add/Edit Note Modal -->
+      <div id="noteModal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" style="width:18px;height:18px;vertical-align:middle;" alt="edit"> Edit Note
+          </div>
+
+          <div class="form-group">
+            <label>
+        <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" style="width:18px;height:18px;vertical-align:middle;" alt="edit"> New Title
+      </label>
+            <input type="text" id="noteTitle" placeholder="Enter note title">
+          </div>
+
+          <div class="form-group">
+            <label>
+        <img src="https://img.icons8.com/?size=100&id=tWKODv40VPFu&format=png&color=000000" style="width:18px;height:18px;vertical-align:middle;" alt="calendar"> Add Date
+      </label>
+            <input type="date" id="noteStartDate">
+          </div>
+
+          <div class="form-group">
+            <label>
+        <img src="https://img.icons8.com/?size=100&id=t6KCtQfLNjCU&format=png&color=000000" style="width:18px;height:18px;vertical-align:middle;" alt="tag"> Add Tag
+      </label>
+            <input type="text" id="noteTag" placeholder="Enter tag">
+          </div>
+
+<!-- เอา img ออก เหลือแค่ select -->
+<div class="form-input-wrapper">
+  <label>
+        <img src="https://img.icons8.com/?size=100&id=DHzZEuuO17eB&format=png&color=000000" 
+     style="width:18px;height:18px;vertical-align:middle;" 
+     alt="status" 
+     class="form-input-icon">
+      </label>
+  <select id="noteStatus" class="form-input">
+    <option value="Not Started">Not Started</option>
+    <option value="In progress">In progress</option>
+    <option value="Done">Done</option>
+  </select>
+</div>
+
+          <div class="modal-buttons">
+            <button class="btn btn-primary" onclick="saveNote()">Save</button>
+            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="calendar-tooltip" id="tooltip"></div>
+
+      <script>
+  // =============================
+  // Notes Board - LocalStorage CRUD
+  // (เตรียมไว้สลับไป backend ใหม่ภายหลังได้ง่าย)
+  // =============================
+
+  const NOTES_STORAGE_KEY = "pmtool_notes_v1";
+
+  let notesData = [];
+  let currentDate = new Date();
+  let editingNoteId = null;
+
+  // ✅ เก็บการ์ดที่ถูกซ่อนตอน edit เพื่อคืนค่าตอน cancel
+  let editingCardEl = null;
+
+  function safeParseJSON(str, fallback) {
+    try { return JSON.parse(str); } catch (_) { return fallback; }
+  }
+
+  function uid() {
+    // ใช้ crypto ถ้ามี (ปลอดภัยกว่า) ไม่งั้น fallback เป็นเวลา
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return "note_" + Date.now() + "_" + Math.random().toString(16).slice(2);
+  }
+
+  function loadFromStorage() {
+    const raw = localStorage.getItem(NOTES_STORAGE_KEY);
+    const data = safeParseJSON(raw || "[]", []);
+    return Array.isArray(data) ? data : [];
+  }
+
+  function saveToStorage(list) {
+    localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(list || []));
+  }
+
+  // สร้างสี tag แบบเบาๆจากข้อความ (คง UI เดิมไว้)
+  function tagColors(tag) {
+    const s = (tag || "").toString();
+    let hash = 0;
+    for (let i = 0; i < s.length; i++) hash = (hash * 31 + s.charCodeAt(i)) >>> 0;
+    const hue = hash % 360;
+    return {
+      tagBgColor: `hsl(${hue} 70% 92%)`,
+      tagTextColor: `hsl(${hue} 35% 28%)`,
+    };
+  }
+
+  // =============================
+  // Data API (ตอนนี้เป็น LocalStorage)
+  // ถ้าจะต่อ backend ใหม่: แค่เปลี่ยนฟังก์ชันใน object นี้
+  // =============================
+  const NotesAPI = {
+    getNotes() {
+      const list = loadFromStorage();
+      return list.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+    },
+
+    createNote(noteData) {
+      const list = loadFromStorage();
+      const now = Date.now();
+      const base = {
+        id: uid(),
+        title: "",
+        startDate: "",
+        endDate: "",
+        status: "Not Started",
+        tag: "Design",
+        createdAt: now,
+        updatedAt: now,
+      };
+      const colors = tagColors(noteData?.tag || base.tag);
+      const note = { ...base, ...noteData, ...colors, createdAt: now, updatedAt: now };
+      list.push(note);
+      saveToStorage(list);
+      return { success: true, note };
+    },
+
+    updateNote(noteId, patch) {
+      const list = loadFromStorage();
+      const idx = list.findIndex(n => n.id === noteId);
+      if (idx < 0) return { success: false, message: "ไม่พบโน้ต" };
+
+      const now = Date.now();
+      const next = { ...list[idx], ...patch, updatedAt: now };
+
+      // ถ้า tag เปลี่ยน ให้ปรับสีตาม
+      if (patch && Object.prototype.hasOwnProperty.call(patch, "tag")) {
+        Object.assign(next, tagColors(next.tag));
+      }
+
+      list[idx] = next;
+      saveToStorage(list);
+      return { success: true, note: next };
+    },
+
+    deleteNote(noteId) {
+      const list = loadFromStorage();
+      const next = list.filter(n => n.id !== noteId);
+      saveToStorage(next);
+      return { success: true };
+    }
+  };
+
+  // =============================
+  // UI logic (คงฟังก์ชันเดิมไว้)
+  // =============================
+
+  // Toggle add note form
+  function toggleAddForm(status, button) {
+    const formId = 'addForm' + status.replace(' ', '');
+    const form = document.getElementById(formId);
+
+    if (form.style.display === 'none' || form.style.display === '') {
+      // Hide all forms first
+      document.querySelectorAll('.add-note-form').forEach(f => f.style.display = 'none');
+      document.querySelectorAll('.notes-new-page').forEach(b => b.style.display = 'flex');
+
+      // Show this form and hide the button
+      form.style.display = 'block';
+      button.style.display = 'none';
+
+      // Set default date
+      const dateInput = form.querySelector('input[type="date"]');
+      if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+
+      // Focus on title input
+      const titleInput = form.querySelector('input[type="text"]');
+      if (titleInput) titleInput.focus();
+    } else {
+      form.style.display = 'none';
+      button.style.display = 'flex';
+    }
+  }
+
+  function cancelAddForm(formId) {
+    const form = document.getElementById(formId);
+    const button = form.previousElementSibling;
+    form.style.display = 'none';
+    button.style.display = 'flex';
+
+    // Clear form
+    form.querySelectorAll('input').forEach(input => input.value = '');
+  }
+
+  function saveQuickNote(status) {
+    const statusKey = status.replace(' ', '');
+    const title = document.getElementById('title' + statusKey).value.trim();
+    const date = document.getElementById('date' + statusKey).value;
+    const tag = document.getElementById('tag' + statusKey).value.trim();
+
+    if (!title) {
+      alert('กรุณากรอกชื่อโน้ต');
+      return;
+    }
+
+    // ใช้วันที่ปัจจุบันถ้าไม่ได้กรอก
+    const finalDate = date || new Date().toISOString().split('T')[0];
+
+    const noteData = {
+      title: title,
+      startDate: finalDate,
+      endDate: finalDate,
+      status: status,
+      tag: tag || 'Design'
+    };
+
+    const result = NotesAPI.createNote(noteData);
+    if (result.success) {
+      cancelAddForm('addForm' + statusKey);
+      loadNotes();
+    } else {
+      alert('เกิดข้อผิดพลาด: ' + (result.message || 'unknown'));
+    }
+  }
+
+  // Load notes (LocalStorage)
+  function loadNotes() {
+    notesData = NotesAPI.getNotes() || [];
+    renderBoard();
+    renderCalendar();
+  }
+
+  function renderBoard() {
+    const notStarted = document.getElementById('notStartedColumn');
+    const inProgress = document.getElementById('inProgressColumn');
+    const done = document.getElementById('doneColumn');
+
+    notStarted.innerHTML = '';
+    inProgress.innerHTML = '';
+    done.innerHTML = '';
+
+    const counts = { "Not Started": 0, "In progress": 0, "Done": 0 };
+
+    notesData.forEach(note => {
+      const card = createNoteCard(note);
+
+      if (note.status === "Not Started") {
+        notStarted.appendChild(card);
+        counts["Not Started"]++;
+      } else if (note.status === "In progress") {
+        inProgress.appendChild(card);
+        counts["In progress"]++;
+      } else if (note.status === "Done") {
+        done.appendChild(card);
+        counts["Done"]++;
+      }
+    });
+
+    document.getElementById('notStartedCount').textContent = counts["Not Started"];
+    document.getElementById('inProgressCount').textContent = counts["In progress"];
+    document.getElementById('doneCount').textContent = counts["Done"];
+  }
+
+  function escHtml(s) {
+    return (s ?? "").toString()
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function createNoteCard(note) {
+    const card = document.createElement('div');
+    card.className = 'notes-card';
+
+    const bgColor = note.tagBgColor || '#E8E8E8';
+    const textColor = note.tagTextColor || '#555';
+
+    card.innerHTML = `
+      <div class="notes-card-title">
+        <span>${escHtml(note.title)}</span>
+        <div class="notes-card-actions">
+          <i onclick="editNote('${note.id}')">✏️</i>
+          <i onclick="deleteNoteConfirm('${note.id}')">🗑️</i>
+        </div>
+      </div>
+      <div class="notes-date-range">📅 ${escHtml(note.startDate)}</div>
+      <span class="notes-tag" style="background: ${bgColor}; color: ${textColor}">
+        ${escHtml(note.tag)}
+      </span>
+    `;
+
+    return card;
+  }
+
+  function openModal(status = 'Not Started') {
+    editingNoteId = null;
+    document.getElementById('noteTitle').value = '';
+    document.getElementById('noteStartDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('noteTag').value = '';
+    document.getElementById('noteStatus').value = status;
+    document.getElementById('noteModal').style.display = 'block';
+  }
+
+  function closeModal() {
+    document.getElementById('noteModal').style.display = 'none';
+    editingNoteId = null;
+  }
+
+  function editNote(noteId) {
+    const note = notesData.find(n => n.id === noteId);
+    if (!note) return;
+
+    // Close all other edit forms
+    document.querySelectorAll('.edit-note-form').forEach(f => f.remove());
+    if (editingCardEl) { editingCardEl.style.display = ''; editingCardEl = null; }
+
+    // Find the card
+    const cards = document.querySelectorAll('.notes-card');
+    let targetCard = null;
+    cards.forEach(card => {
+      const editBtn = card.querySelector('.notes-card-actions i');
+      if (editBtn && editBtn.getAttribute('onclick') && editBtn.getAttribute('onclick').includes(noteId)) {
+        targetCard = card;
+      }
+    });
+
+    if (!targetCard) return;
+
+    // Create edit form
+    const editForm = document.createElement('div');
+    editForm.className = 'add-note-form edit-note-form';
+    editForm.style.display = 'block';
+    editForm.innerHTML = `
+      <div class="form-title-wrapper">
+        <div class="form-title-left">
+          <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" style="width:18px;height:18px;vertical-align:middle;" alt="edit" class="form-input-icon">
+          <input type="text" class="form-input" placeholder="New Title" value="${escHtml(note.title)}" id="editTitle${noteId}">
+        </div>
+      </div>
+      <div class="form-input-wrapper">
+        <img src="https://img.icons8.com/?size=100&id=tWKODv40VPFu&format=png&color=000000" style="width:18px;height:18px;vertical-align:middle;" alt="calendar" class="form-input-icon">
+        <input type="date" class="form-input" value="${escHtml(note.startDate)}" id="editDate${noteId}">
+      </div>
+      <div class="form-input-wrapper">
+        <img src="https://img.icons8.com/?size=100&id=t6KCtQfLNjCU&format=png&color=000000" style="width:18px;height:18px;vertical-align:middle;" alt="tag" class="form-input-icon">
+        <input type="text" class="form-input" placeholder="Add Tag" value="${escHtml(note.tag)}" id="editTag${noteId}">
+      </div>
+      <div class="form-input-wrapper">
+        <select class="form-input" id="editStatus${noteId}">
+          <option value="Not Started" ${note.status === 'Not Started' ? 'selected' : ''}>Not Started</option>
+          <option value="In progress" ${note.status === 'In progress' ? 'selected' : ''}>In progress</option>
+          <option value="Done" ${note.status === 'Done' ? 'selected' : ''}>Done</option>
+        </select>
+      </div>
+      <div class="form-actions">
+        <button class="form-btn form-btn-save" onclick="saveEditedNote('${noteId}')"><span>Save</span></button>
+        <button class="form-btn form-btn-cancel" onclick="cancelEdit()"><span>Cancel</span></button>
+      </div>
+    `;
+
+    // Insert after the card
+    editingCardEl = targetCard;
+    targetCard.style.display = 'none';
+    targetCard.parentNode.insertBefore(editForm, targetCard.nextSibling);
+  }
+
+  function saveEditedNote(noteId) {
+    const titleEl = document.getElementById('editTitle' + noteId);
+    const dateEl = document.getElementById('editDate' + noteId);
+    const tagEl = document.getElementById('editTag' + noteId);
+    const statusEl = document.getElementById('editStatus' + noteId);
+
+    if (!titleEl || !dateEl || !tagEl || !statusEl) {
+      alert('ไม่พบฟอร์มแก้ไข (DOM) กรุณาลองใหม่');
+      return;
+    }
+
+    const title = titleEl.value.trim();
+    const startDate = dateEl.value;
+    const tag = tagEl.value.trim();
+    const status = statusEl.value;
+
+    if (!title || !startDate) {
+      alert('กรุณากรอกชื่อและวันที่');
+      return;
+    }
+
+    const noteData = {
+      title: title,
+      startDate: startDate,
+      endDate: startDate,
+      status: status,
+      tag: tag || 'Design'
+    };
+
+    const result = NotesAPI.updateNote(noteId, noteData);
+    if (result && result.success) {
+      cancelEdit();
+      loadNotes();
+    } else {
+      alert('เกิดข้อผิดพลาด: ' + (result?.message || 'unknown'));
+    }
+  }
+
+  function cancelEdit() {
+    const editForm = document.querySelector('.edit-note-form');
+    if (editForm) editForm.remove();
+
+    if (editingCardEl) {
+      editingCardEl.style.display = '';
+      editingCardEl = null;
+    }
+  }
+
+  function saveNote() {
+    const title = document.getElementById('noteTitle').value.trim();
+    const startDate = document.getElementById('noteStartDate').value;
+    const tag = document.getElementById('noteTag').value.trim();
+    const status = document.getElementById('noteStatus').value;
+
+    if (!title || !startDate) {
+      alert('กรุณากรอกชื่อและวันที่');
+      return;
+    }
+
+    const noteData = {
+      title: title,
+      startDate: startDate,
+      endDate: startDate,
+      status: status,
+      tag: tag || 'Design'
+    };
+
+    if (editingNoteId) {
+      const result = NotesAPI.updateNote(editingNoteId, noteData);
+      if (result.success) {
+        closeModal();
+        loadNotes();
+      } else {
+        alert('เกิดข้อผิดพลาด: ' + (result.message || 'unknown'));
+      }
+    } else {
+      // ตอนนี้สร้างใหม่ผ่าน saveQuickNote() อยู่แล้ว
+      // ถ้าจะให้ modal สร้างใหม่ด้วย: uncomment บรรทัดข้างล่าง
+      // NotesAPI.createNote(noteData); loadNotes();
+      closeModal();
+    }
+  }
+
+  function deleteNoteConfirm(noteId) {
+    if (confirm('คุณต้องการลบ Note นี้หรือไม่?')) {
+      const result = NotesAPI.deleteNote(noteId);
+      if (result.success) {
+        loadNotes();
+      } else {
+        alert('เกิดข้อผิดพลาด: ' + (result.message || 'unknown'));
+      }
+    }
+  }
+
+  function getStatusColor(status) {
+    if (status === "Not Started") return "calendar-note-red";
+    if (status === "In progress") return "calendar-note-blue";
+    if (status === "Done") return "calendar-note-green";
+    return "calendar-note-red";
+  }
+
+  function renderCalendar() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"];
+
+    document.getElementById("calendarMonth").textContent = `${monthNames[month]} ${year}`;
+
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startDayOfWeek = firstDay.getDay();
+    const prevMonthLastDay = new Date(year, month, 0).getDate();
+
+    const grid = document.getElementById("calendarGrid");
+    grid.innerHTML = "";
+
+    const tooltip = document.getElementById("tooltip");
+
+    const dayHeaders = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    dayHeaders.forEach(day => {
+      const header = document.createElement("div");
+      header.className = "calendar-day-header";
+      header.textContent = day;
+      grid.appendChild(header);
+    });
+
+    for (let i = startDayOfWeek - 1; i >= 0; i--) {
+      const day = document.createElement("div");
+      day.className = "calendar-day other-month";
+      day.innerHTML = `<div class="calendar-day-number">${prevMonthLastDay - i}</div>`;
+      grid.appendChild(day);
+    }
+
+    const today = new Date();
+    for (let i = 1; i <= daysInMonth; i++) {
+      const day = document.createElement("div");
+      day.className = "calendar-day";
+
+      if (year === today.getFullYear() &&
+        month === today.getMonth() &&
+        i === today.getDate()) {
+        day.classList.add("today");
+      }
+
+      const dayNumber = document.createElement("div");
+      dayNumber.className = "calendar-day-number";
+      dayNumber.textContent = i;
+      day.appendChild(dayNumber);
+
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+      const dayNotes = notesData.filter(note =>
+        note.startDate === dateStr || note.endDate === dateStr
+      );
+
+      dayNotes.forEach(note => {
+        const noteItem = document.createElement("div");
+        noteItem.className = `calendar-note-item ${getStatusColor(note.status)}`;
+        noteItem.textContent = note.tag || "Note";
+
+        noteItem.addEventListener("mouseenter", function () {
+          tooltip.innerHTML = `
+            <strong>${escHtml(note.title)}</strong><br>
+            <span style="display:inline-flex;align-items:center;gap:4px;">
+              <img src="https://img.icons8.com/?size=100&id=t6KCtQfLNjCU&format=png&color=000000" style="width:12px;height:12px;"> ${escHtml(note.tag)}
+            </span><br>
+            <span style="display:inline-flex;align-items:center;gap:4px;">
+              <img src="https://img.icons8.com/?size=100&id=tWKODv40VPFu&format=png&color=000000" style="width:12px;height:12px;"> ${escHtml(note.startDate)}
+            </span>
+          `;
+
+          const rect = this.getBoundingClientRect();
+          tooltip.style.left = (rect.left + rect.width / 2) + "px";
+          tooltip.style.top = (rect.top - 10) + "px";
+          tooltip.style.transform = "translate(-50%, -100%)";
+          tooltip.classList.add("show");
+        });
+
+        noteItem.addEventListener("mouseleave", function () {
+          tooltip.classList.remove("show");
+        });
+
+        noteItem.addEventListener("click", function (e) {
+          e.stopPropagation();
+          editNote(note.id);
+        });
+
+        day.appendChild(noteItem);
+      });
+
+      grid.appendChild(day);
+    }
+
+    const totalCells = grid.children.length - 7;
+    const remainingCells = 42 - totalCells - 7;
+    for (let i = 1; i <= remainingCells; i++) {
+      const day = document.createElement("div");
+      day.className = "calendar-day other-month";
+      day.innerHTML = `<div class="calendar-day-number">${i}</div>`;
+      grid.appendChild(day);
+    }
+  }
+
+  function previousMonth() {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    renderCalendar();
+  }
+
+  function nextMonth() {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    renderCalendar();
+  }
+
+  window.onclick = function (event) {
+    const modal = document.getElementById('noteModal');
+    if (event.target === modal) closeModal();
+  }
+
+  // ทำให้เรียกจาก onclick ได้ (กรณี browser strict)
+  Object.assign(window, {
+    toggleAddForm,
+    cancelAddForm,
+    saveQuickNote,
+    loadNotes,
+    renderBoard,
+    renderCalendar,
+    openModal,
+    closeModal,
+    editNote,
+    saveEditedNote,
+    cancelEdit,
+    saveNote,
+    deleteNoteConfirm,
+    previousMonth,
+    nextMonth
+  });
+
+  // Initialize
+  loadNotes();
+</script>
+</body>
+
+
+</html>

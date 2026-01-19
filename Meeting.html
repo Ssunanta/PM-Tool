@@ -1,0 +1,3147 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meeting Schedule</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f3f3f3;
+      color: #333;
+    }
+
+    header {
+      background: #fff;
+      padding: 15px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    header h1 {
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    nav {
+      background: #f3f3f3;
+      padding: 10px 25px;
+      display: flex;
+      gap: 10px;
+      border-bottom: 1px solid #ddd;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      padding: 8px 18px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      text-decoration: none;
+      color: #333;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+
+    nav a:hover {
+      background: #f0f0f0;
+    }
+
+    nav a.active {
+      background: #000;
+      color: #fff;
+      border-color: #000;
+    }
+
+.container {
+  max-width: 1200px;
+  margin: 0px auto;
+  padding: 25px;
+  background: #fff;
+  border-radius: 10px;
+  display: flex; /* เพิ่มบรรทัดนี้ */
+  flex-direction: column; /* เพิ่มบรรทัดนี้ */
+  height: 100vh; /* เพิ่มบรรทัดนี้ */
+}
+
+    .title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+
+    }
+
+    .project-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .proj-btn {
+      padding: 8px 18px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background: #fff;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+
+    .proj-btn:hover {
+      background: #eee;
+    }
+
+    /* Meeting Container */
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 25px;
+      background: #fff;
+      border-radius: 10px;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    /* Meeting Header */
+    .meeting-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .meeting-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .meeting-btn {
+      padding: 8px 16px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 14px;
+      background: #fff;
+    }
+
+    .meeting-btn:hover {
+      background: #f5f5f5;
+    }
+
+    .meeting-btn.save {
+      background: #000;
+      color: #fff;
+      border: none;
+    }
+
+    .meeting-btn.save:hover {
+      background: #222;
+    }
+
+    .meeting-btn.cancel {
+      background: #f5f5f5;
+      color: #666;
+      border: 1px solid #ddd;
+    }
+
+    .meeting-btn.cancel:hover {
+      background: #e5e5e5;
+      color: #333;
+    }
+
+.meeting-table-wrapper {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+  border: 1px solid #ddd;
+  border-radius: 0;
+  margin: 0;
+  height: 100vh; /* เพิ่มบรรทัดนี้ */
+  max-height: 100vh; /* เพิ่มบรรทัดนี้ */
+}
+
+    .meeting-header-frozen {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    tbody td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 9;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+      font-size: 14px;
+      table-layout: fixed;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #999;
+      font-size: 14px;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    thead th {
+      background: #fafafa !important;
+      border-right: 1px solid #eee;
+      text-align: center;
+      padding: 12px;
+    }
+
+    /* ✅ ปรับคอลัมน์แรก (วัน/ลำดับ) ให้เล็กลง */
+    thead th:first-child {
+      background: #fafafa !important;
+      position: sticky;
+      left: 0;
+      z-index: 25;
+      box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+      width: 100px;
+      min-width: 100px;
+      max-width: 100px;
+      padding: 12px 8px;
+      font-size: 13px;
+      border-right: 1px solid #eee;
+    }
+
+    tbody tr {
+      position: relative;
+      height: auto;
+      min-height: 65px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    tbody td {
+      padding: 12px;
+      vertical-align: middle;
+      min-height: 50px;
+      text-align: center;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ✅ ปรับคอลัมน์แรก body ให้เล็กลง */
+    tbody td:first-child {
+      background: #fff !important;
+      position: sticky;
+      left: 0;
+      z-index: 15;
+      box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+      width: 100px;
+      min-width: 100px;
+      max-width: 100px;
+      padding: 12px 8px;
+      font-size: 13px;
+      border-right: 1px solid #eee;
+    }
+
+    /* ✅ ปรับคอลัมน์วัน (จันทร์-ศุกร์) */
+    thead th:not(:first-child),
+    tbody td:not(:first-child) {
+      width: 175px;
+      min-width: 175px;
+    }
+
+    /* Meeting Box */
+    .meeting-box {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 14px 16px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      border: 1px solid #e0e0e0;
+      max-width: 100vh;
+      text-align: center;
+      align-items: center;
+      position: relative;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .meeting-box.draggable {
+      cursor: move;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    .meeting-box.draggable:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Delete Box Button */
+    .delete-box-btn {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #000;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      z-index: 10;
+    }
+
+    .delete-box-btn:hover {
+      background: #333;
+      transform: scale(1.1);
+    }
+
+    /* Person Info */
+    .meeting-person {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 15px;
+      width: 100%;
+    }
+
+    .meeting-person-name {
+      color: #1a1a1a;
+      font-weight: 400;
+    }
+
+    .meeting-person-position {
+      font-size: 14px;
+      color: #555;
+      font-weight: 400;
+    }
+
+    /* Project Tag */
+    .meeting-project {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 400;
+      text-align: center;
+      margin-top: 4px;
+      width: 100%;
+      box-sizing: border-box;
+      letter-spacing: 0.3px;
+      border: 1px solid;
+    }
+
+    /* Add Meeting Button */
+    .add-meeting-btn {
+      padding: 12px 20px;
+      border: 1px dashed #999;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #fff;
+      color: #666;
+      font-size: 14px;
+      font-weight: 400;
+      transition: 0.2s;
+    }
+
+    .add-meeting-btn:hover {
+      background: #f5f5f5;
+      border-color: #666;
+    }
+
+    /* Row Buttons Container */
+    #meetingRowButtons,
+    #meetingRowDeleteButtons {
+      position: absolute;
+      top: 0;
+      width: 30px;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    #meetingRowButtons {
+      left: -40px;
+    }
+
+    #meetingRowDeleteButtons {
+      right: -40px;
+    }
+
+    /* Row Buttons */
+    #meetingRowButtons button,
+    #meetingRowDeleteButtons button {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #fff;
+      color: #fff;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: bold;
+      opacity: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      padding: 0;
+      line-height: 1;
+      pointer-events: auto;
+      z-index: 101;
+    }
+
+    #meetingRowButtons button {
+      border: 2px solid #000;
+      color: #000;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    #meetingRowButtons button:hover {
+      background: #000;
+      color: #fff;
+      transform: scale(1.15);
+      opacity: 1 !important;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    #meetingRowDeleteButtons button {
+      border: 2px solid #666;
+      color: #666;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    #meetingRowDeleteButtons button:hover {
+      background: #666;
+      color: #fff;
+      transform: scale(1.15);
+      opacity: 1 !important;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Drag and Drop */
+    .drag-over {
+      background: #f0f7ff !important;
+      border: 2px dashed #4A90E2 !important;
+      transform: scale(1.02);
+      box-shadow: 0 8px 24px rgba(74, 144, 226, 0.25) !important;
+    }
+
+    .dragging {
+      opacity: 0.5;
+      transform: rotate(2deg);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Meeting Modal */
+    #meetingModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      backdrop-filter: blur(4px);
+    }
+
+    #meetingModal .meeting-modal-content {
+      background: #fff;
+      border-radius: 16px;
+      padding: 30px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    #meetingModal .meeting-header {
+      margin-bottom: 20px;
+      border-bottom: 2px solid #f0f0f0;
+      padding-bottom: 15px;
+    }
+
+    #meetingModal h2 {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 0;
+      color: #000;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #meetingModal .form-group {
+      margin-bottom: 15px;
+    }
+
+    #meetingModal .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    #meetingModal .form-group input,
+    #meetingModal .form-group select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 14px;
+      box-sizing: border-box;
+      transition: all 0.2s;
+    }
+
+    #meetingModal .form-group input:focus,
+    #meetingModal .form-group select:focus {
+      outline: none;
+      border-color: #000;
+      box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    }
+
+    #meetingModal .form-group select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23333' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
+      cursor: pointer;
+    }
+
+    #meetingModal .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 2px solid #f0f0f0;
+    }
+
+    #meetingModal .modal-actions button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    #meetingModal .btn-add {
+      background: #000;
+      color: #fff;
+    }
+
+    #meetingModal .btn-add:hover {
+      background: #333;
+    }
+
+    #meetingModal .btn-cancel {
+      background: #000;
+      color: #fff;
+      border: 2px solid #e0e0e0;
+    }
+
+    #meetingModal .btn-cancel:hover {
+      background: #f5f5f5;
+      color: #333;
+    }
+
+    /* ========== Check-in System ========== */
+    /* Check-in Modal */
+    #checkinModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 3000;
+      backdrop-filter: blur(4px);
+    }
+
+    #checkinModal .checkin-modal-content {
+      background: #fff;
+      border-radius: 16px;
+      padding: 30px;
+      width: 95%;
+      max-width: 900px;
+      max-height: 90vh;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+    }
+
+    #checkinModal .checkin-header {
+      margin-bottom: 20px;
+      border-bottom: 2px solid #f0f0f0;
+      padding-bottom: 15px;
+    }
+
+    #checkinModal .checkin-header h2 {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #000;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #checkinModal .checkin-info {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    /* Search and Action Buttons - Single Row */
+    .checkin-search-and-actions {
+      display: flex;
+      gap: 10px;
+      margin: 15px 0;
+      align-items: stretch;
+    }
+
+    .checkin-search {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .checkin-search input {
+      width: 100%;
+      height: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .checkin-search input:focus {
+      outline: none;
+      border-color: #000;
+      box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Action Buttons */
+    .checkin-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .checkin-action-btn {
+      padding: 10px 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #fff;
+      color: #666;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .checkin-action-btn:hover {
+      background: #f5f5f5;
+      border-color: #999;
+      color: #333;
+      transform: translateY(-1px);
+    }
+
+    /* Summary */
+    .checkin-summary {
+      padding: 12px 16px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-radius: 8px;
+      margin-bottom: 15px;
+      text-align: center;
+      font-size: 15px;
+      color: #333;
+      font-weight: 500;
+      border: 1px solid #dee2e6;
+    }
+
+    .checkin-summary .count {
+      color: #000;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    /* List Container */
+    .checkin-list {
+      flex: 1;
+      overflow-y: auto;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      background: #fafafa;
+      max-height: 500px;
+      padding: 10px;
+    }
+
+    .checkin-day-section {
+      background: #fff;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .checkin-day-header {
+      background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+      padding: 12px 16px;
+      font-weight: 600;
+      font-size: 15px;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .checkin-day-count {
+      font-size: 13px;
+      color: #2c3e50;
+      background: #fff;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    /* Grid Layout for People */
+    .checkin-people-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 8px;
+      padding: 12px;
+      background: #f8f9fa;
+    }
+
+    .checkin-list::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .checkin-list::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 5px;
+    }
+
+    .checkin-list::-webkit-scrollbar-thumb {
+      background: #ccc;
+      border-radius: 5px;
+    }
+
+    .checkin-list::-webkit-scrollbar-thumb:hover {
+      background: #999;
+    }
+
+    /* List Item - Card Style */
+    .checkin-item {
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #fff;
+      border-radius: 6px;
+      border: 2px solid #e0e0e0;
+    }
+
+    .checkin-item:hover {
+      border-color: #999;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .checkin-item.checked {
+      background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+      border-color: #4caf50;
+    }
+
+    .checkin-item.checked:hover {
+      background: linear-gradient(135deg, #dcedc8 0%, #aed581 100%);
+      box-shadow: 0 3px 12px rgba(76, 175, 80, 0.3);
+    }
+
+    /* Checkbox */
+    .checkin-checkbox {
+      width: 28px;
+      height: 28px;
+      border: 2px solid #ccc;
+      border-radius: 6px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      background: #fff;
+      font-size: 16px;
+    }
+
+    .checkin-item.checked .checkin-checkbox {
+      background: #4caf50;
+      border-color: #4caf50;
+      color: #fff;
+      font-weight: bold;
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+    }
+
+    /* Person Info */
+    .checkin-person-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .checkin-person-main {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .checkin-person-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+
+    .checkin-person-position {
+      font-size: 12px;
+      color: #fff;
+      background: #5a6c7d;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-weight: 500;
+    }
+
+    .checkin-person-details {
+      font-size: 12px;
+      color: #666;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .checkin-person-row {
+      color: #999;
+      font-size: 11px;
+      background: #f0f0f0;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .checkin-person-project {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid;
+    }
+
+    /* Empty State */
+    .checkin-empty {
+      padding: 60px 20px;
+      text-align: center;
+      color: #999;
+      font-size: 14px;
+    }
+
+    /* Bottom Buttons */
+    .checkin-bottom-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 2px solid #f0f0f0;
+    }
+
+    .checkin-export-btn {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid #000;
+      border-radius: 8px;
+      background: #fff;
+      color: #000;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .checkin-export-btn:hover {
+      background: #000;
+      color: #fff;
+    }
+
+    .checkin-close-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #000;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .checkin-close-btn:hover {
+      background: #333;
+    }
+
+    /* ========== CUSTOM DROPDOWN FOR MODAL ========== */
+    .modal-dropdown-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .modal-dropdown-selected {
+      height: 48px;
+      padding: 0 14px;
+      border-radius: 14px;
+      background: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      border: 1px solid rgba(15, 23, 42, .18);
+      font-size: 15px;
+      font-weight: 800;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, .06);
+      transition: all 0.2s;
+      color: #111;
+    }
+
+    .modal-dropdown-selected:hover {
+      border-color: #999;
+    }
+
+    .modal-dropdown-items {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background: #f1f5f9;
+      border: 1px solid rgba(15, 23, 42, .12);
+      border-radius: 16px;
+      margin-top: 8px;
+      max-height: 220px;
+      overflow-y: auto;
+      display: none;
+      z-index: 2001;
+      padding: 10px;
+      box-shadow: 0 10px 28px rgba(15, 23, 42, .10);
+    }
+
+
+    .modal-dropdown-items.open {
+      display: block;
+    }
+
+    .modal-dropdown-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 12px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-size: 15px;
+      color: #111;
+      border: 1px solid rgba(15, 23, 42, .06);
+      background: #fff;
+      font-weight: 900;
+      transition: all 0.2s;
+      margin-bottom: 8px;
+    }
+
+    .modal-dropdown-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .modal-dropdown-item:hover {
+      background: #fafafa;
+      border-color: rgba(15, 23, 42, .12);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, .08);
+    }
+
+    .modal-dropdown-item.selected {
+      background: #111;
+      color: #fff;
+      border-color: #111;
+    }
+
+/* ==================== RESPONSIVE STYLES ==================== */
+
+/* Tablet (iPad) */
+@media screen and (max-width: 1024px) {
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  .container {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .title {
+    font-size: 18px !important;
+    padding: 15px !important;
+  }
+
+  .meeting-header {
+    padding: 15px !important;
+  }
+
+  /* ✅ ตารางเต็มจอ - ไม่มี padding ไม่มี margin */
+  .meeting-table-wrapper {
+    height: 100vh !important; /* เพิ่มบรรทัดนี้ */
+    max-height: 100vh !important; /* แก้จากเดิม */
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    border-left: none !important;
+    border-right: none !important;
+  }
+
+  table {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+
+  thead th:not(:first-child),
+  tbody td:not(:first-child) {
+    width: 140px !important;
+    min-width: 140px !important;
+  }
+
+  .meeting-box {
+    padding: 12px 14px !important;
+    max-width: 180px !important;
+  }
+}
+
+/* ===================== IMPROVED MOBILE STYLES ==================== */
+
+/* Mobile */
+@media screen and (max-width: 768px) {
+  * {
+    box-sizing: border-box !important;
+  }
+
+  body {
+    background: #fff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  .container {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .title {
+    font-size: 18px !important;
+    padding: 12px !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    font-weight: 700 !important;
+  }
+
+  .title img {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .meeting-header {
+    padding: 12px !important;
+    margin-bottom: 12px !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  .meeting-actions {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 10px !important;
+  }
+
+  .meeting-btn {
+    width: 100% !important;
+    padding: 14px 16px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    justify-content: center !important;
+  }
+
+  .meeting-btn img {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  /* ========== TABLE - FULL WIDTH & HEIGHT ========== */
+  .meeting-table-wrapper {
+    height: calc(100vh - 120px) !important; /* แก้จาก max-height */
+    max-height: calc(100vh - 120px) !important; /* เพิ่มบรรทัดนี้ */
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    border-left: none !important;
+    border-right: none !important;
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    position: fixed !important;
+    top: 120px !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+  }
+
+  table {
+    width: 100% !important;
+    min-width: 100% !important;
+    font-size: 15px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  thead th {
+    padding: 12px 8px !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    height: 50px !important;
+  }
+
+  thead th:first-child {
+    width: 70px !important;
+    min-width: 70px !important;
+    max-width: 70px !important;
+    padding: 10px 6px !important;
+    font-size: 13px !important;
+  }
+
+  thead th:not(:first-child) {
+    width: 140px !important;
+    min-width: 140px !important;
+  }
+
+  tbody tr {
+    height: auto !important;
+    min-height: 80px !important;
+  }
+
+  tbody td {
+    padding: 12px 10px !important;
+    vertical-align: middle !important;
+    min-height: 70px !important;
+    text-align: center !important;
+    font-size: 15px !important;
+  }
+
+  tbody td:first-child {
+    width: 70px !important;
+    min-width: 70px !important;
+    max-width: 70px !important;
+    padding: 10px 6px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+  }
+
+  tbody td:not(:first-child) {
+    width: 140px !important;
+    min-width: 140px !important;
+  }
+
+  /* ========== MEETING BOX ========== */
+  .meeting-box {
+    padding: 14px 12px !important;
+    max-width: 160px !important;
+    gap: 8px !important;
+    border-radius: 10px !important;
+    font-size: 15px !important;
+  }
+
+  .meeting-person {
+    flex-direction: column !important;
+    gap: 6px !important;
+  }
+
+  .meeting-person-name {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+  }
+
+  .meeting-person-position {
+    font-size: 12px !important;
+    padding: 4px 10px !important;
+  }
+
+  .meeting-project {
+    font-size: 12px !important;
+    padding: 8px 10px !important;
+    font-weight: 600 !important;
+  }
+
+  .add-meeting-btn {
+    padding: 12px 14px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+  }
+
+  .add-meeting-btn img {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .delete-box-btn {
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 14px !important;
+  }
+
+  /* ซ่อนปุ่ม row บน mobile */
+  #meetingRowButtons,
+  #meetingRowDeleteButtons {
+    display: none !important;
+  }
+
+  /* ========== MEETING MODAL ========== */
+  #meetingModal .meeting-modal-content {
+    width: 95% !important;
+    max-width: none !important;
+    padding: 24px !important;
+    margin: 10px !important;
+    border-radius: 16px !important;
+  }
+
+  #meetingModal h2 {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+  }
+
+  #meetingModal h2 img {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  #meetingModal .form-group label {
+    font-size: 15px !important;
+    font-weight: 600 !important;
+  }
+
+  #meetingModal .form-group input,
+  #meetingModal .form-group select {
+    padding: 14px 16px !important;
+    font-size: 16px !important;
+    border-radius: 10px !important;
+    height: 50px !important;
+  }
+
+  #meetingModal .modal-actions {
+    flex-direction: row !important;
+    gap: 12px !important;
+  }
+
+  #meetingModal .modal-actions button {
+    padding: 14px 16px !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    border-radius: 10px !important;
+  }
+
+  .modal-dropdown-selected {
+    height: 50px !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+  }
+
+  .modal-dropdown-item {
+    padding: 14px 12px !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+  }
+
+  /* ========== CHECK-IN MODAL ========== */
+  #checkinModal .checkin-modal-content {
+    width: 100% !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    padding: 16px !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+  }
+
+  #checkinModal .checkin-header h2 {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+  }
+
+  #checkinModal .checkin-header h2 img {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  .checkin-info {
+    font-size: 15px !important;
+    font-weight: 600 !important;
+  }
+
+  .checkin-search-and-actions {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .checkin-search {
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+
+  .checkin-search input {
+    padding: 14px 16px !important;
+    font-size: 16px !important;
+    border-radius: 10px !important;
+    height: 50px !important;
+  }
+
+  .checkin-search input::placeholder {
+    font-size: 15px !important;
+  }
+
+  .checkin-actions {
+    width: 100% !important;
+    flex-direction: row !important;
+    gap: 10px !important;
+  }
+
+  .checkin-action-btn {
+    flex: 1 !important;
+    padding: 12px 12px !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    border-radius: 10px !important;
+    height: 50px !important;
+  }
+
+  .checkin-action-btn img {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .checkin-summary {
+    padding: 14px 16px !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+  }
+
+  .checkin-summary .count {
+    font-size: 22px !important;
+    font-weight: 800 !important;
+  }
+
+  .checkin-list {
+    max-height: none !important;
+    flex: 1 !important;
+    border-radius: 10px !important;
+    padding: 12px !important;
+  }
+
+  .checkin-day-header {
+    padding: 14px 16px !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+  }
+
+  .checkin-day-header img {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .checkin-day-count {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+  }
+
+  .checkin-people-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    padding: 12px !important;
+  }
+
+  .checkin-item {
+    padding: 14px !important;
+    border-radius: 10px !important;
+    gap: 12px !important;
+  }
+
+  .checkin-checkbox {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 8px !important;
+    font-size: 18px !important;
+  }
+
+  .checkin-checkbox img {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .checkin-person-name {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+  }
+
+  .checkin-person-position {
+    font-size: 13px !important;
+    padding: 4px 12px !important;
+  }
+
+  .checkin-person-details {
+    font-size: 13px !important;
+    gap: 8px !important;
+  }
+
+  .checkin-person-row {
+    font-size: 12px !important;
+    padding: 4px 10px !important;
+  }
+
+  .checkin-person-project {
+    font-size: 12px !important;
+    padding: 4px 12px !important;
+  }
+
+  .checkin-bottom-actions {
+    flex-direction: row !important;
+    gap: 10px !important;
+    margin-top: 16px !important;
+  }
+
+  .checkin-export-btn,
+  .checkin-close-btn {
+    width: 100% !important;
+    padding: 14px 16px !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    border-radius: 10px !important;
+    height: 50px !important;
+  }
+
+  .checkin-export-btn img,
+  .checkin-close-btn img {
+    width: 18px !important;
+    height: 18px !important;
+  }
+}
+
+/* Small Mobile */
+@media screen and (max-width: 480px) {
+  .container {
+    padding: 0 !important;
+  }
+
+  .title {
+    font-size: 17px !important;
+    padding: 10px !important;
+    font-weight: 700 !important;
+  }
+
+  .title img {
+    width: 26px !important;
+    height: 26px !important;
+  }
+
+  .meeting-header {
+    padding: 10px !important;
+  }
+
+  .meeting-btn {
+    padding: 12px 14px !important;
+    font-size: 15px !important;
+  }
+
+  table {
+    font-size: 14px !important;
+  }
+
+  thead th {
+    padding: 10px 6px !important;
+    font-size: 13px !important;
+  }
+
+  tbody td {
+    padding: 10px 8px !important;
+    font-size: 14px !important;
+    min-height: 70px !important;
+  }
+
+  .meeting-box {
+    padding: 12px 10px !important;
+    max-width: 150px !important;
+  }
+
+  .meeting-person-name {
+    font-size: 14px !important;
+  }
+
+  .meeting-person-position {
+    font-size: 11px !important;
+  }
+
+  .meeting-project {
+    font-size: 11px !important;
+  }
+
+  #meetingModal .meeting-modal-content {
+    padding: 20px !important;
+  }
+
+  #meetingModal h2 {
+    font-size: 18px !important;
+  }
+
+  #meetingModal .form-group input,
+  #meetingModal .form-group select {
+    padding: 12px 14px !important;
+    font-size: 15px !important;
+  }
+
+  .modal-dropdown-selected {
+    height: 46px !important;
+    font-size: 15px !important;
+  }
+
+  .modal-dropdown-item {
+    padding: 12px 10px !important;
+    font-size: 14px !important;
+  }
+
+  #checkinModal .checkin-header h2 {
+    font-size: 18px !important;
+  }
+
+  .checkin-search input {
+    padding: 12px 14px !important;
+    font-size: 15px !important;
+    height: 46px !important;
+  }
+
+  .checkin-action-btn {
+    padding: 10px 10px !important;
+    font-size: 13px !important;
+    height: 46px !important;
+  }
+
+  .checkin-person-name {
+    font-size: 15px !important;
+  }
+
+  .checkin-bottom-actions button {
+    height: 46px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* Landscape Mode */
+@media screen and (max-width: 900px) and (orientation: landscape) {
+  .meeting-table-wrapper {
+    max-height: 60vh !important;
+    top: 90px !important;
+  }
+
+  #checkinModal .checkin-modal-content {
+    max-height: 95vh !important;
+  }
+
+  .checkin-list {
+    max-height: 45vh !important;
+  }
+
+  tbody tr {
+    min-height: 70px !important;
+  }
+
+  tbody td {
+    min-height: 65px !important;
+  }
+}
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="meeting-header">
+      <!-- Title ตาราง -->
+      <div class="title">
+        <img src="https://img.icons8.com/?size=100&id=xsplcFnKV7LY&format=png&color=000000"
+       style="width:30px;height:30px;vertical-align:middle;margin-right:4px;"
+       alt="ตารางการเข้าประชุมรายวัน">
+  ตารางการเข้าประชุมรายวัน
+      </div>
+
+      <div class="meeting-actions">
+        <!-- ปุ่ม เช็คชื่อ -->
+        <button id="checkinAllBtn" class="meeting-btn" onclick="openAllDaysCheckin()" style="display:block;">
+  <img src="https://img.icons8.com/?size=100&id=nfgG1p3p8yvY&format=png&color=000000" style="width:16px;height:16px;margin-right:4px;vertical-align:middle;" alt="checkin"> เช็คชื่อ
+</button>
+
+        <!-- ปุ่ม Export ตาราง -->
+        <button id="exportMeetingBtn" class="meeting-btn" onclick="exportMeetingAsImage()" style="display:block;">
+  <img src="https://img.icons8.com/?size=100&id=CaMcWbJizbzF&format=png&color=000000" style="width:16px;height:16px;margin-right:4px;vertical-align:middle;" alt="export"> Export ตาราง
+</button>
+
+        <!-- ปุ่ม แก้ไข -->
+        <button id="editMeetingBtn" class="meeting-btn" onclick="toggleEditMeeting()" style="display:block;">
+  <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" style="width:16px;height:16px;margin-right:4px;vertical-align:middle;" alt="edit"> แก้ไข
+</button>
+
+        <!-- ปุ่ม บันทึก -->
+        <button id="saveMeetingBtn" class="meeting-btn save" style="display:none;" onclick="saveMeetingData()">
+  <img src="https://img.icons8.com/?size=100&id=IoxdKD291KHp&format=png&color=000000" style="width:16px;height:16px;margin-right:4px;vertical-align:middle;" alt="save"> บันทึก
+</button>
+
+        <!-- ปุ่ม ยกเลิก -->
+        <button id="cancelMeetingBtn" class="meeting-btn cancel" style="display:none;" onclick="cancelEditMeeting()">
+  <img src="https://img.icons8.com/?size=100&id=QlMnqMXDMws3&format=png&color=000000" style="width:16px;height:16px;margin-right:4px;vertical-align:middle;" alt="cancel"> ยกเลิก
+</button>
+
+      </div>
+    </div>
+
+    <div class="meeting-table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>วัน / ลำดับ</th>
+            <th>จันทร์</th>
+            <th>อังคาร</th>
+            <th>พุธ</th>
+            <th>พฤหัสบดี</th>
+            <th>ศุกร์</th>
+          </tr>
+        </thead>
+        <tbody id="meetingBody">
+          <tr>
+            <td colspan="6" class="loading">กำลังโหลดข้อมูล...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Meeting Modal -->
+  <div id="meetingModal">
+    <div class="meeting-modal-content">
+      <div class="meeting-header">
+        <!-- Modal Header -->
+        <h2>
+          <img src="https://img.icons8.com/?size=100&id=XpyLr4ervzGM&format=png&color=000000" style="width:20px;height:20px;margin-right:8px;vertical-align:middle;" alt="add"> Add Meeting
+        </h2>
+      </div>
+
+      <div class="form-group">
+        <label>ชื่อ</label>
+        <div class="modal-dropdown-wrapper">
+          <input type="text" id="meetingPersonName" placeholder="ค้นหาชื่อ..." style="width:100%; padding:0 14px; height:48px; border-radius:14px; border:1px solid rgba(15, 23, 42, .18); background:#fff; font-size:15px; font-weight:800; box-shadow:0 6px 16px rgba(15, 23, 42, .06);">
+          <div class="modal-dropdown-items" id="nameDropdownItems"></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>ตำแหน่ง</label>
+        <div class="modal-dropdown-wrapper">
+          <div class="modal-dropdown-selected" id="positionDropdownToggle">
+            <span id="positionDropdownText">เลือกตำแหน่ง</span>
+            <span>▾</span>
+          </div>
+          <div class="modal-dropdown-items" id="positionDropdownItems"></div>
+        </div>
+        <input type="hidden" id="meetingPosition">
+      </div>
+
+      <div class="form-group">
+        <label>โปรเจค (ไม่บังคับ)</label>
+        <div class="modal-dropdown-wrapper">
+          <div class="modal-dropdown-selected" id="projectDropdownToggle">
+            <span id="projectDropdownText">ไม่มีโปรเจค</span>
+            <span>▾</span>
+          </div>
+          <div class="modal-dropdown-items" id="projectDropdownItems"></div>
+        </div>
+        <input type="hidden" id="meetingProject">
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-add" onclick="saveMeetingFromModal()">
+  <img src="https://img.icons8.com/?size=100&id=XpyLr4ervzGM&format=png&color=000000" style="width:16px;height:16px;margin-right:4px;vertical-align:middle;" alt="add"> Add Meeting
+</button>
+        <button class="btn-cancel" onclick="closeMeetingModal()">
+        Cancel
+      </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Check-in Modal -->
+  <div id="checkinModal">
+    <div class="checkin-modal-content">
+      <div class="checkin-header">
+        <h2 id="checkinTitle">
+          <img src="https://img.icons8.com/?size=100&id=nfgG1p3p8yvY&format=png&color=000000" style="width:20px;height:20px;margin-right:8px;vertical-align:middle;" alt="checkin"> เช็คชื่อเข้าประชุมรายสัปดาห์
+        </h2>
+        <div class="checkin-info" id="checkinInfo">รวมทั้งหมด 0 คน</div>
+      </div>
+
+      <div class="checkin-search-and-actions">
+        <div class="checkin-search">
+          <div style="display: flex; align-items: center;">
+            <img src="https://img.icons8.com/?size=100&id=dkXh44TRt377&format=png&color=000000" style="width:16px;height:16px;margin-right:8px;" alt="search">
+            <input type="text" id="checkinSearchInput" placeholder="ค้นหา ชื่อ, ตำแหน่ง, หรือโปรเจค..." style="flex: 1;  padding: 8px;">
+          </div>
+        </div>
+        <div class="checkin-actions">
+
+          <!-- ปุ่ม เลือกทั้งหมด -->
+          <button class="checkin-action-btn" onclick="selectAllCheckin()">
+  <img src="https://img.icons8.com/?size=100&id=zo9eHF24MB3R&format=png&color=000000" style="width:14px;height:14px;margin-right:4px;vertical-align:middle;" alt="select"> เลือกทั้งหมด
+</button>
+
+          <!-- ปุ่ม ยกเลิกทั้งหมด -->
+          <button class="checkin-action-btn" onclick="deselectAllCheckin()">
+  <img src="https://img.icons8.com/?size=100&id=QlMnqMXDMws3&format=png&color=000000" style="width:14px;height:14px;margin-right:4px;vertical-align:middle;" alt="deselect"> ยกเลิกทั้งหมด
+</button>
+
+
+        </div>
+      </div>
+
+      <div class="checkin-summary">
+        เช็คชื่อแล้ว: <span class="count" id="checkinCount">0 / 0</span> คน
+      </div>
+
+      <div class="checkin-list" id="checkinList">
+        <div class="checkin-empty">ไม่พบรายชื่อ</div>
+      </div>
+
+      <div class="checkin-bottom-actions">
+        <button class="checkin-export-btn" onclick="exportCheckinList()">
+  <img src="https://img.icons8.com/?size=100&id=V95e5ej2T24y&format=png&color=000000" style="width:16px;height:16px;margin-right:4px;vertical-align:middle;" alt="export"> Export รายชื่อ
+</button>
+        <button class="checkin-close-btn" onclick="closeCheckinModal()">ปิด</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+/* ==========================================
+   MEETING MODULE - FRONTEND ONLY (BACKEND STUB READY)
+   - Backend เดิม (google.script.run) ถูก "พักไว้" ใน BACKEND.gas.*
+   - ตอนนี้ใช้ localStorage/mock ผ่าน BACKEND.api.*
+========================================== */
+
+let meetingData = [];
+let originalMeetingData = [];
+let isEditingMeeting = false;
+let draggedMeetingItem = null;
+let tempMeetingRow = null;
+let tempMeetingDay = null;
+const projectColors = {};
+
+/* =========================
+   ✅ BACKEND ADAPTER (READY TO SWAP)
+   ========================= */
+const BACKEND = (() => {
+  const LS_KEYS = {
+    MEETING: "PMT_MEETING_SCHEDULE_V1",
+    INTERNS: "PMT_INTERNS_V1",
+    PROJECTS: "PMT_PROJECTS_V1",
+  };
+
+  const hasGAS = () => (window.google && google.script && google.script.run);
+
+  // ---------- (A) เก็บ "ของเดิม" ไว้รอ (ไม่ใช้ตอนนี้) ----------
+  const gas = {
+    getInternData: () => {
+      // ✅ รอเสียบ backend ใหม่ / หรือเอากลับไปใช้ภายหลัง
+      // if (!hasGAS()) return Promise.reject(new Error("GAS not available"));
+      // return new Promise((resolve, reject) => {
+      //   google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getInternData();
+      // });
+    },
+    getProjectList: () => {
+      // if (!hasGAS()) return Promise.reject(new Error("GAS not available"));
+      // return new Promise((resolve, reject) => {
+      //   google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getProjectList();
+      // });
+    },
+    getMeetingScheduleData: () => {
+      // if (!hasGAS()) return Promise.reject(new Error("GAS not available"));
+      // return new Promise((resolve, reject) => {
+      //   google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getMeetingScheduleData();
+      // });
+    },
+    saveMeetingScheduleData: (filteredData) => {
+      // if (!hasGAS()) return Promise.reject(new Error("GAS not available"));
+      // return new Promise((resolve, reject) => {
+      //   google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).saveMeetingScheduleData(filteredData);
+      // });
+    }
+  };
+
+  // ---------- (B) API ที่หน้าเว็บเรียกจริง (ตอนนี้เป็น localStorage/mock) ----------
+  function safeJsonParse(str, fallback) {
+    try { return JSON.parse(str); } catch { return fallback; }
+  }
+
+  function getMeetingFromLS() {
+    const raw = localStorage.getItem(LS_KEYS.MEETING);
+    const data = safeJsonParse(raw, []);
+    return Array.isArray(data) ? data : (data && typeof data === "object" ? Object.values(data) : []);
+  }
+
+  function saveMeetingToLS(data) {
+    localStorage.setItem(LS_KEYS.MEETING, JSON.stringify(data || []));
+  }
+
+  function seedMockIfEmpty() {
+    // seed interns
+    if (!localStorage.getItem(LS_KEYS.INTERNS)) {
+      const mockInterns = [
+        { name: "ต้น", position: "Web Dev" },
+        { name: "ฟ้า", position: "UX/UI" },
+        { name: "บีม", position: "BA" },
+      ];
+      localStorage.setItem(LS_KEYS.INTERNS, JSON.stringify(mockInterns));
+    }
+
+    // seed projects
+    if (!localStorage.getItem(LS_KEYS.PROJECTS)) {
+      const mock = {
+        projects: [
+          { name: "Project A" },
+          { name: "Project B" },
+          { name: "Project C" },
+        ]
+      };
+      localStorage.setItem(LS_KEYS.PROJECTS, JSON.stringify(mock));
+    }
+
+    // seed meeting schedule (ถ้ายังไม่มี)
+    if (!localStorage.getItem(LS_KEYS.MEETING)) {
+      const mockMeeting = [
+        { order: "1", mon: [], tue: [], wed: [], thu: [], fri: [] },
+        { order: "2", mon: [], tue: [], wed: [], thu: [], fri: [] },
+        { order: "3", mon: [], tue: [], wed: [], thu: [], fri: [] },
+      ];
+      localStorage.setItem(LS_KEYS.MEETING, JSON.stringify(mockMeeting));
+    }
+  }
+
+  // mock api
+  const api = {
+    async getInternData() {
+      seedMockIfEmpty();
+      const raw = localStorage.getItem(LS_KEYS.INTERNS);
+      const data = safeJsonParse(raw, []);
+      return Array.isArray(data) ? data : [];
+    },
+    async getProjectList() {
+      seedMockIfEmpty();
+      const raw = localStorage.getItem(LS_KEYS.PROJECTS);
+      const data = safeJsonParse(raw, { projects: [] });
+      return data && typeof data === "object" ? data : { projects: [] };
+    },
+    async getMeetingScheduleData() {
+      seedMockIfEmpty();
+      return getMeetingFromLS();
+    },
+    async saveMeetingScheduleData(filteredData) {
+      seedMockIfEmpty();
+      saveMeetingToLS(filteredData || []);
+      return true;
+    }
+  };
+
+  return { api, gas, hasGAS };
+})();
+
+/* ========== Color Generation ========== */
+function generateColorFromString(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  const hue = Math.abs(hash % 360);
+  const saturation = 70;
+  const lightness = 90;
+
+  const hslToRgb = (h, s, l) => {
+    s /= 100;
+    l /= 100;
+    const k = n => (n + h / 30) % 12;
+    const a = s * Math.min(l, 1 - l);
+    const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+    return [255 * f(0), 255 * f(8), 255 * f(4)];
+  };
+
+  const [r, g, b] = hslToRgb(hue, saturation, lightness);
+  const bgColor = `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+
+  const [tr, tg, tb] = hslToRgb(hue, saturation + 10, 25);
+  const textColor = `rgb(${Math.round(tr)}, ${Math.round(tg)}, ${Math.round(tb)})`;
+
+  const [br, bg2, bb] = hslToRgb(hue, saturation, 80);
+  const borderColor = `rgb(${Math.round(br)}, ${Math.round(bg2)}, ${Math.round(bb)})`;
+
+  return { bg: bgColor, text: textColor, border: borderColor };
+}
+
+function getProjectColor(projectName) {
+  if (!projectName) return { bg: '#FFE0E0', text: '#8B0000', border: '#FFCCCC' };
+  if (projectColors[projectName]) return projectColors[projectName];
+  const newColor = generateColorFromString(projectName);
+  projectColors[projectName] = newColor;
+  return newColor;
+}
+
+/* ========== Modal Functions ========== */
+function openMeetingModal(rowIndex, day) {
+  tempMeetingRow = rowIndex;
+  tempMeetingDay = day;
+
+  document.getElementById("meetingModal").style.display = "flex";
+  document.getElementById("meetingPersonName").value = "";
+  document.getElementById("meetingPosition").value = "";
+  document.getElementById("meetingProject").value = "";
+
+  // Reset dropdown text
+  document.getElementById("positionDropdownText").textContent = "เลือกตำแหน่ง";
+  document.getElementById("projectDropdownText").textContent = "ไม่มีโปรเจค";
+
+  // Reset name dropdown
+  document.getElementById("nameDropdownItems").innerHTML = '';
+
+  initializeModalDropdowns();
+  loadInternNamesForMeeting();       // ✅ now uses BACKEND.api
+  loadInternPositionsForMeeting();   // ✅ now uses BACKEND.api
+  loadProjectDropdownForMeeting();   // ✅ now uses BACKEND.api
+
+  setTimeout(() => {
+    document.getElementById("meetingPersonName").focus();
+  }, 100);
+}
+
+function closeMeetingModal() {
+  document.getElementById("meetingModal").style.display = "none";
+  tempMeetingRow = null;
+  tempMeetingDay = null;
+}
+
+function saveMeetingFromModal() {
+  const name = document.getElementById("meetingPersonName").value.trim();
+  const position = document.getElementById("meetingPosition").value.trim();
+  const project = document.getElementById("meetingProject").value.trim();
+
+  if (!name) return alert("กรุณากรอกชื่อ");
+  if (!position) return alert("กรุณาเลือกตำแหน่ง");
+  if (tempMeetingRow === null || !tempMeetingDay) return alert("เกิดข้อผิดพลาด");
+
+  if (!meetingData[tempMeetingRow][tempMeetingDay]) meetingData[tempMeetingRow][tempMeetingDay] = [];
+
+  const personText = `${name} ${position}`;
+  meetingData[tempMeetingRow][tempMeetingDay].push({ text: personText, isProject: false });
+
+  if (project) {
+    meetingData[tempMeetingRow][tempMeetingDay].push({
+      text: project,
+      isProject: true,
+      bgColor: "#fff2cc"
+    });
+  }
+
+  closeMeetingModal();
+  renderMeeting(meetingData);
+}
+
+/* ========== Drag and Drop ========== */
+function onDragStart(e, rowIndex, day, itemIndex) {
+  draggedMeetingItem = { rowIndex, day, itemIndex };
+  e.target.style.opacity = '0.4';
+  e.target.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function onDragEnd(e) {
+  e.target.style.opacity = '1';
+  e.target.classList.remove('dragging');
+  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+}
+
+function onDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  e.currentTarget.classList.add('drag-over');
+}
+
+function onDragLeave(e) {
+  if (!e.currentTarget.contains(e.relatedTarget)) e.currentTarget.classList.remove('drag-over');
+}
+
+function onDrop(e, targetRowIndex, targetDay) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!draggedMeetingItem) return;
+
+  const { rowIndex: srcRow, day: srcDay } = draggedMeetingItem;
+
+  if (srcDay === targetDay && srcRow !== targetRowIndex) {
+    reorderMeetingInDaySmooth(srcRow, targetRowIndex, srcDay);
+  } else if (srcDay !== targetDay) {
+    moveMeetingAcrossDays(srcRow, srcDay, 0, targetRowIndex, targetDay);
+  }
+
+  draggedMeetingItem = null;
+  renderMeeting(meetingData);
+}
+
+function reorderMeetingInDaySmooth(fromRow, toRow, day) {
+  const dayItems = [];
+  meetingData.forEach((row, idx) => {
+    const items = row[day] || [];
+    if (items.length > 0) dayItems.push({ rowIdx: idx, items: items });
+  });
+
+  const fromIdx = dayItems.findIndex(item => item.rowIdx === fromRow);
+  const toIdx = dayItems.findIndex(item => item.rowIdx === toRow);
+  if (fromIdx === -1 || toIdx === -1) return;
+
+  const [movedItem] = dayItems.splice(fromIdx, 1);
+  dayItems.splice(toIdx, 0, movedItem);
+
+  meetingData.forEach(row => row[day] = []);
+  dayItems.forEach((item, newIdx) => {
+    if (newIdx < meetingData.length) meetingData[newIdx][day] = item.items;
+  });
+}
+
+function moveMeetingAcrossDays(srcRow, srcDay, srcIdx, targetRow, targetDay) {
+  if (meetingData[targetRow][targetDay] && meetingData[targetRow][targetDay].length > 0) {
+    alert("ช่องนี้มีการประชุมอยู่แล้ว");
+    return;
+  }
+  const movedItem = meetingData[srcRow][srcDay][srcIdx];
+  meetingData[srcRow][srcDay].splice(srcIdx, 1);
+  if (!meetingData[targetRow][targetDay]) meetingData[targetRow][targetDay] = [];
+  meetingData[targetRow][targetDay].push(movedItem);
+}
+
+/* ========== Render Meeting (รองรับ data array/object) ========== */
+function renderMeeting(data) {
+  const tbody = document.getElementById("meetingBody");
+  if (!tbody) return;
+
+  // convert to array if needed
+  if (!Array.isArray(data)) {
+    if (data && typeof data === 'object') data = Object.values(data);
+    else data = [];
+  }
+
+  tbody.innerHTML = "";
+
+  if (!data || data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#999;">ไม่มีข้อมูลการประชุม</td></tr>';
+    return;
+  }
+
+  data.forEach((row, i) => {
+    if (!row) return;
+
+    const tr = document.createElement("tr");
+
+    // Column 1: order
+    const orderCell = document.createElement("td");
+    orderCell.textContent = row.order || (i + 1).toString();
+    tr.appendChild(orderCell);
+
+    const days = ["mon", "tue", "wed", "thu", "fri"];
+    days.forEach(day => {
+      const cell = document.createElement("td");
+
+      if (isEditingMeeting) {
+        cell.ondragover = (e) => onDragOver(e);
+        cell.ondragleave = (e) => onDragLeave(e);
+        cell.ondrop = (e) => onDrop(e, i, day);
+      }
+
+      const items = row[day] || [];
+
+      if (items.length > 0) {
+        const boxDiv = document.createElement("div");
+        boxDiv.className = "meeting-box" + (isEditingMeeting ? " draggable" : "");
+
+        if (isEditingMeeting) {
+          boxDiv.draggable = true;
+          boxDiv.ondragstart = (e) => onDragStart(e, i, day, 0);
+          boxDiv.ondragend = (e) => onDragEnd(e);
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.className = "delete-box-btn";
+          deleteBtn.innerHTML = '<img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000" style="width:16px;height:16px;" alt="delete">';
+          deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            if (confirm("ต้องการลบการประชุมนี้ใช่หรือไม่?")) deleteMeetingBox(i, day);
+          };
+          boxDiv.appendChild(deleteBtn);
+        }
+
+        items.forEach(item => {
+          let itemObj;
+          if (typeof item === 'string') itemObj = { text: item, isProject: false };
+          else if (typeof item === 'object' && item !== null) itemObj = item;
+          else return;
+
+          if (itemObj.isProject) {
+            const projectColor = getProjectColor(itemObj.text);
+            const projectSpan = document.createElement("div");
+            projectSpan.className = "meeting-project";
+            projectSpan.textContent = itemObj.text;
+            projectSpan.style.background = projectColor.bg;
+            projectSpan.style.color = projectColor.text;
+            projectSpan.style.borderColor = projectColor.border;
+            boxDiv.appendChild(projectSpan);
+          } else {
+            const text = itemObj.text;
+            const match = text.match(/^(.+?)\s*\((.+?)\)$/);
+
+            const makePersonRow = (nickname, position) => {
+              const personDiv = document.createElement("div");
+              personDiv.className = "meeting-person";
+
+              const nameSpan = document.createElement("span");
+              nameSpan.className = "meeting-person-name";
+              nameSpan.textContent = nickname;
+              personDiv.appendChild(nameSpan);
+
+              if (position) {
+                const positionSpan = document.createElement("span");
+                positionSpan.className = "meeting-person-position";
+                positionSpan.textContent = position;
+                personDiv.appendChild(positionSpan);
+              }
+
+              return personDiv;
+            };
+
+            if (match) {
+              const namePart = match[1].trim();
+              const projectPart = match[2].trim();
+              const parts = namePart.split(/\s+/);
+              const nickname = parts[0];
+              const position = parts.slice(1).join(' ');
+
+              boxDiv.appendChild(makePersonRow(nickname, position));
+
+              const projectColor = getProjectColor(projectPart);
+              const projectSpan = document.createElement("div");
+              projectSpan.className = "meeting-project";
+              projectSpan.textContent = projectPart;
+              projectSpan.style.background = projectColor.bg;
+              projectSpan.style.color = projectColor.text;
+              projectSpan.style.borderColor = projectColor.border;
+              boxDiv.appendChild(projectSpan);
+            } else {
+              const parts = text.split(/\s+/);
+              const nickname = parts[0];
+              const position = parts.slice(1).join(' ');
+              boxDiv.appendChild(makePersonRow(nickname, position));
+            }
+          }
+        });
+
+        cell.appendChild(boxDiv);
+      } else {
+        if (isEditingMeeting) {
+          const addBtn = document.createElement("button");
+          addBtn.className = "add-meeting-btn";
+          addBtn.innerHTML = '<img src="https://img.icons8.com/?size=100&id=bDKqvw7V0ANQ&format=png&color=000000" style="width:14px;height:14px;margin-right:4px;vertical-align:middle;" alt="add"> เพิ่มการประชุม';
+          addBtn.onclick = () => openMeetingModal(i, day);
+          cell.appendChild(addBtn);
+        } else {
+          const emptySpan = document.createElement("span");
+          emptySpan.textContent = "-";
+          emptySpan.style.color = "#ccc";
+          cell.appendChild(emptySpan);
+        }
+      }
+
+      tr.appendChild(cell);
+    });
+
+    tbody.appendChild(tr);
+  });
+
+  if (isEditingMeeting) {
+    setTimeout(() => {
+      updateMeetingRowButtons();
+      updateMeetingDeleteButtons();
+    }, 50);
+  }
+}
+
+/* ========== Row Management ========== */
+function insertRowBelow(rowIndex) {
+  const newRow = { order: "", mon: [], tue: [], wed: [], thu: [], fri: [] };
+  meetingData.splice(rowIndex + 1, 0, newRow);
+  updateRowOrders();
+  renderMeeting(meetingData);
+}
+
+function deleteRowAtIndex(rowIndex) {
+  if (confirm("ต้องการลบแถวนี้ใช่หรือไม่?")) {
+    meetingData.splice(rowIndex, 1);
+    updateRowOrders();
+    renderMeeting(meetingData);
+  }
+}
+
+function updateRowOrders() {
+  meetingData.forEach((row, index) => row.order = (index + 1).toString());
+}
+
+function deleteMeetingBox(rowIndex, day) {
+  if (meetingData[rowIndex] && meetingData[rowIndex][day]) {
+    meetingData[rowIndex][day] = [];
+    renderMeeting(meetingData);
+  }
+}
+
+/* ========== Button Management ========== */
+function addMeetingRowButtons() {
+  const tbody = document.getElementById("meetingBody");
+  if (!tbody) return;
+
+  const oldContainer = document.getElementById("meetingRowButtons");
+  if (oldContainer) oldContainer.remove();
+
+  const buttonContainer = document.createElement("div");
+  buttonContainer.id = "meetingRowButtons";
+
+  const tableWrapper = tbody.closest('.meeting-table-wrapper');
+  if (tableWrapper) {
+    tableWrapper.style.position = "relative";
+    tableWrapper.appendChild(buttonContainer);
+  }
+
+  updateMeetingRowButtons();
+}
+
+function updateMeetingRowButtons() {
+  const buttonContainer = document.getElementById("meetingRowButtons");
+  const tbody = document.getElementById("meetingBody");
+  if (!buttonContainer || !tbody) return;
+
+  buttonContainer.innerHTML = "";
+
+  const rows = tbody.querySelectorAll("tr");
+  rows.forEach((tr, index) => {
+    const btn = document.createElement("button");
+    btn.innerHTML = "+";
+    btn.type = "button";
+
+    const rect = tr.getBoundingClientRect();
+    const containerRect = tbody.parentElement.getBoundingClientRect();
+    const topPos = rect.top - containerRect.top + rect.height / 2 - 14;
+    btn.style.top = topPos + "px";
+
+    btn.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      insertRowBelow(index);
+      setTimeout(() => {
+        updateMeetingRowButtons();
+        updateMeetingDeleteButtons();
+      }, 100);
+    };
+
+    let hideTimeout;
+    tr.addEventListener("mouseenter", () => {
+      clearTimeout(hideTimeout);
+      btn.style.display = "flex";
+      btn.style.opacity = "0.6";
+    });
+
+    tr.addEventListener("mouseleave", () => {
+      hideTimeout = setTimeout(() => {
+        if (!btn.matches(':hover')) {
+          btn.style.display = "none";
+          btn.style.opacity = "0";
+        }
+      }, 100);
+    });
+
+    btn.addEventListener("mouseenter", () => {
+      clearTimeout(hideTimeout);
+      btn.style.opacity = "1";
+    });
+
+    btn.addEventListener("mouseleave", () => {
+      btn.style.display = "none";
+      btn.style.opacity = "0";
+    });
+
+    buttonContainer.appendChild(btn);
+  });
+}
+
+function addMeetingDeleteButtons() {
+  const tbody = document.getElementById("meetingBody");
+  if (!tbody) return;
+
+  const oldContainer = document.getElementById("meetingRowDeleteButtons");
+  if (oldContainer) oldContainer.remove();
+
+  const buttonContainer = document.createElement("div");
+  buttonContainer.id = "meetingRowDeleteButtons";
+
+  const tableWrapper = tbody.closest('.meeting-table-wrapper');
+  if (tableWrapper) tableWrapper.appendChild(buttonContainer);
+
+  updateMeetingDeleteButtons();
+}
+
+function updateMeetingDeleteButtons() {
+  const buttonContainer = document.getElementById("meetingRowDeleteButtons");
+  const tbody = document.getElementById("meetingBody");
+  if (!buttonContainer || !tbody) return;
+
+  buttonContainer.innerHTML = "";
+
+  const rows = tbody.querySelectorAll("tr");
+  rows.forEach((tr, index) => {
+    const btn = document.createElement("button");
+    btn.innerHTML = "-";
+    btn.type = "button";
+
+    const rect = tr.getBoundingClientRect();
+    const containerRect = tbody.parentElement.getBoundingClientRect();
+    const topPos = rect.top - containerRect.top + rect.height / 2 - 14;
+    btn.style.top = topPos + "px";
+
+    btn.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      deleteRowAtIndex(index);
+      setTimeout(() => {
+        updateMeetingRowButtons();
+        updateMeetingDeleteButtons();
+      }, 100);
+    };
+
+    let hoverTimeout;
+    tr.addEventListener("mouseenter", () => {
+      clearTimeout(hoverTimeout);
+      btn.style.display = "flex";
+      btn.style.opacity = "0.6";
+    });
+
+    tr.addEventListener("mouseleave", () => {
+      hoverTimeout = setTimeout(() => {
+        if (!btn.matches(':hover')) {
+          btn.style.display = "none";
+          btn.style.opacity = "0";
+        }
+      }, 100);
+    });
+
+    btn.addEventListener("mouseenter", () => {
+      clearTimeout(hoverTimeout);
+      btn.style.opacity = "1";
+    });
+
+    btn.addEventListener("mouseleave", () => {
+      btn.style.display = "none";
+      btn.style.opacity = "0";
+    });
+
+    buttonContainer.appendChild(btn);
+  });
+}
+
+function removeMeetingRowButtons() {
+  const buttonContainer = document.getElementById("meetingRowButtons");
+  if (buttonContainer) buttonContainer.remove();
+}
+
+function removeMeetingDeleteButtons() {
+  const buttonContainer = document.getElementById("meetingRowDeleteButtons");
+  if (buttonContainer) buttonContainer.remove();
+}
+
+/* ========== Edit Mode ========== */
+function toggleEditMeeting() {
+  isEditingMeeting = !isEditingMeeting;
+
+  document.getElementById("checkinAllBtn").style.display = isEditingMeeting ? "none" : "block";
+  document.getElementById("exportMeetingBtn").style.display = isEditingMeeting ? "none" : "block";
+  document.getElementById("editMeetingBtn").style.display = isEditingMeeting ? "none" : "block";
+  document.getElementById("saveMeetingBtn").style.display = isEditingMeeting ? "block" : "none";
+  document.getElementById("cancelMeetingBtn").style.display = isEditingMeeting ? "block" : "none";
+
+  if (isEditingMeeting) {
+    checkAndAddEmptyRow();
+    addMeetingRowButtons();
+    addMeetingDeleteButtons();
+  } else {
+    removeMeetingRowButtons();
+    removeMeetingDeleteButtons();
+  }
+
+  renderMeeting(meetingData);
+}
+
+function cancelEditMeeting() {
+  if (confirm("ต้องการยกเลิกการแก้ไขใช่หรือไม่?")) {
+    meetingData = JSON.parse(JSON.stringify(originalMeetingData));
+    isEditingMeeting = false;
+
+    document.getElementById("checkinAllBtn").style.display = "block";
+    document.getElementById("exportMeetingBtn").style.display = "block";
+    document.getElementById("editMeetingBtn").style.display = "block";
+    document.getElementById("saveMeetingBtn").style.display = "none";
+    document.getElementById("cancelMeetingBtn").style.display = "none";
+
+    renderMeeting(meetingData);
+  }
+}
+
+/* ========== Save Data (NOW: localStorage via BACKEND.api) ========== */
+async function saveMeetingData() {
+  if (!confirm("ต้องการบันทึกการเปลี่ยนแปลงใช่หรือไม่?")) return;
+
+  // กรอง row ที่มีข้อมูล
+  const filteredData = meetingData.filter(row => {
+    const days = ["mon", "tue", "wed", "thu", "fri"];
+    return days.some(day => (row[day] || []).length > 0);
+  });
+
+  const saveBtn = document.getElementById("saveMeetingBtn");
+  const originalText = saveBtn ? saveBtn.innerHTML : "";
+  if (saveBtn) {
+    saveBtn.innerHTML = '<img src="https://img.icons8.com/?size=100&id=p8s7a0zN9p8T&format=png&color=000000" style="width:16px;height:16px;margin-right:4px;vertical-align:middle;" alt="loading"> กำลังบันทึก...';
+    saveBtn.disabled = true;
+  }
+
+  try {
+    await BACKEND.api.saveMeetingScheduleData(filteredData);
+
+    alert("✅ บันทึกข้อมูลสำเร็จ! (localStorage)");
+    isEditingMeeting = false;
+    meetingData = filteredData;
+    originalMeetingData = JSON.parse(JSON.stringify(filteredData));
+
+    document.getElementById("checkinAllBtn").style.display = "block";
+    document.getElementById("exportMeetingBtn").style.display = "block";
+    document.getElementById("editMeetingBtn").style.display = "block";
+    document.getElementById("saveMeetingBtn").style.display = "none";
+    document.getElementById("cancelMeetingBtn").style.display = "none";
+
+    renderMeeting(meetingData);
+  } catch (err) {
+    console.error("❌ saveMeetingData FAILED:", err);
+    alert("เกิดข้อผิดพลาด: " + (err.message || err));
+  } finally {
+    if (saveBtn) {
+      saveBtn.innerHTML = originalText;
+      saveBtn.disabled = false;
+    }
+  }
+}
+
+/* ========== Load Meeting (NOW: localStorage via BACKEND.api) ========== */
+async function loadMeeting() {
+  const tbody = document.getElementById("meetingBody");
+  if (!tbody) return;
+
+  tbody.innerHTML =
+    '<tr><td colspan="6" style="text-align:center; padding:20px; color:#999;">' +
+    '<img src="https://img.icons8.com/?size=100&id=p8s7a0zN9p8T&format=png&color=000000" style="width:20px;height:20px;margin-right:6px;vertical-align:middle;" alt="loading"> กำลังโหลด...</td></tr>';
+
+  try {
+    const data = await BACKEND.api.getMeetingScheduleData();
+
+    // safety normalize
+    if (!data) meetingData = [];
+    else if (Array.isArray(data)) meetingData = data;
+    else if (typeof data === "object") meetingData = Object.values(data);
+    else meetingData = [];
+
+    originalMeetingData = JSON.parse(JSON.stringify(meetingData));
+    renderMeeting(meetingData);
+  } catch (err) {
+  console.error("❌ loadMeeting FAILED:", err);
+
+  function escapeHtml(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  var msg = (err && err.message) ? err.message : err;
+  msg = escapeHtml(msg);
+
+  tbody.innerHTML =
+    '<tr>' +
+      '<td colspan="6" class="error-message">' +
+        '<div>❌ ไม่สามารถโหลดข้อมูลได้</div>' +
+        '<div class="error-details">' +
+          '<strong>Error:</strong> ' + msg +
+        '</div>' +
+        '<button onclick="loadMeeting()" ' +
+          'style="margin-top:15px; padding:10px 20px; background:#000; color:#fff; border:none; border-radius:6px; cursor:pointer;">' +
+          '<img src="https://img.icons8.com/?size=100&id=Je8TW918H0X1&format=png&color=000000" ' +
+               'style="width:16px;height:16px;margin-right:6px;vertical-align:middle;" alt="retry"> ลองอีกครั้ง' +
+        '</button>' +
+      '</td>' +
+    '</tr>';
+}
+
+}
+
+function checkAndAddEmptyRow() {
+  if (meetingData.length === 0) return;
+
+  const lastRow = meetingData[meetingData.length - 1];
+  const days = ["mon", "tue", "wed", "thu", "fri"];
+
+  const hasData = days.some(day => {
+    const items = lastRow[day] || [];
+    return items.length > 0;
+  });
+
+  if (hasData) {
+    meetingData.push({
+      order: (meetingData.length + 1).toString(),
+      mon: [], tue: [], wed: [], thu: [], fri: []
+    });
+  }
+}
+
+/* ========== Export as Image (เหมือนเดิม) ========== */
+async function exportMeetingAsImage() {
+  if (typeof html2canvas === 'undefined') {
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    document.head.appendChild(script);
+
+    await new Promise((resolve, reject) => {
+      script.onload = resolve;
+      script.onerror = reject;
+    });
+  }
+
+  const exportBtn = document.getElementById('exportMeetingBtn');
+  const originalText = exportBtn.innerHTML;
+  exportBtn.innerHTML = '<img src="https://img.icons8.com/?size=100&id=p8s7a0zN9p8T&format=png&color=000000" style="width:16px;height:16px;margin-right:4px;vertical-align:middle;" alt="loading"> กำลังสร้างภาพ...';
+  exportBtn.disabled = true;
+
+  try {
+    const tableWrapper = document.querySelector('.meeting-table-wrapper');
+
+    const originalWrapperStyle = {
+      maxHeight: tableWrapper.style.maxHeight,
+      overflow: tableWrapper.style.overflow,
+      height: tableWrapper.style.height
+    };
+
+    tableWrapper.style.maxHeight = 'none';
+    tableWrapper.style.overflow = 'visible';
+    tableWrapper.style.height = 'auto';
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    const canvas = await html2canvas(tableWrapper, {
+      scale: 2,
+      backgroundColor: '#ffffff',
+      logging: false,
+      useCORS: true,
+      allowTaint: true,
+      scrollY: 0,
+      scrollX: 0,
+      windowWidth: tableWrapper.scrollWidth,
+      windowHeight: tableWrapper.scrollHeight
+    });
+
+    tableWrapper.style.maxHeight = originalWrapperStyle.maxHeight;
+    tableWrapper.style.overflow = originalWrapperStyle.overflow;
+    tableWrapper.style.height = originalWrapperStyle.height;
+
+    const link = document.createElement('a');
+    const date = new Date();
+    const filename = `ตารางประชุม_${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-${date.getDate().toString().padStart(2,'0')}.png`;
+
+    link.download = filename;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+
+    exportBtn.innerHTML = '<img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" style="width:16px;height:16px;margin-right:4px;vertical-align:middle;" alt="success"> Export สำเร็จ!';
+
+    setTimeout(() => {
+      exportBtn.innerHTML = originalText;
+      exportBtn.disabled = false;
+    }, 2000);
+
+  } catch (error) {
+    console.error('Export error:', error);
+    alert('เกิดข้อผิดพลาดในการ Export: ' + error.message);
+
+    const tableWrapper = document.querySelector('.meeting-table-wrapper');
+    if (tableWrapper) {
+      tableWrapper.style.maxHeight = '700px';
+      tableWrapper.style.overflow = 'auto';
+      tableWrapper.style.height = '';
+    }
+
+    exportBtn.innerHTML = originalText;
+    exportBtn.disabled = false;
+  }
+}
+
+/* ========== Check-in System (เหมือนเดิม) ========== */
+let checkinData = {}; // Store check-in status: { day-personId: true/false }
+
+function openAllDaysCheckin() {
+  const currentDayIndex = new Date().getDay();
+  const dayMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+  const currentDay = dayMap[currentDayIndex];
+
+  if (currentDay === 'sun' || currentDay === 'sat') {
+    alert('⏱️ วันนี้เป็นวันหยุด ไม่มีการประชุม');
+    return;
+  }
+
+  const people = getAllPeopleForDay(currentDay);
+
+  if (people.length === 0) {
+    const dayNames = { mon: 'จันทร์', tue: 'อังคาร', wed: 'พุธ', thu: 'พฤหัสบดี', fri: 'ศุกร์' };
+    alert(`วัน${dayNames[currentDay]}ไม่มีการประชุม`);
+    return;
+  }
+
+  document.getElementById('checkinModal').style.display = 'flex';
+
+  const dayNames = { mon: 'จันทร์', tue: 'อังคาร', wed: 'พุธ', thu: 'พฤหัสบดี', fri: 'ศุกร์' };
+  document.getElementById('checkinTitle').innerHTML =
+    `<img src="https://img.icons8.com/?size=100&id=nfgG1p3p8yvY&format=png&color=000000" style="width:20px;height:20px;margin-right:8px;vertical-align:middle;" alt="checkin"> เช็คชื่อเข้าประชุม - วัน${dayNames[currentDay]}`;
+  document.getElementById('checkinInfo').textContent = `รวมทั้งหมด ${people.length} คน`;
+
+  document.getElementById('checkinSearchInput').value = '';
+
+  const allPeopleByDay = {};
+  allPeopleByDay[currentDay] = people;
+
+  renderAllDaysCheckinList(allPeopleByDay);
+  setupAllDaysCheckinSearch(allPeopleByDay);
+}
+
+function getAllPeopleForDay(day) {
+  const people = [];
+
+  meetingData.forEach((row, rowIndex) => {
+    const items = row[day] || [];
+    if (items.length === 0) return;
+
+    let currentProject = null;
+
+    items.forEach(item => {
+      const itemObj = typeof item === 'object' ? item : { text: item, isProject: false };
+
+      if (itemObj.isProject) {
+        currentProject = itemObj.text;
+      } else {
+        const text = itemObj.text;
+        const match = text.match(/^(.+?)\s*\((.+?)\)$/);
+
+        if (match) {
+          const namePart = match[1].trim();
+          const projectFromText = match[2].trim();
+          const parts = namePart.split(/\s+/);
+          const nickname = parts[0];
+          const position = parts.slice(1).join(' ');
+
+          people.push({
+            id: `${day}-${rowIndex}-${nickname}-${position}`,
+            nickname,
+            position,
+            project: projectFromText,
+            rowIndex: rowIndex + 1,
+            day
+          });
+        } else {
+          const parts = text.split(/\s+/);
+          const nickname = parts[0];
+          const position = parts.slice(1).join(' ');
+
+          people.push({
+            id: `${day}-${rowIndex}-${nickname}-${position}`,
+            nickname,
+            position,
+            project: currentProject,
+            rowIndex: rowIndex + 1,
+            day
+          });
+        }
+      }
+    });
+  });
+
+  return people;
+}
+
+function renderAllDaysCheckinList(allPeopleByDay, searchTerm = '') {
+  const listContainer = document.getElementById('checkinList');
+  listContainer.innerHTML = '';
+
+  const dayNames = { mon: 'จันทร์', tue: 'อังคาร', wed: 'พุธ', thu: 'พฤหัสบดี', fri: 'ศุกร์' };
+
+  let totalChecked = 0;
+  let totalPeople = 0;
+
+  ['mon', 'tue', 'wed', 'thu', 'fri'].forEach(day => {
+    const people = allPeopleByDay[day];
+    if (!people || people.length === 0) return;
+
+    const filteredPeople = searchTerm
+      ? people.filter(p => {
+          const searchLower = searchTerm.toLowerCase();
+          return p.nickname.toLowerCase().includes(searchLower) ||
+            (p.position && p.position.toLowerCase().includes(searchLower)) ||
+            (p.project && p.project.toLowerCase().includes(searchLower));
+        })
+      : people;
+
+    if (filteredPeople.length === 0) return;
+
+    const daySection = document.createElement('div');
+    daySection.className = 'checkin-day-section';
+
+    const dayCheckedCount = filteredPeople.filter(p => checkinData[p.id]).length;
+    totalChecked += dayCheckedCount;
+    totalPeople += filteredPeople.length;
+
+    const dayHeader = document.createElement('div');
+    dayHeader.className = 'checkin-day-header';
+    dayHeader.innerHTML =
+  '<span><img src="https://img.icons8.com/?size=100&id=tWKODv40VPFu&format=png&color=000000" ' +
+  'style="width:16px;height:16px;margin-right:6px;vertical-align:middle;" alt="calendar"> ' +
+  (dayNames[day] || '') +
+  '</span>' +
+  '<span class="checkin-day-count">' +
+  dayCheckedCount + '/' + filteredPeople.length + ' คน' +
+  '</span>';
+
+    daySection.appendChild(dayHeader);
+
+    const gridContainer = document.createElement('div');
+    gridContainer.className = 'checkin-people-grid';
+
+    filteredPeople.forEach(person => {
+      const isChecked = checkinData[person.id] || false;
+
+      const itemDiv = document.createElement('div');
+      itemDiv.className = 'checkin-item' + (isChecked ? ' checked' : '');
+      itemDiv.onclick = () => toggleAllDaysCheckin(person.id, allPeopleByDay);
+
+      const checkbox = document.createElement('div');
+      checkbox.className = 'checkin-checkbox';
+      checkbox.innerHTML = isChecked
+        ? '<img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" style="width:14px;height:14px;" alt="checked">'
+        : '';
+
+      const infoDiv = document.createElement('div');
+      infoDiv.className = 'checkin-person-info';
+
+      const mainDiv = document.createElement('div');
+      mainDiv.className = 'checkin-person-main';
+
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'checkin-person-name';
+      nameSpan.textContent = person.nickname;
+      mainDiv.appendChild(nameSpan);
+
+      if (person.position) {
+        const positionSpan = document.createElement('span');
+        positionSpan.className = 'checkin-person-position';
+        positionSpan.textContent = person.position;
+        mainDiv.appendChild(positionSpan);
+      }
+
+      const detailsDiv = document.createElement('div');
+      detailsDiv.className = 'checkin-person-details';
+
+      const rowSpan = document.createElement('span');
+      rowSpan.className = 'checkin-person-row';
+      rowSpan.textContent = `แถว ${person.rowIndex}`;
+      detailsDiv.appendChild(rowSpan);
+
+      if (person.project) {
+        const projectColor = getProjectColor(person.project);
+        const projectSpan = document.createElement('span');
+        projectSpan.className = 'checkin-person-project';
+        projectSpan.textContent = person.project;
+        projectSpan.style.background = projectColor.bg;
+        projectSpan.style.color = projectColor.text;
+        projectSpan.style.borderColor = projectColor.border;
+        detailsDiv.appendChild(projectSpan);
+      }
+
+      infoDiv.appendChild(mainDiv);
+      infoDiv.appendChild(detailsDiv);
+
+      itemDiv.appendChild(checkbox);
+      itemDiv.appendChild(infoDiv);
+
+      gridContainer.appendChild(itemDiv);
+    });
+
+    daySection.appendChild(gridContainer);
+    listContainer.appendChild(daySection);
+  });
+
+  if (listContainer.children.length === 0) {
+    listContainer.innerHTML =
+      '<div class="checkin-empty"><img src="https://img.icons8.com/?size=100&id=dkXh44TRt377&format=png&color=000000" style="width:24px;height:24px;margin-right:8px;vertical-align:middle;" alt="search"> ไม่พบรายชื่อที่ตรงกับการค้นหา</div>';
+  }
+
+  document.getElementById('checkinCount').textContent = `${totalChecked} / ${totalPeople}`;
+}
+
+function toggleAllDaysCheckin(personId, allPeopleByDay) {
+  checkinData[personId] = !checkinData[personId];
+  const searchTerm = document.getElementById('checkinSearchInput').value;
+  renderAllDaysCheckinList(allPeopleByDay, searchTerm);
+}
+
+function selectAllCheckin() {
+  const currentDayIndex = new Date().getDay();
+  const dayMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+  const currentDay = dayMap[currentDayIndex];
+
+  const people = getAllPeopleForDay(currentDay);
+  people.forEach(person => { checkinData[person.id] = true; });
+
+  const allPeopleByDay = {};
+  allPeopleByDay[currentDay] = people;
+
+  const searchTerm = document.getElementById('checkinSearchInput').value;
+  renderAllDaysCheckinList(allPeopleByDay, searchTerm);
+}
+
+function deselectAllCheckin() {
+  const currentDayIndex = new Date().getDay();
+  const dayMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+  const currentDay = dayMap[currentDayIndex];
+
+  const people = getAllPeopleForDay(currentDay);
+  people.forEach(person => { checkinData[person.id] = false; });
+
+  const allPeopleByDay = {};
+  allPeopleByDay[currentDay] = people;
+
+  const searchTerm = document.getElementById('checkinSearchInput').value;
+  renderAllDaysCheckinList(allPeopleByDay, searchTerm);
+}
+
+function setupAllDaysCheckinSearch(allPeopleByDay) {
+  const searchInput = document.getElementById('checkinSearchInput');
+  searchInput.oninput = (e) => {
+    renderAllDaysCheckinList(allPeopleByDay, e.target.value);
+  };
+}
+
+function exportCheckinList() {
+  const dayNames = { mon: 'จันทร์', tue: 'อังคาร', wed: 'พุธ', thu: 'พฤหัสบดี', fri: 'ศุกร์' };
+
+  const currentDayIndex = new Date().getDay();
+  const dayMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+  const currentDay = dayMap[currentDayIndex];
+
+  const people = getAllPeopleForDay(currentDay);
+
+  let csvContent = `รายชื่อเข้าประชุม - วัน${dayNames[currentDay]}\n`;
+  csvContent += `วันที่ Export: ${new Date().toLocaleDateString('th-TH')}\n\n`;
+  csvContent += `ลำดับ,ชื่อ,ตำแหน่ง,โปรเจค,แถวที่,สถานะ\n`;
+
+  people.forEach((person, index) => {
+    const isChecked = checkinData[person.id] || false;
+    const status = isChecked ? '✓ เช็คชื่อแล้ว' : '- ยังไม่เช็คชื่อ';
+    const project = person.project || '-';
+    csvContent += `${index + 1},"${person.nickname}","${person.position}","${project}",${person.rowIndex},"${status}"\n`;
+  });
+
+  const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+
+  const date = new Date();
+  const filename = `เช็คชื่อ_${dayNames[currentDay]}_${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-${date.getDate().toString().padStart(2,'0')}.csv`;
+
+  link.setAttribute('href', url);
+  link.setAttribute('download', filename);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  alert('✅ Export สำเร็จ! ไฟล์ถูกบันทึกเป็น CSV');
+}
+
+function closeCheckinModal() {
+  document.getElementById('checkinModal').style.display = 'none';
+}
+
+/* ========== Expose ========== */
+window.loadMeeting = loadMeeting;
+window.toggleEditMeeting = toggleEditMeeting;
+window.saveMeetingData = saveMeetingData;
+window.cancelEditMeeting = cancelEditMeeting;
+window.openMeetingModal = openMeetingModal;
+window.closeMeetingModal = closeMeetingModal;
+window.saveMeetingFromModal = saveMeetingFromModal;
+window.exportMeetingAsImage = exportMeetingAsImage;
+window.openAllDaysCheckin = openAllDaysCheckin;
+window.closeCheckinModal = closeCheckinModal;
+window.selectAllCheckin = selectAllCheckin;
+window.deselectAllCheckin = deselectAllCheckin;
+window.exportCheckinList = exportCheckinList;
+
+/* ========== AUTO LOAD ========== */
+document.addEventListener("DOMContentLoaded", function() {
+  loadMeeting();
+});
+
+/* ========== MODAL DROPDOWN FUNCTIONS ========== */
+function setupModalDropdown(toggleId, itemsId, inputId, onSelect) {
+  const toggle = document.getElementById(toggleId);
+  const items = document.getElementById(itemsId);
+  const input = document.getElementById(inputId);
+  if (!toggle || !items) return;
+
+  toggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    items.classList.toggle('open');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!toggle.contains(e.target) && !items.contains(e.target)) {
+      items.classList.remove('open');
+    }
+  });
+
+  if (!window.modalDropdowns) window.modalDropdowns = {};
+  window.modalDropdowns[inputId] = { toggle, items, input, onSelect };
+}
+
+function setModalDropdownItems(inputId, items) {
+  const itemsContainer = window.modalDropdowns?.[inputId]?.items;
+  if (!itemsContainer) return;
+
+  itemsContainer.innerHTML = '';
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'modal-dropdown-item';
+    div.textContent = item;
+    div.addEventListener('click', () => selectModalDropdownItem(inputId, item));
+    itemsContainer.appendChild(div);
+  });
+}
+
+function selectModalDropdownItem(inputId, value) {
+  const dropdown = window.modalDropdowns?.[inputId];
+  if (!dropdown) return;
+
+  dropdown.input.value = value;
+
+  if (inputId === 'meetingPosition') {
+    document.getElementById('positionDropdownText').textContent = value || 'เลือกตำแหน่ง';
+  } else if (inputId === 'meetingProject') {
+    document.getElementById('projectDropdownText').textContent = value || 'ไม่มีโปรเจค';
+  }
+
+  dropdown.items.classList.remove('open');
+
+  document.querySelectorAll(`#${dropdown.items.id} .modal-dropdown-item`).forEach(item => {
+    item.classList.toggle('selected', item.textContent === value);
+  });
+
+  if (dropdown.onSelect) dropdown.onSelect(value);
+}
+
+function initializeModalDropdowns() {
+  setupModalDropdown('positionDropdownToggle', 'positionDropdownItems', 'meetingPosition');
+  setupModalDropdown('projectDropdownToggle', 'projectDropdownItems', 'meetingProject');
+}
+
+/* ===== Name dropdown ===== */
+function setupNameDropdown() {
+  const input = document.getElementById("meetingPersonName");
+  const itemsContainer = document.getElementById("nameDropdownItems");
+  if (!input || !itemsContainer) return;
+
+  input.addEventListener('focus', () => itemsContainer.classList.add('open'));
+
+  input.addEventListener('input', (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    filterAndShowNames(searchTerm);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!input.contains(e.target) && !itemsContainer.contains(e.target)) {
+      itemsContainer.classList.remove('open');
+    }
+  });
+}
+
+function filterAndShowNames(searchTerm) {
+  const itemsContainer = document.getElementById("nameDropdownItems");
+  const allNames = window.internNames || [];
+
+  let filtered = allNames;
+  if (searchTerm) filtered = allNames.filter(name => name.toLowerCase().includes(searchTerm));
+
+  itemsContainer.innerHTML = '';
+
+  if (filtered.length === 0 && searchTerm) {
+    const div = document.createElement('div');
+    div.className = 'modal-dropdown-item';
+    div.textContent = 'ไม่พบชื่อที่ตรงกัน';
+    div.style.color = '#999';
+    div.style.cursor = 'default';
+    itemsContainer.appendChild(div);
+    return;
+  }
+
+  filtered.forEach(name => {
+    const div = document.createElement('div');
+    div.className = 'modal-dropdown-item';
+    div.textContent = name;
+    div.addEventListener('click', () => {
+      document.getElementById("meetingPersonName").value = name;
+      itemsContainer.classList.remove('open');
+    });
+    itemsContainer.appendChild(div);
+  });
+}
+
+/* =========================
+   ✅ Data loaders (NOW: BACKEND.api)
+   ========================= */
+async function loadInternNamesForMeeting() {
+  try {
+    const internList = await BACKEND.api.getInternData();
+
+    const names = new Set();
+    if (Array.isArray(internList)) {
+      internList.forEach(intern => { if (intern.name) names.add(intern.name); });
+    }
+
+    window.internNames = Array.from(names).sort();
+    setupNameDropdown();
+    filterAndShowNames('');
+  } catch (e) {
+    window.internNames = [];
+  }
+}
+
+async function loadInternPositionsForMeeting() {
+  try {
+    const internList = await BACKEND.api.getInternData();
+    const positions = new Set();
+
+    if (Array.isArray(internList)) {
+      internList.forEach(intern => {
+        if (intern.position) positions.add(String(intern.position).trim());
+      });
+    }
+
+    const positionArray = Array.from(positions).filter(Boolean);
+    setModalDropdownItems('meetingPosition', positionArray);
+  } catch (e) {
+    setModalDropdownItems('meetingPosition', []);
+  }
+}
+
+async function loadProjectDropdownForMeeting() {
+  try {
+    const res = await BACKEND.api.getProjectList();
+    const projects = (res && res.projects) ? res.projects : [];
+    const projectNames = projects.map(p => String(p.name || "").trim()).filter(Boolean);
+    const itemsWithBlank = ["ไม่มีโปรเจค", ...projectNames];
+    setModalDropdownItems('meetingProject', itemsWithBlank);
+  } catch (e) {
+    setModalDropdownItems('meetingProject', ["ไม่มีโปรเจค"]);
+  }
+}
+</script>
+
+</body>
+
+</html>

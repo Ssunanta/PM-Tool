@@ -1,0 +1,2339 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PM Tool - Todos</title>
+
+  <style>
+  body {
+    --bg: #f3f3f3;
+    --card: #ffffff;
+    --text: #111827;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --shadow: 0 10px 28px rgba(15, 23, 42, 0.10);
+    --shadow2: 0 4px 12px rgba(15, 23, 42, 0.08);
+    --radius: 16px;
+    --radius2: 12px;
+
+    --btn: #111;
+    --btnHover: #000;
+
+    --orange: #ff6e00;
+    --danger: #ef4444;
+
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+
+    /* ✅ กัน iOS ปรับขนาดตัวอักษรเอง */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ---------- Layout ---------- */
+  #todosPage .container {
+    max-width: 1280px;
+    margin: 16px auto;
+    padding: 22px;
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+
+  #todosPage .title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  #todosPage .title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: 0.2px;
+  }
+
+  .title .dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 5px;
+    background: #10b981;
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+    display: inline-block;
+  }
+
+  /* ---------- Top Row (Project Dropdown + Manage Button) ---------- */
+  #todosPage .top-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin: 10px 0 16px;
+    flex-wrap: wrap;
+  }
+
+  #todosDropdown {
+    flex: 0 0 auto;
+    order: 1;
+    min-width: 240px;
+  }
+
+  #todosPage .custom-dropdown {
+    position: relative;
+    width: 340px;
+    max-width: 100%;
+  }
+
+  #todosPage .dropdown-selected {
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    font-size: 15px;
+    font-weight: 900;
+    box-shadow: var(--shadow2);
+    width: 333px;
+    max-width: 100%;
+  }
+
+  .dropdown-selected:hover { border-color: #cbd5e1; }
+
+  #todosPage .dropdown-items {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 333px;
+    background: #f1f5f9;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-top: 8px;
+    max-height: 360px;
+    overflow-y: auto;
+    display: none;
+    z-index: 100;
+    padding: 10px;
+    box-shadow: var(--shadow);
+  }
+  #todosPage .dropdown-items.open { display: block; }
+
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 12px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-size: 15px;
+    color: #111;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    background: #fff;
+  }
+
+  .dropdown-item + .dropdown-item { margin-top: 8px; }
+
+  .dropdown-item:hover {
+    background: #fafafa;
+    border-color: rgba(15, 23, 42, 0.12);
+  }
+
+  #todosPage .manage-btn {
+    height: 44px;
+    padding: 0 18px;
+    border-radius: 14px;
+    border: none;
+    background: var(--btn);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 900;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: var(--shadow2);
+    white-space: nowrap;
+    flex: 0 0 auto;
+    order: 2;
+
+    /* ✅ กัน Safari/Theme รีเซ็ตหน้าตาปุ่ม */
+    -webkit-appearance: none;
+    appearance: none;
+
+    /* ✅ กัน iOS บางเครื่องทำสีเพี้ยน */
+    -webkit-text-fill-color: #fff;
+  }
+
+  #todosPage .manage-btn:hover { background: var(--btnHover); }
+  #todosPage .manage-btn.active { background: #10b981; }
+
+  /* ===== FILTERS ROW (เรียงลำดับ) ===== */
+  #todosPage .todos-filters {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    order: 3;
+  }
+
+  #todosPage .ctrl {
+    position: relative;
+    height: 44px;
+    min-width: 160px;
+  }
+
+  #todosPage .ctrl-selected {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0 14px;
+    border-radius: 14px;
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow2);
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 900;
+    color: #111;
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  .ctrl-selected:hover { border-color: #cbd5e1; }
+
+  #todosPage .ctrl-items {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #f1f5f9;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-top: 8px;
+    max-height: 360px;
+    overflow-y: auto;
+    display: none;
+    z-index: 100;
+    padding: 10px;
+    box-shadow: var(--shadow);
+  }
+  #todosPage .ctrl-items.open { display: block; }
+
+  #todosPage .ctrl-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 12px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-size: 15px;
+    color: #111;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    background: #fff;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .ctrl-item + .ctrl-item { margin-top: 8px; }
+
+  .ctrl-item:hover {
+    background: #fafafa;
+    border-color: rgba(15, 23, 42, 0.12);
+  }
+
+  #todosPage .search-ctrl {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 14px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow2);
+    flex: 0 0 260px;
+    min-width: 260px;
+  }
+
+  .search-ctrl input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 13px;
+    font-weight: 800;
+    color: #111;
+    min-width: 0;
+  }
+
+  #todosPage .btn-clear {
+    height: 44px;
+    padding: 0 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: #000;
+    color: #fff;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: var(--shadow2);
+    white-space: nowrap;
+    flex: 0 0 auto;
+
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-text-fill-color: #fff;
+  }
+
+  .btn-clear:hover { filter: brightness(0.95); }
+
+  /* ==========================================================
+     TABLE (One table) — Column align + X scroll + sticky header
+     ========================================================== */
+
+  .table-wrap {
+    margin-top: 8px;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: var(--shadow2);
+    background: #fff;
+  }
+
+  .table-scroll{
+  height: 100vh;                 /* ✅ ล็อกความสูง */
+  max-height: none;              /* กันโดน max-height ทำให้แกว่ง */
+  overflow-y: scroll !important; /* ✅ มี scrollbar ตลอด */
+  overflow-x: auto;              /* แนวนอนยัง auto ได้ */
+  -webkit-overflow-scrolling: touch;
+}
+
+
+  #todosPage table.todos-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+    min-width: 1180px;
+  }
+
+  table.todos-table thead th {
+    background: #f8fafc;
+    font-weight: 900;
+    color: #111827;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  #todosPage table.todos-table th,
+  #todosPage table.todos-table td {
+    padding: 14px 14px;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+    vertical-align: middle;
+  }
+
+  table.todos-table tbody tr:nth-child(odd) { background: #fff; }
+  table.todos-table tbody tr:nth-child(even) { background: #fcfcfd; }
+  table.todos-table tbody tr:hover { background: #f7fafc; }
+
+  table.todos-table th:nth-child(1),
+  table.todos-table td:nth-child(1) { width: 180px; }
+
+  table.todos-table th:nth-child(2),
+  table.todos-table td:nth-child(2) { width: 180px; }
+
+  #todosPage table.todos-table th:nth-child(2),
+  #todosPage table.todos-table td:nth-child(2) { text-align: center; }
+
+  table.todos-table th:nth-child(3),
+  table.todos-table td:nth-child(3) { width: 130px; text-align: center; }
+
+  table.todos-table th:nth-child(4),
+  table.todos-table td:nth-child(4) { width: 130px; text-align: center; }
+
+  table.todos-table th:nth-child(5),
+  table.todos-table td:nth-child(5) { width: 140px; text-align: center; }
+
+  table.todos-table th:nth-child(6),
+  table.todos-table td:nth-child(6) { width: 210px; text-align: center; overflow: visible; }
+
+  table.todos-table th:nth-child(7),
+  table.todos-table td:nth-child(7) { width: 220px;text-align: center; }
+
+  table.todos-table th:nth-child(8),
+  table.todos-table td:nth-child(8) { width: 120px; text-align: right; }
+
+  .wrap-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
+    line-height: 1.35;
+  }
+
+  .owner-text {
+    display: block;
+    font-weight: 900;
+    color: #0f172a;
+    word-break: break-word;
+  }
+
+  #todosPage .status-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    white-space: nowrap;
+    min-width: 150px;
+    max-width: 100%;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: 12px;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    box-shadow: 0 10px 18px rgba(15, 23, 42, 0.06);
+    background: #eef2ff;
+    color: #111;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  #todosPage .status-pill.notscheduled { background: #e9ecef; color: #6c757d; }
+  #todosPage .status-pill.inprogress   { background: #dbeafe; color: #1d4ed8; }
+  #todosPage .status-pill.finished     { background: #d4edda; color: #2e7d32; }
+  #todosPage .status-pill.overdue      { background: #fee;    color: #d9534f; }
+
+.status-select {
+    min-width: 150px;
+    max-width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: none;
+
+    padding: 0 12px;
+    line-height: 32px;
+    text-align: center;
+    text-align-last: center;
+
+    border-radius: 999px;
+    box-sizing: border-box;
+    border: 1px solid rgba(15, 23, 42, 0.10);
+    box-shadow: 0 10px 18px rgba(15, 23, 42, 0.06);
+
+    font-weight: 900;
+    font-size: 12px;
+    cursor: pointer;
+    outline: none;
+    
+    /* ✅ ต้องมี */
+    color-scheme: light;
+  }
+
+  .status-select::-ms-expand { 
+    display: none; 
+  }
+
+  .status-select option { 
+    font-weight: 900; 
+  }
+
+  .st-notscheduled { 
+    background: #e9ecef !important; 
+    color: #6c757d !important;
+    -webkit-text-fill-color: #6c757d !important;
+  }
+
+  .st-inprogress { 
+    background: #dbeafe !important; 
+    color: #1d4ed8 !important;
+    -webkit-text-fill-color: #1d4ed8 !important;
+  }
+
+  .st-finished { 
+    background: #d4edda !important; 
+    color: #2e7d32 !important;
+    -webkit-text-fill-color: #2e7d32 !important;
+  }
+
+  .st-overdue { 
+    background: #fee !important; 
+    color: #d9534f !important;
+    -webkit-text-fill-color: #d9534f !important;
+  }
+
+  .actions-cell {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .icon-btn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    color: #111;
+    line-height: 1;
+
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .icon-btn:hover { background: #ececec; }
+  .icon-btn.danger { color: var(--danger); }
+
+  #todosPage .loading {
+    text-align: center;
+    padding: 36px;
+    color: #94a3b8;
+    font-weight: 800;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #94a3b8;
+  }
+
+  .empty-state-icon {
+    font-size: 46px;
+    margin-bottom: 12px;
+    opacity: 0.7;
+  }
+
+  .add-row-wrap {
+    display: flex;
+    justify-content: center;
+    padding: 14px 0 4px;
+  }
+
+  .add-row-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    border: 2px solid #111;
+    color: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 900;
+    cursor: pointer;
+    background: #fff;
+    box-shadow: var(--shadow2);
+
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .add-row-btn:hover { background: #f7f7f7; }
+
+  /* ---------- Modal ---------- */
+  #todosPage .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    padding: 18px;
+    backdrop-filter: blur(2px);
+  }
+  #todosPage .modal-overlay.show { display: flex; }
+
+  #todosPage .modal-box {
+    width: 100%;
+    max-width: 640px;
+    background: #ffffff;
+    border-radius: 22px;
+    padding: 22px 20px;
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    max-height: min(92vh, 820px);
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+
+    /* ✅ iOS Safari: ทำให้ scroll ใน modal ลื่น + ไม่เด้ง */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #todosPage .modal-title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 1000;
+    margin: 8px 0 18px;
+    color: #111;
+    letter-spacing: 0.2px;
+  }
+
+  #todosPage .field { margin: 14px 0; }
+
+  #todosPage .label {
+    font-size: 15px;
+    font-weight: 1000;
+    margin-bottom: 8px;
+    color: #111827;
+  }
+
+  /* ==========================================================
+     ✅ FIX MODAL INPUT/SELECT ให้เท่ากันทุก device (รวม iPad)
+     ========================================================== */
+
+  /* base */
+  #todosPage .modal-box .input,
+  #todosPage .modal-box select.input,
+  #todosPage .modal-box input.input {
+    width: 100%;
+    height: 48px;
+    border-radius: 14px;
+    border: 1px solid rgba(15, 23, 42, 0.18);
+    background: #fff;
+    padding: 10px 12px;
+
+    /* ✅ iOS: ต้อง >=16px กัน zoom และช่วยให้ความสูงไม่เพี้ยน */
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.2;
+
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+    box-sizing: border-box;
+
+    /* ✅ กัน iOS เปลี่ยน style */
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  /* select เฉพาะ: กันเพี้ยน + เผื่อพื้นที่ arrow */
+  #todosPage .modal-box select.input {
+    background-image: none;
+    padding-right: 36px; /* เผื่อ arrow native/พื้นที่ด้านขวา */
+  }
+
+  /* focus */
+  #todosPage .modal-box .input:focus,
+  #todosPage .modal-box select.input:focus {
+    outline: none;
+    border-color: #111;
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.10);
+  }
+
+  #todosPage .modal-actions {
+    margin-top: 16px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  #todosPage .btn {
+    height: 46px;
+    border-radius: 14px;
+    border: none;
+    font-size: 15px;
+    font-weight: 1000;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 16px;
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.16);
+    background: var(--btn);
+    color: #fff;
+
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-text-fill-color: #fff;
+  }
+
+  .btn:hover { background: var(--btnHover); }
+
+  .btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .btn.cancel { background: var(--btn); color: #fff; }
+  .btn.cancel:hover { background: var(--btnHover); }
+
+  /* =====================================================================
+   MOBILE & TABLET RESPONSIVE - PM TOOL TODOS
+   ===================================================================== */
+
+/* Mobile & Tablet (768px and below) */
+@media (max-width: 768px) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    font-size: 16px !important;
+  }
+
+  /* ========== CONTAINER ========== */
+  #todosPage .container {
+    max-width: 100% !important;
+    margin: 10px auto !important;
+    padding: 16px !important;
+    background: var(--card) !important;
+    border-radius: 14px !important;
+    box-shadow: var(--shadow2) !important;
+  }
+
+  /* ========== TITLE ROW ========== */
+  #todosPage .title-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    flex-wrap: wrap !important;
+    margin-bottom: 16px !important;
+  }
+
+  #todosPage .title {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    font-size: 22px !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.2px !important;
+  }
+
+  #todosPage .title img {
+    width: 26px !important;
+    height: 26px !important;
+  }
+
+  .title .dot {
+    width: 14px !important;
+    height: 14px !important;
+    border-radius: 5px !important;
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35) !important;
+  }
+
+  /* ========== TOP ROW (Dropdown + Manage Button) ========== */
+  #todosPage .top-row {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    margin: 10px 0 16px !important;
+    flex-wrap: wrap !important;
+  }
+
+  #todosDropdown {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    order: 1 !important;
+  }
+
+  #todosPage .custom-dropdown {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  #todosPage .dropdown-selected {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 16px !important;
+    height: 50px !important;
+    border-radius: 14px !important;
+    background: #fff !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    cursor: pointer !important;
+    border: 1px solid var(--border) !important;
+    font-size: 16px !important;
+    font-weight: 900 !important;
+    box-shadow: var(--shadow2) !important;
+  }
+
+  #todosPage .dropdown-items {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    width: 100% !important;
+    background: #f1f5f9 !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 16px !important;
+    margin-top: 8px !important;
+    max-height: 280px !important;
+    overflow-y: auto !important;
+    display: none !important;
+    z-index: 100 !important;
+    padding: 10px !important;
+    box-shadow: var(--shadow) !important;
+  }
+
+  #todosPage .dropdown-items.open {
+    display: block !important;
+  }
+
+  .dropdown-item {
+    display: flex !important;
+    align-items: center !important;
+    padding: 14px 12px !important;
+    border-radius: 14px !important;
+    cursor: pointer !important;
+    font-size: 15px !important;
+    color: #111 !important;
+    border: 1px solid rgba(15, 23, 42, 0.06) !important;
+    background: #fff !important;
+    font-weight: 900 !important;
+  }
+
+  .dropdown-item + .dropdown-item {
+    margin-top: 8px !important;
+  }
+
+  .dropdown-item:active {
+    background: #fafafa !important;
+    border-color: rgba(15, 23, 42, 0.12) !important;
+  }
+
+  /* ========== MANAGE BUTTON ========== */
+  #todosPage .manage-btn {
+    width: 100% !important;
+    height: 50px !important;
+    padding: 0 16px !important;
+    border-radius: 14px !important;
+    border: none !important;
+    background: var(--btn) !important;
+    color: #fff !important;
+    font-size: 16px !important;
+    font-weight: 900 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    box-shadow: var(--shadow2) !important;
+    white-space: nowrap !important;
+    flex: 0 0 auto !important;
+    order: 2 !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    -webkit-text-fill-color: #fff !important;
+  }
+
+  #todosPage .manage-btn:active {
+    background: var(--btnHover) !important;
+  }
+
+  #todosPage .manage-btn.active {
+    background: #10b981 !important;
+  }
+
+  /* ========== FILTERS ROW ========== */
+  #todosPage .todos-filters {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    margin-bottom: 16px !important;
+  }
+
+  #todosPage .ctrl {
+    position: relative !important;
+    height: 50px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  #todosPage .ctrl-selected {
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+    padding: 0 16px !important;
+    border-radius: 14px !important;
+    background: #fff !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: var(--shadow2) !important;
+    cursor: pointer !important;
+    font-size: 16px !important;
+    font-weight: 900 !important;
+    color: #111 !important;
+    white-space: nowrap !important;
+    width: 100% !important;
+  }
+
+  #todosPage .ctrl-items {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    width: 100% !important;
+    background: #f1f5f9 !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 16px !important;
+    margin-top: 8px !important;
+    max-height: 280px !important;
+    overflow-y: auto !important;
+    display: none !important;
+    z-index: 100 !important;
+    padding: 10px !important;
+    box-shadow: var(--shadow) !important;
+  }
+
+  #todosPage .ctrl-items.open {
+    display: block !important;
+  }
+
+  #todosPage .ctrl-item {
+    display: flex !important;
+    align-items: center !important;
+    padding: 14px 12px !important;
+    border-radius: 14px !important;
+    cursor: pointer !important;
+    font-size: 15px !important;
+    color: #111 !important;
+    border: 1px solid rgba(15, 23, 42, 0.06) !important;
+    background: #fff !important;
+    font-weight: 900 !important;
+    white-space: nowrap !important;
+  }
+
+  .ctrl-item + .ctrl-item {
+    margin-top: 8px !important;
+  }
+
+  .ctrl-item:active {
+    background: #fafafa !important;
+    border-color: rgba(15, 23, 42, 0.12) !important;
+  }
+
+  /* ========== SEARCH CONTROL ========== */
+  #todosPage .search-ctrl {
+    height: 50px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 0 16px !important;
+    border-radius: 14px !important;
+    background: #fff !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: var(--shadow2) !important;
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .search-ctrl input {
+    border: none !important;
+    outline: none !important;
+    width: 100% !important;
+    font-size: 16px !important;
+    font-weight: 800 !important;
+    color: #111 !important;
+    min-width: 0 !important;
+    background: transparent !important;
+  }
+
+  .search-ctrl input::placeholder {
+    color: #94a3b8 !important;
+  }
+
+  /* ========== CLEAR BUTTON ========== */
+  #todosPage .btn-clear {
+    width: 100% !important;
+    height: 50px !important;
+    padding: 0 16px !important;
+    border-radius: 14px !important;
+    border: none !important;
+    background: #000 !important;
+    color: #fff !important;
+    font-weight: 900 !important;
+    font-size: 16px !important;
+    cursor: pointer !important;
+    box-shadow: var(--shadow2) !important;
+    white-space: nowrap !important;
+    flex: 0 0 auto !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    -webkit-text-fill-color: #fff !important;
+  }
+
+  #todosPage .btn-clear:active {
+    filter: brightness(0.95) !important;
+  }
+
+  /* ========== TABLE ========== */
+  .table-wrap {
+    margin-top: 8px !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    box-shadow: var(--shadow2) !important;
+    background: #fff !important;
+  }
+
+  .table-scroll {
+    height: 450px !important;
+    max-height: none !important;
+    overflow-y: scroll !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  #todosPage table.todos-table {
+    width: 100% !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    table-layout: fixed !important;
+    min-width: 1000px !important;
+  }
+
+  table.todos-table thead th {
+    background: #f8fafc !important;
+    font-weight: 900 !important;
+    color: #111827 !important;
+    border-bottom: 1px solid var(--border) !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+    padding: 12px 10px !important;
+    font-size: 13px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+  }
+
+  #todosPage table.todos-table th,
+  #todosPage table.todos-table td {
+    padding: 12px 10px !important;
+    font-size: 13px !important;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.06) !important;
+    vertical-align: middle !important;
+  }
+
+  table.todos-table tbody tr:nth-child(odd) {
+    background: #fff !important;
+  }
+
+  table.todos-table tbody tr:nth-child(even) {
+    background: #fcfcfd !important;
+  }
+
+  .wrap-3 {
+    display: -webkit-box !important;
+    -webkit-line-clamp: 3 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    word-break: break-word !important;
+    line-height: 1.35 !important;
+  }
+
+  .owner-text {
+    display: block !important;
+    font-weight: 900 !important;
+    color: #0f172a !important;
+    word-break: break-word !important;
+  }
+
+  /* ========== STATUS PILL & SELECT ========== */
+  #todosPage .status-pill {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    min-width: 140px !important;
+    max-width: 100% !important;
+    padding: 8px 12px !important;
+    border-radius: 999px !important;
+    font-weight: 900 !important;
+    font-size: 12px !important;
+    border: 1px solid rgba(15, 23, 42, 0.06) !important;
+    box-shadow: 0 10px 18px rgba(15, 23, 42, 0.06) !important;
+    background: #eef2ff !important;
+    color: #111 !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+
+  #todosPage .status-pill.notscheduled {
+    background: #e9ecef !important;
+    color: #333333 !important;
+  }
+
+  #todosPage .status-pill.inprogress {
+    background: #dbeafe !important;
+    color: #000066 !important;
+  }
+
+  #todosPage .status-pill.finished {
+    background: #d4edda !important;
+    color: #004d1a !important;
+  }
+
+  #todosPage .status-pill.overdue {
+    background: #fee !important;
+    color: #990000 !important;
+  }
+
+  .status-select {
+    min-width: 140px !important;
+    max-width: 100% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    padding: 8px 12px !important;
+    line-height: 32px !important;
+    text-align: center !important;
+    text-align-last: center !important;
+    border-radius: 999px !important;
+    box-sizing: border-box !important;
+    border: 1px solid rgba(15, 23, 42, 0.10) !important;
+    box-shadow: 0 10px 18px rgba(15, 23, 42, 0.06) !important;
+    font-weight: 900 !important;
+    font-size: 12px !important;
+    cursor: pointer !important;
+    outline: none !important;
+    color-scheme: light !important;
+    background-image: none !important;
+  }
+
+  .status-select::-ms-expand {
+    display: none !important;
+  }
+
+  .status-select option {
+    font-weight: 900 !important;
+  }
+
+  /* ========== ACTIONS CELL ========== */
+  .actions-cell {
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+  }
+
+  .icon-btn {
+    border: none !important;
+    background: transparent !important;
+    cursor: pointer !important;
+    font-size: 16px !important;
+    padding: 6px 8px !important;
+    border-radius: 8px !important;
+    color: #111 !important;
+    line-height: 1 !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+
+  .icon-btn:active {
+    background: #ececec !important;
+  }
+
+  .icon-btn.danger {
+    color: var(--danger) !important;
+  }
+
+  .icon-btn img {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  /* ========== ADD ROW ========== */
+  .add-row-wrap {
+    display: flex !important;
+    justify-content: center !important;
+    padding: 14px 0 4px !important;
+  }
+
+  .add-row-btn {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 999px !important;
+    border: 2px solid #111 !important;
+    color: #111 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 26px !important;
+    font-weight: 900 !important;
+    cursor: pointer !important;
+    background: #fff !important;
+    box-shadow: var(--shadow2) !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+
+  .add-row-btn:active {
+    background: #f7f7f7 !important;
+  }
+
+  /* ========== MODAL ========== */
+  #todosPage .modal-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0, 0, 0, 0.35) !important;
+    display: none !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 999 !important;
+    padding: 16px !important;
+    backdrop-filter: blur(2px) !important;
+  }
+
+  #todosPage .modal-overlay.show {
+    display: flex !important;
+  }
+
+  #todosPage .modal-box {
+    width: 100% !important;
+    max-width: 640px !important;
+    background: #ffffff !important;
+    border-radius: 20px !important;
+    padding: 20px 16px !important;
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28) !important;
+    border: 1px solid rgba(15, 23, 42, 0.08) !important;
+    max-height: min(92vh, 820px) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  #todosPage .modal-title {
+    text-align: center !important;
+    font-size: 22px !important;
+    font-weight: 900 !important;
+    margin: 8px 0 16px !important;
+    color: #111 !important;
+    letter-spacing: 0.2px !important;
+  }
+
+  #todosPage .field {
+    margin: 12px 0 !important;
+  }
+
+  #todosPage .label {
+    font-size: 15px !important;
+    font-weight: 900 !important;
+    margin-bottom: 8px !important;
+    color: #111827 !important;
+  }
+
+  /* ========== MODAL INPUTS ========== */
+  #todosPage .modal-box .input,
+  #todosPage .modal-box select.input,
+  #todosPage .modal-box input.input {
+    width: 100% !important;
+    height: 50px !important;
+    border-radius: 14px !important;
+    border: 1px solid rgba(15, 23, 42, 0.18) !important;
+    background: #fff !important;
+    padding: 10px 14px !important;
+    font-size: 16px !important;
+    font-weight: 800 !important;
+    line-height: 1.2 !important;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06) !important;
+    box-sizing: border-box !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+
+  #todosPage .modal-box select.input {
+    background-image: none !important;
+    padding-right: 36px !important;
+  }
+
+  #todosPage .modal-box .input:focus,
+  #todosPage .modal-box select.input:focus {
+    outline: none !important;
+    border-color: #111 !important;
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.10) !important;
+  }
+
+  #todosPage .modal-actions {
+    margin-top: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    justify-content: flex-end !important;
+    flex-wrap: wrap !important;
+  }
+
+  #todosPage .btn {
+    width: 100% !important;
+    height: 50px !important;
+    border-radius: 14px !important;
+    border: none !important;
+    font-size: 16px !important;
+    font-weight: 900 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    padding: 0 16px !important;
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.16) !important;
+    background: var(--btn) !important;
+    color: #fff !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    -webkit-text-fill-color: #fff !important;
+  }
+
+  #todosPage .btn:active {
+    background: var(--btnHover) !important;
+  }
+
+  #todosPage .btn:disabled {
+    opacity: 0.55 !important;
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+  }
+
+  #todosPage .btn.cancel {
+    background: var(--btn) !important;
+    color: #fff !important;
+  }
+
+  /* ========== EMPTY STATE ========== */
+  #todosPage .loading {
+    text-align: center !important;
+    padding: 30px 20px !important;
+    color: #94a3b8 !important;
+    font-weight: 800 !important;
+  }
+
+  .empty-state {
+    text-align: center !important;
+    padding: 50px 20px !important;
+    color: #94a3b8 !important;
+  }
+
+  .empty-state-icon {
+    font-size: 42px !important;
+    margin-bottom: 12px !important;
+    opacity: 0.7 !important;
+  }
+}
+
+/* Extra Small Screens (480px and below) */
+@media (max-width: 480px) {
+  #todosPage .container {
+    padding: 14px !important;
+    margin: 8px auto !important;
+  }
+
+  #todosPage .title {
+    font-size: 20px !important;
+  }
+
+  #todosPage .title img {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  #todosPage .manage-btn,
+  #todosPage .ctrl-selected,
+  #todosPage .search-ctrl,
+  #todosPage .btn-clear {
+    height: 52px !important;
+    font-size: 17px !important;
+  }
+
+  #todosPage .modal-box {
+    padding: 16px 14px !important;
+  }
+
+  #todosPage .modal-title {
+    font-size: 20px !important;
+  }
+
+  #todosPage .modal-box .input,
+  #todosPage .modal-box select.input,
+  #todosPage .btn {
+    height: 52px !important;
+    font-size: 17px !important;
+  }
+
+  .table-scroll {
+    height: 380px !important;
+  }
+
+  table.todos-table {
+    min-width: 950px !important;
+  }
+}
+
+/* Very Small Screens (360px and below) */
+@media (max-width: 360px) {
+  #todosPage .container {
+    padding: 12px !important;
+  }
+
+  #todosPage .title {
+    font-size: 18px !important;
+  }
+
+  #todosPage table.todos-table {
+    font-size: 12px !important;
+    min-width: 920px !important;
+  }
+
+  #todosPage .status-pill {
+    min-width: 120px !important;
+  }
+}
+
+/* Landscape Mode */
+@media (max-width: 900px) and (orientation: landscape) {
+  .table-scroll {
+    height: 320px !important;
+  }
+
+  #todosPage .container {
+    padding: 12px !important;
+    margin: 6px auto !important;
+  }
+
+  #todosPage .title {
+    font-size: 18px !important;
+  }
+}
+  
+</style>
+
+</head>
+
+<body onload="initTodos()">
+  <div id="todosPage">
+    <div class="container">
+      <div class="title-row">
+        <div class="title"><img src="https://img.icons8.com/?size=100&id=McZquTzBdn0t&format=png&color=000000" alt="Tasks" style="width: 30px; height: 30px; margin-right: 8px; vertical-align: middle;"> To Do List</div>
+      </div>
+
+      <div class="top-row">
+        <div class="custom-dropdown" id="todosDropdown">
+          <div class="dropdown-selected" id="dropdownToggle" onclick="toggleTodosDropdown()">
+            <span id="todosSelectedProjectText">All Projects</span>
+            <span>▾</span>
+          </div>
+          <div class="dropdown-items" id="todosDropdownItems"></div>
+        </div>
+
+        <button id="manageBtn" class="manage-btn" onclick="toggleManageMode()">
+          <img src="https://img.icons8.com/?size=100&id=bDKqvw7V0ANQ&format=png&color=000000" alt="Add" style="width: 20px; height: 20px; margin-right: 4px;">
+          <span>เพิ่ม/ลดงาน</span>
+        </button>
+      </div>
+
+      <div class="todos-filters">
+        <div class="ctrl" id="sortFieldCtrl">
+          <div class="ctrl-selected" onclick="toggleCtrlDropdown('sortFieldCtrl')">
+            <span id="sortFieldText">ไม่เรียง</span>
+            <span>▾</span>
+          </div>
+          <div class="ctrl-items" id="sortFieldItems">
+            <div class="ctrl-item" onclick="selectSortField('none', 'ไม่เรียง')">ไม่เรียง</div>
+            <div class="ctrl-item" onclick="selectSortField('start', 'เริ่มงาน')">เริ่มงาน</div>
+            <div class="ctrl-item" onclick="selectSortField('deadline', 'กำหนดส่ง')">กำหนดส่ง</div>
+            <div class="ctrl-item" onclick="selectSortField('submitted', 'ส่งงานแล้ว')">ส่งงานแล้ว</div>
+          </div>
+        </div>
+
+        <div class="ctrl" id="sortDirCtrl">
+          <div class="ctrl-selected" onclick="toggleCtrlDropdown('sortDirCtrl')">
+            <span id="sortDirText">ใหม่ → เก่า</span>
+            <span>▾</span>
+          </div>
+          <div class="ctrl-items" id="sortDirItems">
+            <div class="ctrl-item" onclick="selectSortDir('desc', 'ใหม่ → เก่า')">ใหม่ → เก่า</div>
+            <div class="ctrl-item" onclick="selectSortDir('asc', 'เก่า → ใหม่')">เก่า → ใหม่</div>
+          </div>
+        </div>
+
+        <div class="ctrl" id="statusFilterCtrl">
+          <div class="ctrl-selected" onclick="toggleCtrlDropdown('statusFilterCtrl')">
+            <span id="statusFilterText">ทั้งหมด</span>
+            <span>▾</span>
+          </div>
+          <div class="ctrl-items" id="statusFilterItems">
+            <div class="ctrl-item" onclick="selectStatusFilter('all', 'ทั้งหมด')">ทั้งหมด</div>
+            <div class="ctrl-item" onclick="selectStatusFilter('Not scheduled', 'Not scheduled')">Not scheduled</div>
+            <div class="ctrl-item" onclick="selectStatusFilter('In Progress', 'In Progress')">In Progress</div>
+            <div class="ctrl-item" onclick="selectStatusFilter('Finished', 'Finished')">Finished</div>
+            <div class="ctrl-item" onclick="selectStatusFilter('Overdue', 'Overdue')">Overdue</div>
+          </div>
+        </div>
+
+        <div class="search-ctrl">
+          <input id="ownerSearchInput" type="text" placeholder="ค้นหาผู้รับผิดชอบ (พิมพ์ชื่อ...)"
+            oninput="applyTodoView()" />
+        </div>
+
+        <button class="btn-clear" onclick="clearTodoFilters()">ล้างตัวกรอง</button>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table class="todos-table">
+            <thead>
+              <tr>
+                <th>ชื่องาน</th>
+                <th>โปรเจกต์</th>
+                <th>เริ่มงาน</th>
+                <th>กำหนดส่ง</th>
+                <th>ส่งงานแล้ว</th>
+                <th>สถานะ</th>
+                <th>ผู้รับผิดชอบ</th>
+                <th id="actionsHeader" style="display:none;"></th>
+              </tr>
+            </thead>
+
+            <tbody id="todoTableBody">
+              <tr>
+                <td colspan="8" class="loading">กำลังโหลดข้อมูล...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- MODAL -->
+    <div id="todoModal" class="modal-overlay">
+      <div class="modal-box">
+        <div class="modal-title" id="todoModalTitle">เพิ่มงาน</div>
+
+        <input type="hidden" id="todoIdHidden" value="" />
+
+        <div class="field">
+          <div class="label">โปรเจกต์</div>
+          <input type="text" id="todoProjectInput" class="input"
+            placeholder="พิมพ์ชื่อโปรเจกต์ (หรือเลือกจากรายการ)" list="todoProjectDatalist" />
+          <datalist id="todoProjectDatalist"></datalist>
+        </div>
+
+        <div class="field">
+          <div class="label">ชื่องาน</div>
+          <input type="text" id="todoName" class="input" placeholder="ชื่องาน" />
+        </div>
+
+        <div class="field">
+          <div class="label">ผู้รับผิดชอบ</div>
+          <select id="todoOwnerSelect" class="input">
+            <option value="">เลือกผู้รับผิดชอบ</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <div class="label">เริ่มงาน</div>
+          <input type="date" id="todoStartDate" class="input" />
+        </div>
+
+        <div class="field">
+          <div class="label">กำหนดส่ง</div>
+          <input type="date" id="todoDeadline" class="input" />
+        </div>
+
+        <div class="field">
+          <div class="label">ส่งงานแล้ว</div>
+          <input type="date" id="todoSubmittedDate" class="input" />
+        </div>
+
+        <div class="field">
+          <div class="label">สถานะ</div>
+          <select id="todoStatus" class="input">
+            <option value="Not scheduled">Not scheduled</option>
+            <option value="In Progress" selected>In Progress</option>
+            <option value="Finished">Finished</option>
+            <option value="Overdue">Overdue</option>
+          </select>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn" onclick="submitTodo()">บันทึก</button>
+          <button class="btn cancel" onclick="closeTodoModal()">ยกเลิก</button>
+          
+        </div>
+      </div>
+    </div>
+
+    <script>
+  const $ = (id) => document.getElementById(id);
+
+  // =========================
+  // LocalStorage (No backend)
+  // =========================
+  const TODOS_STORE_KEY = "pmtool_todos_v1"; // เปลี่ยน key ได้ตอนย้าย backend ใหม่
+
+  function loadTodosState() {
+    try {
+      const raw = localStorage.getItem(TODOS_STORE_KEY);
+      const obj = raw ? JSON.parse(raw) : null;
+      return obj && Array.isArray(obj.todos) ? obj : { todos: [] };
+    } catch (e) {
+      console.error("loadTodosState error:", e);
+      return { todos: [] };
+    }
+  }
+
+  function saveTodosState(state) {
+    try {
+      localStorage.setItem(TODOS_STORE_KEY, JSON.stringify(state || { todos: [] }));
+    } catch (e) {
+      console.error("saveTodosState error:", e);
+    }
+  }
+
+  function uid() {
+    return "td_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 7);
+  }
+
+  // ✅ Mockup data (ถ้าไม่มีข้อมูลในเครื่อง)
+  function ensureMockTodosOnce() {
+    const st = loadTodosState();
+    if (st.todos && st.todos.length) return;
+
+    const today = new Date();
+    const fmt = (d) => {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${dd}`;
+    };
+
+    const d1 = new Date(today.getTime());
+    const d2 = new Date(today.getTime() + 3 * 86400000);
+    const d3 = new Date(today.getTime() + 7 * 86400000);
+    const d4 = new Date(today.getTime() - 2 * 86400000);
+
+    st.todos = [
+      {
+        id: uid(),
+        projectId: "PM Tool",
+        title: "ปรับ UI ตาราง Todos ให้คอลัมน์ไม่ทับกัน",
+        assignedTo: "Pattamachart",
+        startDate: fmt(d1),
+        dueDate: fmt(d3),
+        submittedDate: "",
+        status: "In Progress",
+      },
+      {
+        id: uid(),
+        projectId: "Intern",
+        title: "เพิ่มฟังก์ชันค้นหาชื่อ + กันหน้าเด้งเวลา scroll",
+        assignedTo: "Team",
+        startDate: fmt(d4),
+        dueDate: fmt(d2),
+        submittedDate: "",
+        status: "Overdue",
+      },
+      {
+        id: uid(),
+        projectId: "Meeting",
+        title: "ทำ drag & drop meeting schedule + สีโปรเจกต์อัตโนมัติ",
+        assignedTo: "Aom",
+        startDate: fmt(d1),
+        dueDate: fmt(d2),
+        submittedDate: fmt(d1),
+        status: "Finished",
+      },
+      {
+        id: uid(),
+        projectId: "PM Tool",
+        title: "เตรียมโครง backend ใหม่ (ใช้ LocalStorage ชั่วคราว)",
+        assignedTo: "Pattamachart",
+        startDate: fmt(d1),
+        dueDate: "",
+        submittedDate: "",
+        status: "Not scheduled",
+      },
+    ];
+
+    saveTodosState(st);
+  }
+
+  // =========================
+  // State in memory (เดิม)
+  // =========================
+  let todosProjectList = [];
+  let todosSelectedProject = null;
+  let todosCache = [];
+  let manageMode = false; // default OFF: actions show only when Manage is active (green)
+  let todoOwnerList = [];
+
+  let ownerSearchText = "";
+  let sortField = "none";
+  let sortDir = "desc";
+  let statusFilter = "all";
+
+  function colSpanCount() {
+    return manageMode ? 8 : 7;
+  }
+
+  // =========================
+  // Init
+  // =========================
+  function initTodos() {
+    ensureMockTodosOnce();  // ✅ มี mockup ให้ทันที
+
+    // load lists + todos
+    refreshProjectAndOwnerLists();
+
+    // ✅ sync manage UI on first load (actions only when button is green)
+    applyManageBtnVisual();
+    const ah0 = $("actionsHeader");
+    if (ah0) ah0.style.display = manageMode ? "" : "none";
+
+    loadTodos(null);
+
+    // bind click outside dropdowns
+    if (!window.__todosDocClickBound) {
+      window.__todosDocClickBound = true;
+
+      document.addEventListener("click", (e) => {
+        const dd = $("todosDropdown");
+        const items = $("todosDropdownItems");
+        if (dd && items && !dd.contains(e.target)) {
+          items.classList.remove("open");
+        }
+
+        ["sortFieldCtrl", "sortDirCtrl", "statusFilterCtrl"].forEach((id) => {
+          const ctrl = $(id);
+          if (ctrl && !ctrl.contains(e.target)) {
+            const ctrlItems = ctrl.querySelector(".ctrl-items");
+            if (ctrlItems) ctrlItems.classList.remove("open");
+          }
+        });
+      });
+    }
+
+    // close modal when click overlay
+    const modal = $("todoModal");
+    if (modal) {
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeTodoModal();
+      });
+    }
+  }
+
+  function refreshProjectAndOwnerLists() {
+    const st = loadTodosState();
+    const todos = Array.isArray(st.todos) ? st.todos : [];
+
+    // projects
+    const mapP = new Map();
+    todos.forEach((t) => {
+      const p = String(t.projectId || "").trim();
+      if (!p) return;
+      mapP.set(p, true);
+    });
+    todosProjectList = Array.from(mapP.keys()).sort((a, b) => a.localeCompare(b, "th"));
+
+    // owners
+    const mapO = new Map();
+    todos.forEach((t) => {
+      const o = String(t.assignedTo || "").trim();
+      if (!o) return;
+      mapO.set(o, true);
+    });
+    todoOwnerList = Array.from(mapO.keys()).sort((a, b) => a.localeCompare(b, "th"));
+
+    renderTodosDropdown();
+    renderTodoProjectSelect();
+    renderTodoOwnerSelect();
+  }
+
+  // =========================
+  // Dropdowns / Filters (เดิม)
+  // =========================
+  function toggleCtrlDropdown(ctrlId) {
+    const ctrl = $(ctrlId);
+    if (!ctrl) return;
+    const items = ctrl.querySelector(".ctrl-items");
+    if (!items) return;
+
+    ["sortFieldCtrl", "sortDirCtrl", "statusFilterCtrl"].forEach((id) => {
+      if (id !== ctrlId) {
+        const other = $(id);
+        if (other) {
+          const otherItems = other.querySelector(".ctrl-items");
+          if (otherItems) otherItems.classList.remove("open");
+        }
+      }
+    });
+
+    items.classList.toggle("open");
+  }
+
+  function selectSortField(value, text) {
+    sortField = value;
+    const el = $("sortFieldText");
+    if (el) el.textContent = text;
+    const items = $("sortFieldItems");
+    if (items) items.classList.remove("open");
+    applyTodoView();
+  }
+
+  function selectSortDir(value, text) {
+    sortDir = value;
+    const el = $("sortDirText");
+    if (el) el.textContent = text;
+    const items = $("sortDirItems");
+    if (items) items.classList.remove("open");
+    applyTodoView();
+  }
+
+  function selectStatusFilter(value, text) {
+    statusFilter = value;
+    const el = $("statusFilterText");
+    if (el) el.textContent = text;
+    const items = $("statusFilterItems");
+    if (items) items.classList.remove("open");
+    applyTodoView();
+  }
+
+  function clearTodoFilters() {
+    const s = $("ownerSearchInput");
+    if (s) s.value = "";
+
+    sortField = "none";
+    sortDir = "desc";
+    statusFilter = "all";
+
+    const sortFieldText = $("sortFieldText");
+    const sortDirText = $("sortDirText");
+    const statusFilterText = $("statusFilterText");
+
+    if (sortFieldText) sortFieldText.textContent = "ไม่เรียง";
+    if (sortDirText) sortDirText.textContent = "ใหม่ → เก่า";
+    if (statusFilterText) statusFilterText.textContent = "ทั้งหมด";
+
+    ownerSearchText = "";
+    applyTodoView();
+  }
+
+  function toggleTodosDropdown() {
+    const menu = $("todosDropdownItems");
+    if (!menu) return;
+    menu.classList.toggle("open");
+  }
+
+  function selectTodosProject(projectName) {
+    todosSelectedProject = projectName;
+    const label = $("todosSelectedProjectText");
+    if (label) label.textContent = projectName || "All Projects";
+
+    const menu = $("todosDropdownItems");
+    if (menu) menu.classList.remove("open");
+
+    loadTodos(projectName);
+  }
+
+  function renderTodosDropdown() {
+    const container = $("todosDropdownItems");
+    if (!container) return;
+    container.innerHTML = "";
+
+    const allItem = document.createElement("div");
+    allItem.className = "dropdown-item";
+    allItem.textContent = "ทั้งหมด";
+    allItem.onclick = () => selectTodosProject(null);
+    container.appendChild(allItem);
+
+    todosProjectList.forEach((name) => {
+      const item = document.createElement("div");
+      item.className = "dropdown-item";
+      item.textContent = name;
+      item.onclick = () => selectTodosProject(name);
+      container.appendChild(item);
+    });
+  }
+
+  function renderTodoProjectSelect() {
+    const dl = $("todoProjectDatalist");
+    if (!dl) return;
+    dl.innerHTML = "";
+    todosProjectList.forEach((name) => {
+      const opt = document.createElement("option");
+      opt.value = name;
+      dl.appendChild(opt);
+    });
+  }
+
+  function renderTodoOwnerSelect() {
+    const sel = $("todoOwnerSelect");
+    if (!sel) return;
+    sel.innerHTML = `<option value="">เลือกผู้รับผิดชอบ</option>`;
+    todoOwnerList.forEach((name) => {
+      sel.innerHTML += `<option value="${escAttr(name)}">${escHtml(name)}</option>`;
+    });
+  }
+
+  /* =========================================================
+     ✅ FIX: manage button สีต้องเปลี่ยนแน่ (CSS + JS inline)
+     ========================================================= */
+  function applyManageBtnVisual() {
+    const btn = $("manageBtn");
+    if (!btn) return;
+
+    btn.classList.toggle("active", manageMode);
+
+    if (manageMode) {
+      btn.style.background = "#10b981";
+      btn.style.color = "#fff";
+      btn.style.border = "none";
+    } else {
+      btn.style.background = "#111";
+      btn.style.color = "#fff";
+      btn.style.border = "none";
+    }
+  }
+
+  function toggleManageMode() {
+    manageMode = !manageMode;
+
+    applyManageBtnVisual();
+
+    const ah = $("actionsHeader");
+    if (ah) ah.style.display = manageMode ? "" : "none";
+
+    applyTodoView();
+  }
+
+  // =========================
+  // Load / View
+  // =========================
+  function loadTodos(projectName) {
+    const st = loadTodosState();
+    const all = Array.isArray(st.todos) ? st.todos : [];
+    if (projectName) {
+      todosCache = all.filter((t) => String(t.projectId || "") === String(projectName));
+    } else {
+      todosCache = all;
+    }
+    applyTodoView();
+  }
+
+  function applyTodoView() {
+    ownerSearchText = String($("ownerSearchInput")?.value || "").trim();
+    let list = Array.isArray(todosCache) ? [...todosCache] : [];
+
+    // status filter
+    if (statusFilter !== "all") {
+      list = list.filter((t) => normalizeStatus(t?.status) === statusFilter);
+    }
+
+    // owner search
+    if (ownerSearchText) {
+      const q = ownerSearchText.toLowerCase();
+      list = list.filter((t) => String(t?.assignedTo || "").toLowerCase().includes(q));
+    }
+
+    // sort
+    if (sortField !== "none") {
+      const key =
+        sortField === "start"
+          ? "startDate"
+          : sortField === "deadline"
+          ? "dueDate"
+          : "submittedDate";
+
+      list.sort((a, b) => {
+        const ta = parseDateSafe(a?.[key]);
+        const tb = parseDateSafe(b?.[key]);
+
+        const aNull = ta === null;
+        const bNull = tb === null;
+        if (aNull && bNull) return 0;
+        if (aNull) return 1;
+        if (bNull) return -1;
+
+        const diff = ta - tb;
+        return sortDir === "asc" ? diff : -diff;
+      });
+    }
+
+    renderTodos(list);
+  }
+
+  function parseDateSafe(v) {
+    const s = String(v || "").trim();
+    if (!s || s === "-") return null;
+
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+    if (m) {
+      const y = Number(m[1]),
+        mo = Number(m[2]) - 1,
+        d = Number(m[3]);
+      const dt = new Date(y, mo, d);
+      if (isNaN(dt.getTime())) return null;
+      return dt.getTime();
+    }
+
+    const dt2 = new Date(s);
+    if (isNaN(dt2.getTime())) return null;
+    return dt2.getTime();
+  }
+
+  // =========================
+  // Render table
+  // =========================
+  function renderTodos(todos) {
+    const tbody = $("todoTableBody");
+    if (!tbody) return;
+
+    tbody.innerHTML = "";
+
+    if (!todos || todos.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="${colSpanCount()}" class="empty-state"><div class="empty-state-icon">📋</div><div style="font-size:16px;font-weight:900;">ไม่มีงาน</div></td></tr>`;
+      if (manageMode) appendAddRow(tbody);
+      attachSelectColorListeners();
+      return;
+    }
+
+    todos.forEach((todo) => {
+      const rawStatus = String(todo.status || "").trim();
+      const norm = normalizeStatus(rawStatus);
+      const stClass = statusClassFromRaw(rawStatus, norm);
+
+      const statusCellHtml = manageMode
+        ? `
+          <div style="width:100%;max-width:100%;">
+            <select class="status-select ${stClass}"
+              onchange="changeTodoStatus('${escAttr(todo.id)}', this.value)">
+              <option value="Not scheduled" ${norm === "Not scheduled" ? "selected" : ""}>Not scheduled</option>
+              <option value="In Progress" ${norm === "In Progress" ? "selected" : ""}>In Progress</option>
+              <option value="Finished" ${norm === "Finished" ? "selected" : ""}>Finished</option>
+              <option value="Overdue" ${norm === "Overdue" ? "selected" : ""}>Overdue</option>
+            </select>
+          </div>
+        `
+        : statusPillHtml(rawStatus, norm);
+
+      const actionsTd = manageMode
+        ? `
+          <td class="col-actions">
+            <div class="actions-cell">
+              <button class="icon-btn" title="แก้ไข" onclick="openEditTodo('${escAttr(todo.id)}')"
+                style="background: none; border: none; cursor: pointer; padding: 4px;">
+                <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" alt="Edit" style="width: 20px; height: 20px;">
+              </button>
+              <button class="icon-btn danger" title="ลบ" onclick="deleteTodoUI('${escAttr(todo.id)}')"
+                style="background: none; border: none; cursor: pointer; padding: 4px;">
+                <img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000" alt="Delete" style="width: 20px; height: 20px;">
+              </button>
+            </div>
+          </td>
+        `
+        : ``;
+
+      tbody.insertAdjacentHTML(
+        "beforeend",
+        `
+        <tr>
+          <td><div class="wrap-3" title="${escAttr(todo.title || "-")}">${escHtml(todo.title || "-")}</div></td>
+          <td>${escHtml(todo.projectId || "-")}</td>
+          <td>${escHtml(todo.startDate || "-")}</td>
+          <td>${escHtml(todo.dueDate || "-")}</td>
+          <td>${escHtml(todo.submittedDate || "-")}</td>
+          <td>${statusCellHtml}</td>
+          <td><span class="owner-text" title="${escAttr(todo.assignedTo || "-")}">${escHtml(todo.assignedTo || "-")}</span></td>
+          ${actionsTd}
+        </tr>
+      `
+      );
+    });
+
+    if (manageMode) appendAddRow(tbody);
+    attachSelectColorListeners();
+  }
+
+  function appendAddRow(tbody) {
+    const defaultProject = todosSelectedProject || "";
+    tbody.insertAdjacentHTML(
+      "beforeend",
+      `
+      <tr>
+        <td colspan="${colSpanCount()}">
+          <div class="add-row-wrap">
+            <div class="add-row-btn" title="เพิ่มงานใหม่" onclick="openAddTodo('${escAttr(defaultProject)}')" style="font-size:20px;">＋</div>
+          </div>
+        </td>
+      </tr>
+    `
+    );
+  }
+
+  // =========================
+  // Status change (LocalStorage)
+  // =========================
+  function changeTodoStatus(todoId, newStatus) {
+    // อัปเดตสี select ทันที
+    const allSelects = document.querySelectorAll(".status-select");
+    allSelects.forEach((sel) => updateSelectColor(sel, sel.value));
+
+    const st = loadTodosState();
+    const item = (st.todos || []).find((x) => String(x.id) === String(todoId));
+    if (item) item.status = newStatus;
+    saveTodosState(st);
+
+    // refresh lists เผื่อโปรเจกต์/owner เปลี่ยน
+    refreshProjectAndOwnerLists();
+    loadTodos(todosSelectedProject);
+  }
+
+  function updateSelectColor(selectEl, status) {
+    selectEl.classList.remove("st-notscheduled", "st-inprogress", "st-finished", "st-overdue");
+
+    if (status === "Not scheduled") selectEl.classList.add("st-notscheduled");
+    else if (status === "In Progress") selectEl.classList.add("st-inprogress");
+    else if (status === "Finished") selectEl.classList.add("st-finished");
+    else if (status === "Overdue") selectEl.classList.add("st-overdue");
+
+    // บังคับ inline style ให้ชัวร์
+    if (status === "Not scheduled") {
+      selectEl.style.background = "#e9ecef";
+      selectEl.style.color = "#333333";
+      selectEl.style.WebkitTextFillColor = "#333333";
+      selectEl.style.textShadow = "0 0 0 #333333";
+    } else if (status === "In Progress") {
+      selectEl.style.background = "#dbeafe";
+      selectEl.style.color = "#000066";
+      selectEl.style.WebkitTextFillColor = "#000066";
+      selectEl.style.textShadow = "0 0 0 #000066";
+    } else if (status === "Finished") {
+      selectEl.style.background = "#d4edda";
+      selectEl.style.color = "#004d1a";
+      selectEl.style.WebkitTextFillColor = "#004d1a";
+      selectEl.style.textShadow = "0 0 0 #004d1a";
+    } else if (status === "Overdue") {
+      selectEl.style.background = "#fee";
+      selectEl.style.color = "#990000";
+      selectEl.style.WebkitTextFillColor = "#990000";
+      selectEl.style.textShadow = "0 0 0 #990000";
+    }
+  }
+
+  function attachSelectColorListeners() {
+    const allSelects = document.querySelectorAll(".status-select");
+    allSelects.forEach((sel) => {
+      updateSelectColor(sel, sel.value);
+      sel.removeEventListener("change", onSelectChange);
+      sel.addEventListener("change", onSelectChange);
+    });
+  }
+
+  function onSelectChange(e) {
+    updateSelectColor(e.target, e.target.value);
+  }
+
+  // =========================
+  // Modal open/close + CRUD
+  // =========================
+  function openTodoModal() {
+    const m = $("todoModal");
+    if (m) m.classList.add("show");
+  }
+
+  function closeTodoModal() {
+    const m = $("todoModal");
+    if (m) m.classList.remove("show");
+  }
+
+  function openAddTodo(defaultProject) {
+    $("todoModalTitle").textContent = "เพิ่มงาน";
+    $("todoIdHidden").value = "";
+    $("todoName").value = "";
+    const ownerSel = $("todoOwnerSelect");
+    if (ownerSel) ownerSel.value = "";
+
+    $("todoStartDate").value = "";
+    $("todoDeadline").value = "";
+    $("todoSubmittedDate").value = "";
+    $("todoStatus").value = "In Progress";
+
+    const inp = $("todoProjectInput");
+    if (inp) inp.value = defaultProject || (todosSelectedProject || "");
+
+    openTodoModal();
+  }
+
+  function openEditTodo(todoId) {
+    const st = loadTodosState();
+    const item = (st.todos || []).find((x) => String(x.id) === String(todoId));
+    if (!item) return;
+
+    $("todoModalTitle").textContent = "แก้ไขงาน";
+    $("todoIdHidden").value = item.id || "";
+    $("todoName").value = item.title || "";
+
+    const ownerSel = $("todoOwnerSelect");
+    if (ownerSel) ownerSel.value = (item.assignedTo && item.assignedTo !== "-") ? item.assignedTo : "";
+
+    $("todoStartDate").value = item.startDate || "";
+    $("todoDeadline").value = item.dueDate || "";
+    $("todoSubmittedDate").value = item.submittedDate || "";
+    $("todoStatus").value = normalizeStatus(item.status || "In Progress");
+
+    const inp = $("todoProjectInput");
+    if (inp) inp.value = item.projectId || "";
+
+    openTodoModal();
+  }
+
+  function deleteTodoUI(todoId) {
+    if (!confirm("ยืนยันลบงานนี้?")) return;
+
+    const st = loadTodosState();
+    st.todos = (st.todos || []).filter((x) => String(x.id) !== String(todoId));
+    saveTodosState(st);
+
+    refreshProjectAndOwnerLists();
+    loadTodos(todosSelectedProject);
+  }
+
+  function submitTodo() {
+    const id = ($("todoIdHidden").value || "").trim();
+    const projectId = ($("todoProjectInput").value || "").trim();
+    const title = ($("todoName").value || "").trim();
+    const assignedTo = ($("todoOwnerSelect").value || "").trim();
+
+    const startDate = ($("todoStartDate").value || "").trim();
+    const dueDate = ($("todoDeadline").value || "").trim();
+    const submittedDate = ($("todoSubmittedDate").value || "").trim();
+    const status = ($("todoStatus").value || "In Progress").trim();
+
+    if (!title) {
+      alert("กรุณากรอกชื่องาน");
+      return;
+    }
+
+    const st = loadTodosState();
+    const payload = {
+      id: id || uid(),
+      projectId: projectId || "-",
+      title,
+      assignedTo: assignedTo || "-",
+      startDate: startDate || "-",
+      dueDate: dueDate || "-",
+      submittedDate: submittedDate || "-",
+      status: status || "In Progress",
+    };
+
+    if (id) {
+      const idx = (st.todos || []).findIndex((x) => String(x.id) === String(id));
+      if (idx >= 0) st.todos[idx] = payload;
+      else st.todos = [...(st.todos || []), payload];
+    } else {
+      st.todos = [...(st.todos || []), payload];
+    }
+
+    saveTodosState(st);
+    closeTodoModal();
+
+    refreshProjectAndOwnerLists();
+
+    // ถ้าเลือกโปรเจกต์อยู่ ให้คงการมองเห็นตามนั้น
+    loadTodos(todosSelectedProject);
+  }
+
+  // =========================
+  // Utils (เดิม)
+  // =========================
+  function normalizeStatus(raw) {
+    const s0 = String(raw || "").trim();
+    const s = s0.toLowerCase();
+
+    if (!s0) return "In Progress";
+
+    if (s0.includes("ยังไม่ได้กำหนดวันเสร็จงาน")) return "Not scheduled";
+    if (s0.includes("อยู่ในกำหนด") || s0.includes("กำลัง") || s0.includes("ดำเนิน")) return "In Progress";
+    if (s0.includes("เสร็จ") || s0.includes("done")) return "Finished";
+    if (s0.includes("เกินกำหนด") || s0.includes("overdue")) return "Overdue";
+
+    // fallback อังกฤษ
+    if (s.includes("not")) return "Not scheduled";
+    if (s.includes("progress")) return "In Progress";
+    if (s.includes("finish")) return "Finished";
+    if (s.includes("overdue")) return "Overdue";
+
+    return s0; // ถ้าเป็นค่าเดิมอยู่แล้ว
+  }
+
+  function statusClassFromRaw(raw, norm) {
+    const n = String(norm || "").trim();
+    if (n === "Not scheduled") return "st-notscheduled";
+    if (n === "In Progress") return "st-inprogress";
+    if (n === "Finished") return "st-finished";
+    if (n === "Overdue") return "st-overdue";
+    return "";
+  }
+
+  function statusPillHtml(rawStatus, norm) {
+    const n = String(norm || "").trim();
+    const cls =
+      n === "Not scheduled"
+        ? "notscheduled"
+        : n === "In Progress"
+        ? "inprogress"
+        : n === "Finished"
+        ? "finished"
+        : n === "Overdue"
+        ? "overdue"
+        : "inprogress";
+
+    const text = rawStatus ? String(rawStatus) : n;
+    return `<span class="status-pill ${cls}">${escHtml(text)}</span>`;
+  }
+
+  function escHtml(s) {
+    return String(s ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function escAttr(s) {
+    return escHtml(s).replace(/"/g, "&quot;");
+  }
+  // ✅ ให้ Todos รู้ว่าโดน inject แล้ว
+window.addEventListener("tab:loaded", (e) => {
+  if (!e?.detail || e.detail.tabName !== "todos") return;
+
+  // เรียก init ของ todos ถ้ามี
+  if (typeof window.initTodos === "function") window.initTodos();
+  else if (typeof window.loadTodos === "function") window.loadTodos();
+});
+
+</script>
+  </div>
+</body>
+</html>

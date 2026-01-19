@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PM Tool - About PM Role</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto 20px auto;
+      padding: 25px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-section {
+      margin-bottom: 20px;
+    }
+
+    .title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: #666;
+      font-weight: 400;
+    }
+
+    .link-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 25px;
+    }
+
+    .link-btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      border: 2px solid transparent;
+    }
+
+    .link-btn.figma {
+      background: #000;
+      color: #fff;
+    }
+
+    .link-btn.sheets {
+      background: #000;
+      color: #fff;
+    }
+
+    .link-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .intro-box {
+      background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .intro-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #1a1a1a;
+    }
+
+    .intro-text {
+      font-size: 15px;
+      color: #444;
+      line-height: 1.8;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .pm-card {
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 18px;
+      transition: all 0.3s ease;
+    }
+
+    .pm-card:hover {
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .card-icon {
+      font-size: 24px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+
+    .card-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .card-list li {
+      padding: 8px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      color: #444;
+      font-size: 14px;
+    }
+
+    .card-list li:before {
+      content: "✓";
+      color: #4caf50;
+      font-weight: bold;
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #e8f5e9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .tools-section {
+      background: #fff9e6;
+      border: 1px solid #ffe082;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 40px;
+    }
+
+    .tools-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .tools-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+
+    .responsibilities-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 30px;
+    }
+
+    .responsibility-col h4 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: #1a1a1a;
+    }
+
+    .responsibility-col ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .responsibility-col li {
+      padding: 8px 0;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .responsibility-col li:before {
+      content: "•";
+      color: #1976d2;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    .competencies-section {
+      background: #fffbf0;
+      border: 1px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #1a1a1a;
+    }
+
+    .section-subtitle {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 25px;
+    }
+
+    .competencies-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+
+    .competency-item {
+      background: #fff;
+      padding: 15px 20px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      border: 1px solid #e0e0e0;
+      transition: all 0.2s ease;
+    }
+
+    .competency-item:hover {
+      background: #f5f5f5;
+      transform: translateY(-2px);
+    }
+
+    .metrics-section {
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 40px;
+    }
+
+    .metrics-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    .metrics-table tr {
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .metrics-table tr:last-child {
+      border-bottom: none;
+    }
+
+    .metrics-table td {
+      padding: 20px 15px;
+      font-size: 15px;
+      color: #444;
+    }
+
+    .metrics-table td:first-child {
+      padding-left: 0;
+    }
+
+    .metrics-table td:last-child {
+      text-align: right;
+      font-weight: 700;
+      color: #1a1a1a;
+      padding-right: 0;
+    }
+
+    h3 {
+      font-size: 18px;
+      margin: 25px 0 15px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 25px;
+    }
+
+    table th,
+    table td {
+      padding: 12px 15px;
+      border: 1px solid #eee;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    table thead th {
+      background: #f9f9f9;
+      font-weight: 600;
+    }
+
+    table a {
+      color: #1976d2;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    table a:hover {
+      text-decoration: underline;
+    }
+
+    .status {
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .status.green {
+      color: #2e7d32;
+      background: #e8f5e9;
+    }
+
+    .status.yellow {
+      color: #f57f17;
+      background: #fff9c4;
+    }
+
+    .status.orange {
+      color: #e64a19;
+      background: #ffe0b2;
+    }
+
+    .status.red {
+      color: #c62828;
+      background: #ffebee;
+    }
+
+    .section {
+      margin-bottom: 30px;
+      padding: 25px;
+      border-radius: 12px;
+      background: #fafafa;
+      border: 1px solid #e0e0e0;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .edit-btn {
+      padding: 8px 16px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.2s;
+      font-weight: 500;
+    }
+
+    .edit-btn:hover {
+      background: #f0f0f0;
+      border-color: #999;
+    }
+
+    .meeting-list {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .meeting-list li {
+      padding: 6px 0;
+      font-size: 14px;
+      color: #444;
+      position: relative;
+      padding-left: 18px;
+    }
+
+    .meeting-list li::before {
+      content: "•";
+      color: #1976d2;
+      position: absolute;
+      left: 0;
+    }
+
+    .highlight {
+      color: #d32f2f;
+      font-weight: 600;
+    }
+
+    input[disabled] {
+      cursor: default;
+    }
+
+    input[type="text"] {
+      font-family: inherit;
+    }
+
+    .meeting-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .meeting-column {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .meeting-column-header {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a1a1a;
+      padding: 10px 12px;
+      background: #f5f5f5;
+      border-radius: 6px;
+      border-left: 3px solid #1976d2;
+    }
+
+    .meeting-item {
+      padding: 10px 12px;
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #444;
+      transition: all 0.2s ease;
+    }
+
+    .meeting-item input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      padding: 0;
+      font-size: 13px;
+      color: #444;
+      font-family: inherit;
+      outline: none;
+      cursor: default;
+    }
+
+    .meeting-item.editing {
+      background: #fffde7;
+      border: 1px solid #fbc02d;
+    }
+
+    .meeting-item-content {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .meeting-item-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .meeting-item-actions button {
+      padding: 4px 8px;
+      font-size: 11px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn-delete {
+      background: #f44336;
+      color: white;
+    }
+
+    .btn-delete:hover {
+      background: #d32f2f;
+    }
+
+    .btn-add {
+      background: #4caf50;
+      color: white;
+      width: 100%;
+      padding: 8px 12px;
+      margin-top: 8px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-add:hover {
+      background: #388e3c;
+    }
+
+    .save-status {
+      font-size: 12px;
+      color: #666;
+      margin-top: 8px;
+      text-align: right;
+    }
+
+    .save-status.saving { color: #ff9800; }
+    .save-status.saved { color: #4caf50; }
+    .save-status.error { color: #f44336; }
+
+    /* ==================== RESPONSIVE STYLES ==================== */
+
+    /* Tablet (iPad) - Portrait & Landscape */
+    @media screen and (max-width: 1024px) {
+      .container {
+        padding: 20px;
+        margin: 0 auto 15px auto;
+      }
+
+      .title {
+        font-size: 28px;
+      }
+
+      .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .responsibilities-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .competencies-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+
+      .meeting-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      .link-buttons {
+        flex-wrap: wrap;
+      }
+    }
+
+    /* Mobile - Landscape & Portrait */
+    @media screen and (max-width: 768px) {
+      body {
+        background: #fff;
+      }
+
+      .container {
+        padding: 15px;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .title {
+        font-size: 24px;
+        letter-spacing: -0.3px;
+      }
+
+      .subtitle {
+        font-size: 14px;
+      }
+
+      .link-buttons {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .link-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 20px;
+      }
+
+      .intro-box {
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      .intro-title {
+        font-size: 18px;
+      }
+
+      .intro-text {
+        font-size: 14px;
+      }
+
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pm-card {
+        padding: 15px;
+      }
+
+      .card-title {
+        font-size: 16px;
+      }
+
+      .card-list li {
+        font-size: 13px;
+        padding: 6px 0;
+      }
+
+      .tools-section,
+      .competencies-section,
+      .metrics-section,
+      .section {
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      .tools-title,
+      .section-title {
+        font-size: 18px;
+      }
+
+      .competencies-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .competency-item {
+        padding: 12px 15px;
+        font-size: 13px;
+      }
+
+      .meeting-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+
+      .meeting-column-header {
+        font-size: 13px;
+        padding: 8px 10px;
+      }
+
+      .meeting-item {
+        padding: 8px 10px;
+        font-size: 12px;
+      }
+
+      .meeting-item input {
+        font-size: 12px;
+      }
+
+      .metrics-table td {
+        padding: 15px 10px;
+        font-size: 14px;
+      }
+
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .edit-btn {
+        width: 100%;
+        padding: 10px 16px;
+      }
+
+      .btn-add {
+        padding: 10px 12px;
+        font-size: 14px;
+      }
+
+      table {
+        font-size: 13px;
+      }
+
+      table th,
+      table td {
+        padding: 10px 8px;
+      }
+    }
+
+    /* Small Mobile - Portrait Only */
+    @media screen and (max-width: 480px) {
+      .title {
+        font-size: 20px;
+      }
+
+      .subtitle {
+        font-size: 13px;
+      }
+
+      .intro-box {
+        padding: 15px;
+      }
+
+      .intro-title {
+        font-size: 16px;
+      }
+
+      .intro-text {
+        font-size: 13px;
+      }
+
+      .pm-card {
+        padding: 12px;
+      }
+
+      .card-icon {
+        font-size: 20px;
+      }
+
+      .card-title {
+        font-size: 15px;
+      }
+
+      .card-list li {
+        font-size: 12px;
+      }
+
+      .tools-section,
+      .competencies-section,
+      .metrics-section,
+      .section {
+        padding: 15px;
+      }
+
+      .tools-title,
+      .section-title {
+        font-size: 16px;
+      }
+
+      .competencies-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .competency-item {
+        padding: 10px 12px;
+        font-size: 12px;
+      }
+
+      .meeting-item-actions button {
+        padding: 3px 6px;
+        font-size: 10px;
+      }
+
+      .link-btn {
+        font-size: 13px;
+        padding: 12px 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Header Section -->
+    <div class="header-section">
+      <h1 class="title">Project Manager Role</h1>
+      <p class="subtitle">Comprehensive guide to PM responsibilities and best practices</p>
+
+      <div class="link-buttons">
+        <a
+          href="https://docs.google.com/spreadsheets/d/1PWQKZgEAoviJzno98yx1DSQ8FmYK85Yr_TrDXuFrwjE/edit?gid=748250382#gid=748250382"
+          target="_blank"
+          class="link-btn sheets"
+        >
+          <img
+            src="https://img.icons8.com/?size=100&id=YEak3oyITkF2&format=png&color=000000"
+            style="width:30px;height:30px;"
+            alt="Google Sheets"
+          />
+          Google Sheets
+        </a>
+      </div>
+    </div>
+
+    <!-- What is a Project Manager -->
+    <div class="intro-box">
+      <h2 class="intro-title">What is a Project Manager?</h2>
+      <p class="intro-text">
+        A Project Manager (PM) is the cornerstone of project success, responsible for planning,
+        executing, and delivering projects on time and within budget while managing team dynamics and
+        stakeholder expectations.
+      </p>
+    </div>
+
+    <!-- PM Responsibilities Cards -->
+    <div class="cards-grid">
+      <div class="pm-card">
+        <div class="card-header">
+          <img
+            src="https://img.icons8.com/?size=100&id=J0dQ1QsxVXVZ&format=png&color=000000"
+            style="width:30px;height:30px;"
+            alt="Planning & Strategy"
+            class="card-icon"
+          />
+          <h3 class="card-title">Planning & Strategy</h3>
+        </div>
+        <ul class="card-list">
+          <li>Define project scope and objectives</li>
+          <li>Create detailed project timelines</li>
+          <li>Identify resources and budget needs</li>
+          <li>Develop risk mitigation strategies</li>
+        </ul>
+      </div>
+
+      <div class="pm-card">
+        <div class="card-header">
+          <img
+            src="https://img.icons8.com/?size=100&id=xsplcFnKV7LY&format=png&color=000000"
+            style="width:30px;height:30px;"
+            alt="Team Leadership"
+            class="card-icon"
+          />
+          <h3 class="card-title">Team Leadership</h3>
+        </div>
+        <ul class="card-list">
+          <li>Build and manage project teams</li>
+          <li>Facilitate effective communication</li>
+          <li>Motivate and support team members</li>
+          <li>Resolve conflicts professionally</li>
+        </ul>
+      </div>
+
+      <div class="pm-card">
+        <div class="card-header">
+          <img
+            src="https://img.icons8.com/?size=100&id=KnEZRB2zraeW&format=png&color=000000"
+            style="width:30px;height:30px;"
+            alt="Execution & Monitoring"
+            class="card-icon"
+          />
+          <h3 class="card-title">Execution & Monitoring</h3>
+        </div>
+        <ul class="card-list">
+          <li>Track project progress and milestones</li>
+          <li>Monitor budget and resources</li>
+          <li>Manage project changes and scope</li>
+          <li>Address issues and obstacles</li>
+        </ul>
+      </div>
+
+      <div class="pm-card">
+        <div class="card-header">
+          <img
+            src="https://img.icons8.com/?size=100&id=m7PzRWLmZDro&format=png&color=000000"
+            style="width:30px;height:30px;"
+            alt="Stakeholder Management"
+            class="card-icon"
+          />
+          <h3 class="card-title">Stakeholder Management</h3>
+        </div>
+        <ul class="card-list">
+          <li>Maintain stakeholder engagement</li>
+          <li>Provide regular status updates</li>
+          <li>Manage expectations</li>
+          <li>Ensure deliverable quality</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Essential Tools & Practices -->
+    <div class="tools-section">
+      <div class="tools-header">
+        <img
+          src="https://img.icons8.com/?size=100&id=h1m6tiMTQ0BX&format=png&color=000000"
+          style="width:30px;height:30px;"
+          alt="Essential PM Tools & Practices"
+          class="card-icon"
+        />
+        <h3 class="tools-title">Essential PM Tools & Practices</h3>
+      </div>
+
+      <div class="responsibilities-grid">
+        <div class="responsibility-col">
+          <h4>Daily Responsibilities</h4>
+          <ul>
+            <li>Check task status and blockers</li>
+            <li>Communicate with team members</li>
+            <li>Update project documentation</li>
+            <li>Schedule and conduct meetings</li>
+            <li>Track metrics and KPIs</li>
+          </ul>
+        </div>
+
+        <div class="responsibility-col">
+          <h4>Weekly Activities</h4>
+          <ul>
+            <li>Review project progress</li>
+            <li>Plan upcoming sprints/phases</li>
+            <li>Address escalations</li>
+            <li>Update stakeholders</li>
+            <li>Team performance reviews</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key PM Competencies -->
+    <div class="competencies-section">
+      <h3 class="section-title">Key PM Competencies</h3>
+      <p class="section-subtitle">Skills needed to excel as a Project Manager</p>
+
+      <div class="competencies-grid">
+        <div class="competency-item">Leadership</div>
+        <div class="competency-item">Communication</div>
+        <div class="competency-item">Problem-Solving</div>
+        <div class="competency-item">Time Management</div>
+        <div class="competency-item">Risk Management</div>
+        <div class="competency-item">Budget Planning</div>
+        <div class="competency-item">Negotiation</div>
+        <div class="competency-item">Adaptability</div>
+      </div>
+    </div>
+
+    <!-- PM Success Metrics -->
+    <div class="metrics-section">
+      <h3 class="section-title">PM Success Metrics</h3>
+      <table class="metrics-table">
+        <tbody>
+          <tr>
+            <td>Project delivered on time</td>
+            <td>Time Adherence</td>
+          </tr>
+          <tr>
+            <td>Within budget allocation</td>
+            <td>Budget Management</td>
+          </tr>
+          <tr>
+            <td>Meets quality standards</td>
+            <td>Quality Assurance</td>
+          </tr>
+          <tr>
+            <td>Team satisfaction</td>
+            <td>Team Morale</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Meeting Info (HTML Only - placeholder) -->
+    <div class="section">
+      <div class="section-header">
+        <h3>
+          <img
+            src="https://img.icons8.com/?size=100&id=E0NAgpmq5lnm&format=png&color=000000"
+            style="width:25px;height:25px; vertical-align:middle; margin-right:6px;"
+            alt="ข้อมูลการประชุม"
+          />
+          ข้อมูลการประชุม
+        </h3>
+
+        <!-- ปุ่มนี้ยังอยู่ แต่ไม่มี JS แล้ว -->
+        <button class="edit-btn" id="editBtn" type="button">แก้ไข</button>
+      </div>
+
+      <div class="meeting-grid" id="meetingGrid">
+        <!-- ตัวอย่างโครง (ถ้าจะลบทิ้งได้เลย) -->
+        <div class="meeting-column">
+          <div class="meeting-column-header">Meeting เช้า (IT)</div>
+          <div class="meeting-item">—</div>
+        </div>
+
+        <div class="meeting-column">
+          <div class="meeting-column-header">Content + Editor</div>
+          <div class="meeting-item">—</div>
+        </div>
+
+        <div class="meeting-column">
+          <div class="meeting-column-header">DM</div>
+          <div class="meeting-item">—</div>
+        </div>
+
+        <div class="meeting-column">
+          <div class="meeting-column-header">IC</div>
+          <div class="meeting-item">—</div>
+        </div>
+
+        <div class="meeting-column">
+          <div class="meeting-column-header">Operation + HR</div>
+          <div class="meeting-item">—</div>
+        </div>
+
+        <div class="meeting-column">
+          <div class="meeting-column-header">SEO Project</div>
+          <div class="meeting-item">—</div>
+        </div>
+      </div>
+
+      <div class="save-status" id="saveStatus"></div>
+    </div>
+  </div>
+</body>
+</html>

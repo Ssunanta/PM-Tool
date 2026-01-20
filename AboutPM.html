@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
   <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>PM Tool - About PM Role</title>
 
   <style>
@@ -22,14 +22,14 @@
     .container {
       max-width: 1200px;
       margin: 0 auto 20px;
-      padding: 25px;
+      padding: clamp(10px, 5vw, 25px);
       background: #fff;
       border-radius: 10px;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
 
     .title {
-      font-size: 32px;
+      font-size: clamp(16px, 6vw, 32px);
       font-weight: 700;
       color: #1a1a1a;
       margin-bottom: 10px;
@@ -38,7 +38,7 @@
     }
 
     .subtitle {
-      font-size: 16px;
+      font-size: clamp(11px, 3vw, 16px);
       color: #666;
       font-weight: 400;
       word-wrap: break-word;
@@ -56,7 +56,7 @@
       padding: 12px 24px;
       border-radius: 8px;
       text-decoration: none;
-      font-size: 14px;
+      font-size: clamp(11px, 2vw, 14px);
       font-weight: 600;
       display: inline-flex;
       align-items: center;
@@ -68,14 +68,14 @@
 
     .intro-box {
       background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
-      padding: 30px;
+      padding: clamp(10px, 3vw, 30px);
       border-radius: 12px;
       margin-bottom: 30px;
       border: 1px solid #e0e0e0;
     }
 
     .intro-title {
-      font-size: 20px;
+      font-size: clamp(13px, 4vw, 20px);
       font-weight: 700;
       margin-bottom: 12px;
       color: #1a1a1a;
@@ -84,7 +84,7 @@
     }
 
     .intro-text {
-      font-size: 15px;
+      font-size: clamp(11px, 2.5vw, 15px);
       color: #444;
       line-height: 1.8;
       word-wrap: break-word;
@@ -93,7 +93,7 @@
 
     .cards-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 15px;
       margin-bottom: 30px;
     }
@@ -102,7 +102,7 @@
       background: #fff;
       border: 1px solid #e0e0e0;
       border-radius: 12px;
-      padding: 18px;
+      padding: clamp(10px, 3vw, 18px);
       transition: all 0.3s ease;
     }
 
@@ -120,7 +120,7 @@
     }
 
     .card-title {
-      font-size: 16px;
+      font-size: clamp(12px, 3vw, 16px);
       font-weight: 700;
       color: #1a1a1a;
       word-wrap: break-word;
@@ -133,7 +133,7 @@
       align-items: flex-start;
       gap: 8px;
       color: #444;
-      font-size: 13px;
+      font-size: clamp(10px, 2vw, 13px);
       word-wrap: break-word;
       overflow-wrap: break-word;
     }
@@ -142,7 +142,7 @@
       background: #fff9e6;
       border: 1px solid #ffe082;
       border-radius: 12px;
-      padding: 30px;
+      padding: clamp(10px, 3vw, 30px);
       margin-bottom: 40px;
     }
 
@@ -155,7 +155,7 @@
     }
 
     .tools-title {
-      font-size: 22px;
+      font-size: clamp(14px, 4vw, 22px);
       font-weight: 700;
       color: #1a1a1a;
       word-wrap: break-word;
@@ -164,12 +164,12 @@
 
     .responsibilities-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 30px;
     }
 
     .responsibility-col h4 {
-      font-size: 16px;
+      font-size: clamp(12px, 3vw, 16px);
       font-weight: 700;
       margin-bottom: 15px;
       color: #1a1a1a;
@@ -180,7 +180,7 @@
     .responsibility-col li {
       padding: 8px 0;
       color: #666;
-      font-size: 14px;
+      font-size: clamp(10px, 2.5vw, 14px);
       word-wrap: break-word;
       overflow-wrap: break-word;
     }
@@ -189,12 +189,12 @@
       background: #fffbf0;
       border: 1px solid #e0e0e0;
       border-radius: 12px;
-      padding: 30px;
+      padding: clamp(10px, 3vw, 30px);
       margin-bottom: 40px;
     }
 
     .section-title {
-      font-size: 22px;
+      font-size: clamp(14px, 4vw, 22px);
       font-weight: 700;
       margin-bottom: 10px;
       color: #1a1a1a;
@@ -203,7 +203,7 @@
     }
 
     .section-subtitle {
-      font-size: 14px;
+      font-size: clamp(10px, 2.5vw, 14px);
       color: #666;
       margin-bottom: 25px;
       word-wrap: break-word;
@@ -216,12 +216,18 @@
       gap: 12px;
     }
 
+    @media (max-width: 900px) {
+      .competencies-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
     .competency-item {
       background: #fff;
-      padding: 15px 12px;
+      padding: clamp(8px, 2vw, 15px) clamp(6px, 1.5vw, 12px);
       border-radius: 8px;
       text-align: center;
-      font-size: 13px;
+      font-size: clamp(10px, 2vw, 13px);
       font-weight: 600;
       color: #333;
       border: 1px solid #e0e0e0;
@@ -238,7 +244,7 @@
       background: #fff;
       border: 1px solid #e0e0e0;
       border-radius: 12px;
-      padding: 30px;
+      padding: clamp(10px, 3vw, 30px);
       margin-bottom: 40px;
     }
 
@@ -249,8 +255,8 @@
     }
 
     .metrics-table td {
-      padding: 15px;
-      font-size: 14px;
+      padding: clamp(8px, 2vw, 15px);
+      font-size: clamp(10px, 2.5vw, 14px);
       color: #444;
       word-wrap: break-word;
       overflow-wrap: break-word;
@@ -265,7 +271,7 @@
 
     .section {
       margin-bottom: 30px;
-      padding: 25px;
+      padding: clamp(10px, 3vw, 25px);
       border-radius: 12px;
       background: #fafafa;
       border: 1px solid #e0e0e0;
@@ -281,7 +287,7 @@
     }
 
     .section-header h3 {
-      font-size: 18px;
+      font-size: clamp(12px, 3vw, 18px);
       margin: 0;
       display: flex;
       align-items: center;
@@ -296,7 +302,7 @@
       border: 1px solid #ccc;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: clamp(10px, 2vw, 14px);
       font-weight: 500;
       white-space: nowrap;
       flex-shrink: 0;
@@ -309,6 +315,12 @@
       margin-top: 20px;
     }
 
+    @media (max-width: 900px) {
+      .meeting-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
     .meeting-column {
       display: flex;
       flex-direction: column;
@@ -317,7 +329,7 @@
     }
 
     .meeting-column-header {
-      font-size: 13px;
+      font-size: clamp(10px, 2.5vw, 13px);
       font-weight: 700;
       color: #1a1a1a;
       padding: 10px;
@@ -335,7 +347,7 @@
       background: #fff;
       border: 1px solid #e0e0e0;
       border-radius: 6px;
-      font-size: 12px;
+      font-size: clamp(10px, 2vw, 12px);
       color: #444;
       word-break: break-word;
       overflow-wrap: break-word;
@@ -344,108 +356,6 @@
       min-height: 32px;
       display: flex;
       align-items: center;
-    }
-
-    /* ===== RESPONSIVE ===== */
-
-    @media screen and (max-width: 1024px) and (min-width: 769px) {
-      .container { padding: 18px; }
-      .title { font-size: 26px; }
-      .cards-grid { grid-template-columns: 1fr; gap: 12px; }
-      .responsibilities-grid { grid-template-columns: 1fr; gap: 20px; }
-      .competencies-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
-      .meeting-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-      .intro-box { padding: 18px; }
-      .tools-section, .competencies-section, .metrics-section { padding: 18px; }
-    }
-
-    @media screen and (max-width: 768px) {
-      body { background: #fff; }
-      .container { padding: 12px; margin: 0; border-radius: 0; box-shadow: none; }
-      .title { font-size: 20px; margin-bottom: 6px; }
-      .subtitle { font-size: 13px; }
-      .link-buttons { flex-direction: column; gap: 10px; margin-top: 15px; }
-      .link-btn { width: 100%; justify-content: center; padding: 10px 12px; font-size: 12px; }
-
-      .intro-box { padding: 14px; margin-bottom: 14px; border-radius: 8px; }
-      .intro-title { font-size: 15px; margin-bottom: 8px; }
-      .intro-text { font-size: 12px; line-height: 1.5; }
-
-      .cards-grid { grid-template-columns: 1fr; gap: 10px; margin-bottom: 16px; }
-      .pm-card { padding: 12px; }
-      .card-title { font-size: 14px; }
-      .card-list li { font-size: 11px; padding: 5px 0; }
-
-      .tools-section { padding: 14px; margin-bottom: 16px; }
-      .tools-title { font-size: 16px; }
-      .responsibilities-grid { grid-template-columns: 1fr; gap: 14px; }
-      .responsibility-col h4 { font-size: 13px; margin-bottom: 10px; }
-      .responsibility-col li { font-size: 12px; padding: 4px 0; }
-
-      .competencies-section { padding: 14px; margin-bottom: 16px; }
-      .section-title { font-size: 16px; margin-bottom: 8px; }
-      .section-subtitle { font-size: 12px; margin-bottom: 14px; }
-      .competencies-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-      .competency-item { padding: 10px 8px; font-size: 11px; min-height: 50px; }
-
-      .metrics-section { padding: 14px; margin-bottom: 16px; }
-      .metrics-table td { padding: 10px 8px; font-size: 12px; }
-
-      .section { padding: 14px; margin-bottom: 14px; }
-      .section-header { flex-direction: column; align-items: flex-start; gap: 10px; }
-      .section-header h3 { font-size: 14px; }
-      .edit-btn { width: 100%; }
-
-      .meeting-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 12px; }
-      .meeting-column-header { font-size: 11px; padding: 8px; }
-      .meeting-item { padding: 8px; font-size: 11px; min-height: 28px; }
-    }
-
-    @media screen and (max-width: 480px) {
-      .container { padding: 10px; margin: 0; border-radius: 0; }
-      .title { font-size: 16px; margin-bottom: 4px; }
-      .subtitle { font-size: 11px; }
-      .link-buttons { margin-top: 10px; gap: 8px; }
-      .link-btn { padding: 9px 10px; font-size: 11px; }
-
-      .intro-box { padding: 10px; margin-bottom: 10px; }
-      .intro-title { font-size: 13px; margin-bottom: 6px; }
-      .intro-text { font-size: 11px; }
-
-      .cards-grid { gap: 8px; margin-bottom: 12px; }
-      .pm-card { padding: 10px; }
-      .card-icon { font-size: 18px; }
-      .card-title { font-size: 12px; }
-      .card-list li { font-size: 10px; }
-
-      .tools-section { padding: 10px; margin-bottom: 12px; }
-      .tools-title { font-size: 14px; }
-      .responsibilities-grid { gap: 10px; }
-      .responsibility-col h4 { font-size: 12px; }
-      .responsibility-col li { font-size: 10px; }
-
-      .competencies-section { padding: 10px; margin-bottom: 12px; }
-      .section-title { font-size: 14px; }
-      .section-subtitle { font-size: 10px; margin-bottom: 10px; }
-      .competencies-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
-      .competency-item { padding: 8px 6px; font-size: 10px; min-height: 44px; }
-
-      .metrics-section { padding: 10px; }
-      .metrics-table td { padding: 8px 6px; font-size: 10px; }
-
-      .section { padding: 10px; margin-bottom: 10px; }
-      .section-header h3 { font-size: 12px; }
-      .edit-btn { padding: 6px 10px; font-size: 11px; }
-
-      .meeting-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 10px; }
-      .meeting-column-header { font-size: 10px; padding: 6px; }
-      .meeting-item { padding: 6px; font-size: 10px; min-height: 24px; }
-    }
-
-    @media screen and (max-width: 359px) {
-      .meeting-grid { grid-template-columns: 1fr; gap: 8px; }
-      .container { padding: 8px; }
-      .title { font-size: 14px; }
     }
   </style>
 </head>
@@ -637,7 +547,7 @@
       </table>
     </div>
 
-    <!-- Meeting Info (HTML Only - placeholder) -->
+    <!-- Meeting Info -->
     <div class="section">
       <div class="section-header">
         <h3>
@@ -648,13 +558,10 @@
           />
           ข้อมูลการประชุม
         </h3>
-
-        <!-- ปุ่มนี้ยังอยู่ แต่ไม่มี JS แล้ว -->
         <button class="edit-btn" id="editBtn" type="button">แก้ไข</button>
       </div>
 
       <div class="meeting-grid" id="meetingGrid">
-        <!-- ตัวอย่างโครง (ถ้าจะลบทิ้งได้เลย) -->
         <div class="meeting-column">
           <div class="meeting-column-header">Meeting เช้า (IT)</div>
           <div class="meeting-item">—</div>
@@ -685,8 +592,6 @@
           <div class="meeting-item">—</div>
         </div>
       </div>
-
-      <div class="save-status" id="saveStatus"></div>
     </div>
   </div>
 </body>

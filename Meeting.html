@@ -237,19 +237,20 @@
     }
 
     /* ✅ ปรับคอลัมน์แรก (วัน/ลำดับ) ให้เล็กลง */
-    thead th:first-child {
-      background: #fafafa !important;
-      position: sticky;
-      left: 0;
-      z-index: 25;
-      box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
-      width: 100px;
-      min-width: 100px;
-      max-width: 100px;
-      padding: 12px 8px;
-      font-size: 13px;
-      border-right: 1px solid #eee;
-    }
+thead th:first-child {
+  background: #fafafa !important;
+  position: sticky;
+  left: 0;
+  z-index: 25;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+  width: 175px;        /* ✅ เปลี่ยนเป็น 175px */
+  min-width: 175px;    /* ✅ เปลี่ยนเป็น 175px */
+  max-width: 175px;    /* ✅ เปลี่ยนเป็น 175px */
+  padding: 12px 8px;
+  font-size: 13px;
+  border-right: 1px solid #eee;
+}
+
 
     tbody tr {
       position: relative;
@@ -267,19 +268,19 @@
     }
 
     /* ✅ ปรับคอลัมน์แรก body ให้เล็กลง */
-    tbody td:first-child {
-      background: #fff !important;
-      position: sticky;
-      left: 0;
-      z-index: 15;
-      box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
-      width: 100px;
-      min-width: 100px;
-      max-width: 100px;
-      padding: 12px 8px;
-      font-size: 13px;
-      border-right: 1px solid #eee;
-    }
+tbody td:first-child {
+  background: #fff !important;
+  position: sticky;
+  left: 0;
+  z-index: 15;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+  width: 175px;        /* ✅ เปลี่ยนเป็น 175px */
+  min-width: 175px;    /* ✅ เปลี่ยนเป็น 175px */
+  max-width: 175px;    /* ✅ เปลี่ยนเป็น 175px */
+  padding: 12px 8px;
+  font-size: 13px;
+  border-right: 1px solid #eee;
+}
 
     /* ✅ ปรับคอลัมน์วัน (จันทร์-ศุกร์) */
     thead th:not(:first-child),
@@ -2178,8 +2179,12 @@ function renderMeeting(data) {
     tr.appendChild(addCell);
 
     // Column 1: order
-    const orderCell = document.createElement("td");
+const orderCell = document.createElement("td");
     orderCell.textContent = row.order || (i + 1).toString();
+    orderCell.style.width = "175px";
+    orderCell.style.minWidth = "175px";
+    orderCell.style.textAlign = "center";
+    orderCell.style.verticalAlign = "middle";
     tr.appendChild(orderCell);
 
     // ============= วนแต่ละวัน (Mon-Fri) =============
@@ -2320,11 +2325,16 @@ function renderMeeting(data) {
     tbody.appendChild(tr);
   });
 
-  if (isEditingMeeting) {
+if (isEditingMeeting) {
     setTimeout(() => {
+      addMeetingRowButtons();
+      addMeetingDeleteButtons();
       updateMeetingRowButtons();
       updateMeetingDeleteButtons();
     }, 50);
+  } else {
+    removeMeetingRowButtons();
+    removeMeetingDeleteButtons();
   }
 }
 
@@ -2388,6 +2398,8 @@ function renderMeeting(data) {
         const tableWrapper = tbody.closest('.meeting-table-wrapper');
 
         rows.forEach((tr, index) => {
+                if (index === 0) return;
+
           const btn = document.createElement("button");
           btn.innerHTML = "+";
           btn.type = "button";
@@ -2462,12 +2474,14 @@ function renderMeeting(data) {
       if (!buttonContainer || !tbody) return;
 
       buttonContainer.innerHTML = "";
-
+a
       requestAnimationFrame(() => {
         const rows = tbody.querySelectorAll("tr");
         const tableWrapper = tbody.closest('.meeting-table-wrapper');
 
         rows.forEach((tr, index) => {
+                if (index === 0) return;
+
           const btn = document.createElement("button");
           btn.innerHTML = "-";
           btn.type = "button";
@@ -2540,7 +2554,6 @@ function toggleEditMeeting() {
   document.getElementById("saveMeetingBtn").style.display = isEditingMeeting ? "block" : "none";
   document.getElementById("cancelMeetingBtn").style.display = isEditingMeeting ? "block" : "none";
 
-  // ✅ แสดง/ซ่อน header columns
   const addHeader = document.getElementById("addRowHeader");
   const deleteHeader = document.getElementById("deleteRowHeader");
   if (addHeader) addHeader.style.display = isEditingMeeting ? "table-cell" : "none";
@@ -2548,7 +2561,7 @@ function toggleEditMeeting() {
 
   if (isEditingMeeting) {
     checkAndAddEmptyRow();
-    // ✅ ลบการเรียก addMeetingRowButtons() และ addMeetingDeleteButtons()
+    // ✅ ลบ addMeetingRowButtons() และ addMeetingDeleteButtons() ออก
   }
 
   renderMeeting(meetingData);

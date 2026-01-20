@@ -1384,6 +1384,120 @@
   #memberTable .mini-btn{ width: 100% !important; margin: 4px 0 !important; }
 }
 </style>
+
+<!-- === MOBILE-ONLY FIXES v2 (Phones) === -->
+<style>
+/* Use 479px to match your existing phone breakpoint in the app */
+@media (max-width: 479px) {
+
+  /* -------- FILTERS (force phone layout) -------- */
+  #projectsTab #sortControls.filters-row,
+  #projectsTab .filters-row#sortControls,
+  #sortControls.filters-row,
+  #sortControls {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  #projectsTab #sortControls .ctrl,
+  #sortControls .ctrl{
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  #projectsTab #sortControls .ctrl-selected,
+  #sortControls .ctrl-selected{
+    width: 100% !important;
+  }
+
+  /* the search wrapper uses inline min-width:250px; override only on phones */
+  #projectsTab #sortControls > div[style*="min-width"],
+  #sortControls > div[style*="min-width"]{
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  #projectsTab #sortControls .search-ctrl,
+  #projectsTab #sortControls .search-ctrl input,
+  #sortControls .search-ctrl,
+  #sortControls .search-ctrl input{
+    width: 100% !important;
+  }
+
+  #projectsTab #sortControls .btn-clear,
+  #sortControls .btn-clear{
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* -------- MEMBER TABLE (fix name hidden + header not full + allow swipe) -------- */
+  #projectsTab #memberSection .table-wrap,
+  #memberSection .table-wrap{
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;                 /* allow horizontal swipe if needed */
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x pan-y !important;
+  }
+
+  #projectsTab #memberTable,
+  #memberTable{
+    width: 100% !important;
+    min-width: 520px !important;                 /* ensures 'ชื่อ' column exists and header spans */
+    table-layout: fixed !important;
+  }
+
+  /* make sure columns are real and the first column doesn't collapse */
+  #projectsTab #memberTable thead th:nth-child(1),
+  #projectsTab #memberTable tbody td:nth-child(1),
+  #memberTable thead th:nth-child(1),
+  #memberTable tbody td:nth-child(1){
+    width: 45% !important;
+    min-width: 180px !important;
+    text-align: left !important;
+    padding-left: 12px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  #projectsTab #memberTable thead th:nth-child(2),
+  #projectsTab #memberTable tbody td:nth-child(2),
+  #memberTable thead th:nth-child(2),
+  #memberTable tbody td:nth-child(2){
+    width: 20% !important;
+    min-width: 90px !important;
+    text-align: center !important;
+  }
+
+  #projectsTab #memberTable thead th:nth-child(3),
+  #projectsTab #memberTable tbody td:nth-child(3),
+  #memberTable thead th:nth-child(3),
+  #memberTable tbody td:nth-child(3){
+    width: 35% !important;
+    min-width: 160px !important;
+    text-align: center !important;
+  }
+
+  /* buttons: never overflow right; wrap nicely inside the cell */
+  #projectsTab #memberTable tbody td:nth-child(3),
+  #memberTable tbody td:nth-child(3){
+    white-space: normal !important;
+  }
+  #projectsTab #memberTable tbody td:nth-child(3) .mini-btn,
+  #memberTable tbody td:nth-child(3) .mini-btn{
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 4px 0 !important;
+    box-sizing: border-box !important;
+  }
+}
+</style>
 </head>
 
 <body onload="loadProjects()">

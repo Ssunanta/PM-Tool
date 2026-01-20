@@ -246,17 +246,18 @@
       gap: 15px;
     }
 
-    .competency-item {
-      background: #fff;
-      padding: 15px 20px;
-      border-radius: 8px;
-      text-align: center;
-      font-size: 14px;
-      font-weight: 600;
-      color: #333;
-      border: 1px solid #e0e0e0;
-      transition: all 0.2s ease;
-    }
+.competency-item {
+  background: #fff;
+  padding: 15px 20px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  border: 1px solid #e0e0e0;
+  transition: all 0.2s ease;
+  word-wrap: break-word;          /* ← เพิ่ม */
+}
 
     .competency-item:hover {
       background: #f5f5f5;
@@ -427,38 +428,45 @@ input[type="text"] {
   font-size: 16px;  /* ป้องกัน zoom on iOS */
 }
 
-    .meeting-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-      margin-top: 20px;
-    }
+/* ============ แก้ไข 1: Meeting Grid - เพิ่ม min-width ============ */
+.meeting-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-top: 20px;
+}
 
-    .meeting-column {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+.meeting-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;  /* ← เพิ่มเพื่อให้ grid items ไม่บีบตัว */
+}
 
-    .meeting-column-header {
-      font-size: 14px;
-      font-weight: 700;
-      color: #1a1a1a;
-      padding: 10px 12px;
-      background: #f5f5f5;
-      border-radius: 6px;
-      border-left: 3px solid #1976d2;
-    }
+/* ============ แก้ไข 2: Meeting Header & Item - เพิ่ม word wrap ============ */
+.meeting-column-header {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+  padding: 10px 12px;
+  background: #f5f5f5;
+  border-radius: 6px;
+  border-left: 3px solid #1976d2;
+  word-wrap: break-word;          /* ← เพิ่ม */
+  overflow-wrap: break-word;      /* ← เพิ่ม */
+}
 
-    .meeting-item {
-      padding: 10px 12px;
-      background: #fff;
-      border: 1px solid #e0e0e0;
-      border-radius: 6px;
-      font-size: 13px;
-      color: #444;
-      transition: all 0.2s ease;
-    }
+.meeting-item {
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #444;
+  transition: all 0.2s ease;
+  word-wrap: break-word;          /* ← เพิ่ม */
+  overflow-wrap: break-word;      /* ← เพิ่ม */
+}
 
     .meeting-item input {
       width: 100%;

@@ -2887,6 +2887,139 @@ function renderTableWithCachedMentors(rows, mentorMap) {
       return htmlOut || "<p>-</p>";
     }
   </script>
+
+<!-- === MOBILE-ONLY FIXES v3 (Phones) === -->
+<style>
+@media (max-width: 479px) {
+  /* TOP ROW stacks */
+  #projectsTab .top-row,
+  #projectsTab #topRow {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Project dropdown full width */
+  #projectsTab #projectDropdown {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+  #projectsTab #projectDropdown .dropdown-selected {
+    width: 100% !important;
+  }
+
+  /* FILTERS: stacked full width */
+  #projectsTab #sortControls,
+  #projectsTab .filters-row#sortControls,
+  #projectsTab #sortControls.filters-row,
+  #sortControls {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  #projectsTab #sortControls .ctrl,
+  #sortControls .ctrl {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  #projectsTab #sortControls .ctrl-selected,
+  #sortControls .ctrl-selected {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  /* override inline min-width on search wrapper */
+  #projectsTab #sortControls > div[style],
+  #sortControls > div[style] {
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  #projectsTab #sortControls .search-ctrl,
+  #projectsTab #sortControls .search-ctrl input {
+    width: 100% !important;
+  }
+
+  #projectsTab #sortControls .btn-clear,
+  #sortControls .btn-clear {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* MEMBERS: header full width + name never disappears + swipe works */
+  #projectsTab #memberSection .table-wrap,
+  #memberSection .table-wrap {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x pan-y !important;
+  }
+
+  #projectsTab #memberTable,
+  #memberTable {
+    width: 100% !important;
+    min-width: 560px !important;
+    table-layout: fixed !important;
+    border-collapse: separate !important;
+  }
+
+  #projectsTab #memberTable thead th:nth-child(1),
+  #projectsTab #memberTable tbody td:nth-child(1),
+  #memberTable thead th:nth-child(1),
+  #memberTable tbody td:nth-child(1) {
+    width: 46% !important;
+    min-width: 200px !important;
+    text-align: left !important;
+    padding-left: 12px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  #projectsTab #memberTable thead th:nth-child(2),
+  #projectsTab #memberTable tbody td:nth-child(2),
+  #memberTable thead th:nth-child(2),
+  #memberTable tbody td:nth-child(2) {
+    width: 20% !important;
+    min-width: 100px !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+  }
+
+  #projectsTab #memberTable thead th:nth-child(3),
+  #projectsTab #memberTable tbody td:nth-child(3),
+  #memberTable thead th:nth-child(3),
+  #memberTable tbody td:nth-child(3) {
+    width: 34% !important;
+    min-width: 160px !important;
+    text-align: center !important;
+  }
+
+  #projectsTab #memberTable tbody td:nth-child(3),
+  #memberTable tbody td:nth-child(3) {
+    white-space: normal !important;
+  }
+  #projectsTab #memberTable tbody td:nth-child(3) .mini-btn,
+  #memberTable tbody td:nth-child(3) .mini-btn {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 4px 0 !important;
+    box-sizing: border-box !important;
+  }
+}
+</style>
 </body>
 
 </html>

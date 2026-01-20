@@ -121,27 +121,38 @@
     }
 
     /* Meeting Header */
-    .meeting-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 18px;
-    }
+.meeting-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
 
-    .meeting-actions {
-      display: flex;
-      gap: 8px;
-    }
+.meeting-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
 
-    .meeting-btn {
-      padding: 8px 16px;
-      border-radius: 10px;
-      border: 1px solid #ddd;
-      cursor: pointer;
-      transition: 0.2s;
-      font-size: 14px;
-      background: #fff;
-    }
+.meeting-btn {
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 14px;
+  background: #fff;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: 0 1 auto;
+  min-width: fit-content;
+}
 
     .meeting-btn:hover {
       background: #f5f5f5;
@@ -630,17 +641,18 @@
     }
 
     /* Search and Action Buttons - Single Row */
-    .checkin-search-and-actions {
-      display: flex;
-      gap: 10px;
-      margin: 15px 0;
-      align-items: stretch;
-    }
+.checkin-search-and-actions {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
 
-    .checkin-search {
-      flex: 1;
-      min-width: 0;
-    }
+.checkin-search {
+  flex: 1 1 auto;
+  min-width: 200px;
+}
 
     .checkin-search input {
       width: 100%;
@@ -659,10 +671,11 @@
     }
 
     /* Action Buttons */
-    .checkin-actions {
-      display: flex;
-      gap: 8px;
-    }
+.checkin-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 
     .checkin-action-btn {
       padding: 10px 20px;
@@ -675,6 +688,10 @@
       cursor: pointer;
       transition: all 0.2s;
       white-space: nowrap;
+
+        flex: 0 1 auto;
+  min-width: fit-content;
+
     }
 
     .checkin-action-btn:hover {

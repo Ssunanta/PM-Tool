@@ -21,15 +21,11 @@
 
     .container {
       max-width: 1200px;
-      margin: 0 auto 20px auto;
+      margin: 0 auto 20px;
       padding: 25px;
       background: #fff;
       border-radius: 10px;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .header-section {
-      margin-bottom: 20px;
     }
 
     .title {
@@ -37,19 +33,23 @@
       font-weight: 700;
       color: #1a1a1a;
       margin-bottom: 10px;
-      letter-spacing: -0.5px;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
 
     .subtitle {
       font-size: 16px;
       color: #666;
       font-weight: 400;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
 
     .link-buttons {
       display: flex;
       gap: 12px;
       margin-top: 25px;
+      flex-wrap: wrap;
     }
 
     .link-btn {
@@ -61,23 +61,9 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      background: #000;
+      color: #fff;
       transition: all 0.2s ease;
-      border: 2px solid transparent;
-    }
-
-    .link-btn.figma {
-      background: #000;
-      color: #fff;
-    }
-
-    .link-btn.sheets {
-      background: #000;
-      color: #fff;
-    }
-
-    .link-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
     }
 
     .intro-box {
@@ -93,12 +79,16 @@
       font-weight: 700;
       margin-bottom: 12px;
       color: #1a1a1a;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
 
     .intro-text {
       font-size: 15px;
       color: #444;
       line-height: 1.8;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
 
     .cards-grid {
@@ -116,31 +106,25 @@
       transition: all 0.3s ease;
     }
 
-    .pm-card:hover {
-      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
-      transform: translateY(-2px);
-    }
-
     .card-header {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 10px;
       margin-bottom: 15px;
+      min-width: 0;
     }
 
     .card-icon {
       font-size: 24px;
+      flex-shrink: 0;
     }
 
     .card-title {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 700;
       color: #1a1a1a;
-    }
-
-    .card-list {
-      list-style: none;
-      padding: 0;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
 
     .card-list li {
@@ -149,22 +133,9 @@
       align-items: flex-start;
       gap: 8px;
       color: #444;
-      font-size: 14px;
-    }
-
-    .card-list li:before {
-      content: "✓";
-      color: #4caf50;
-      font-weight: bold;
-      flex-shrink: 0;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: #e8f5e9;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
+      font-size: 13px;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
 
     .tools-section {
@@ -180,12 +151,15 @@
       align-items: center;
       gap: 12px;
       margin-bottom: 25px;
+      flex-wrap: wrap;
     }
 
     .tools-title {
       font-size: 22px;
       font-weight: 700;
       color: #1a1a1a;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
 
     .responsibilities-grid {
@@ -199,24 +173,16 @@
       font-weight: 700;
       margin-bottom: 15px;
       color: #1a1a1a;
-    }
-
-    .responsibility-col ul {
-      list-style: none;
-      padding: 0;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
 
     .responsibility-col li {
       padding: 8px 0;
       color: #666;
       font-size: 14px;
-    }
-
-    .responsibility-col li:before {
-      content: "•";
-      color: #1976d2;
-      font-weight: bold;
-      margin-right: 10px;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
 
     .competencies-section {
@@ -232,36 +198,40 @@
       font-weight: 700;
       margin-bottom: 10px;
       color: #1a1a1a;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
 
     .section-subtitle {
       font-size: 14px;
       color: #666;
       margin-bottom: 25px;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
 
     .competencies-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 15px;
+      gap: 12px;
     }
 
-.competency-item {
-  background: #fff;
-  padding: 15px 20px;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 14px;
-  font-weight: 600;
-  color: #333;
-  border: 1px solid #e0e0e0;
-  transition: all 0.2s ease;
-  word-wrap: break-word;          /* ← เพิ่ม */
-}
-
-    .competency-item:hover {
-      background: #f5f5f5;
-      transform: translateY(-2px);
+    .competency-item {
+      background: #fff;
+      padding: 15px 12px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+      border: 1px solid #e0e0e0;
+      transition: all 0.2s ease;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 60px;
     }
 
     .metrics-section {
@@ -278,90 +248,19 @@
       border-spacing: 0;
     }
 
-    .metrics-table tr {
-      border-bottom: 1px solid #f0f0f0;
-    }
-
-    .metrics-table tr:last-child {
-      border-bottom: none;
-    }
-
     .metrics-table td {
-      padding: 20px 15px;
-      font-size: 15px;
+      padding: 15px;
+      font-size: 14px;
       color: #444;
-    }
-
-    .metrics-table td:first-child {
-      padding-left: 0;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      border-bottom: 1px solid #f0f0f0;
     }
 
     .metrics-table td:last-child {
       text-align: right;
       font-weight: 700;
       color: #1a1a1a;
-      padding-right: 0;
-    }
-
-    h3 {
-      font-size: 18px;
-      margin: 25px 0 15px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 25px;
-    }
-
-    table th,
-    table td {
-      padding: 12px 15px;
-      border: 1px solid #eee;
-      text-align: left;
-      vertical-align: top;
-    }
-
-    table thead th {
-      background: #f9f9f9;
-      font-weight: 600;
-    }
-
-    table a {
-      color: #1976d2;
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    table a:hover {
-      text-decoration: underline;
-    }
-
-    .status {
-      padding: 4px 10px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 13px;
-    }
-
-    .status.green {
-      color: #2e7d32;
-      background: #e8f5e9;
-    }
-
-    .status.yellow {
-      color: #f57f17;
-      background: #fff9c4;
-    }
-
-    .status.orange {
-      color: #e64a19;
-      background: #ffe0b2;
-    }
-
-    .status.red {
-      color: #c62828;
-      background: #ffebee;
     }
 
     .section {
@@ -377,6 +276,18 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .section-header h3 {
+      font-size: 18px;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
 
     .edit-btn {
@@ -386,824 +297,155 @@
       border-radius: 6px;
       cursor: pointer;
       font-size: 14px;
-      transition: 0.2s;
       font-weight: 500;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
 
-    .edit-btn:hover {
-      background: #f0f0f0;
-      border-color: #999;
+    .meeting-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 20px;
     }
 
-    .meeting-list {
-      list-style: none;
-      padding-left: 0;
-    }
-
-    .meeting-list li {
-      padding: 6px 0;
-      font-size: 14px;
-      color: #444;
-      position: relative;
-      padding-left: 18px;
-    }
-
-    .meeting-list li::before {
-      content: "•";
-      color: #1976d2;
-      position: absolute;
-      left: 0;
-    }
-
-    .highlight {
-      color: #d32f2f;
-      font-weight: 600;
-    }
-
-    input[disabled] {
-      cursor: default;
-    }
-
-input[type="text"] {
-  font-size: 16px;  /* ป้องกัน zoom on iOS */
-}
-
-/* ============ แก้ไข 1: Meeting Grid - เพิ่ม min-width ============ */
-.meeting-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
-  margin-top: 20px;
-}
-
-.meeting-column {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  min-width: 0;  /* ← เพิ่มเพื่อให้ grid items ไม่บีบตัว */
-}
-
-/* ============ แก้ไข 2: Meeting Header & Item - เพิ่ม word wrap ============ */
-.meeting-column-header {
-  font-size: 14px;
-  font-weight: 700;
-  color: #1a1a1a;
-  padding: 10px 12px;
-  background: #f5f5f5;
-  border-radius: 6px;
-  border-left: 3px solid #1976d2;
-  word-break: break-word;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  white-space: normal;
-  line-height: 1.4;
-  min-height: auto;
-}
-
-.meeting-item {
-  padding: 10px 12px;
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  font-size: 13px;
-  color: #444;
-  transition: all 0.2s ease;
-  word-break: break-word;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  white-space: normal;
-  line-height: 1.4;
-  min-height: auto;    /* ← เพิ่ม */
-}
-
-    .meeting-item input {
-  width: 100%;
-  border: none;
-  background: transparent;
-  padding: 0;
-  font-size: 13px;
-  color: #444;
-  font-family: inherit;
-  outline: none;
-  cursor: default;
-  word-break: break-word;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  white-space: normal;
-    }
-
-    .meeting-item.editing {
-  background: #fffde7;
-  border: 1px solid #fbc02d;
-    }
-
-    .meeting-item-content {
+    .meeting-column {
       display: flex;
+      flex-direction: column;
       gap: 8px;
+      min-width: 0;
+    }
+
+    .meeting-column-header {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1a1a1a;
+      padding: 10px;
+      background: #f5f5f5;
+      border-radius: 6px;
+      border-left: 3px solid #1976d2;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      white-space: normal;
+      line-height: 1.3;
+    }
+
+    .meeting-item {
+      padding: 10px;
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #444;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      white-space: normal;
+      line-height: 1.3;
+      min-height: 32px;
+      display: flex;
       align-items: center;
     }
 
-    .meeting-item-actions {
-      display: flex;
-      gap: 6px;
-    }
+    /* ===== RESPONSIVE ===== */
 
-    .meeting-item-actions button {
-      padding: 4px 8px;
-      font-size: 11px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-
-    .btn-delete {
-      background: #f44336;
-      color: white;
-    }
-
-    .btn-delete:hover {
-      background: #d32f2f;
-    }
-
-    .btn-add {
-      background: #4caf50;
-      color: white;
-      width: 100%;
-      padding: 8px 12px;
-      margin-top: 8px;
-      border: none;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-add:hover {
-      background: #388e3c;
-    }
-
-    .save-status {
-      font-size: 12px;
-      color: #666;
-      margin-top: 8px;
-      text-align: right;
-    }
-
-    .save-status.saving { color: #ff9800; }
-    .save-status.saved { color: #4caf50; }
-    .save-status.error { color: #f44336; }
-
-    /* ==================== RESPONSIVE STYLES ==================== */
-
-    /* Large Desktop (1400px+) */
-    @media screen and (min-width: 1400px) {
-      .container {
-        padding: 35px;
-        margin: 20px auto;
-        max-width: 1400px;
-      }
-
-      .competencies-grid {
-        grid-template-columns: repeat(5, 1fr);
-      }
-
-      .meeting-grid {
-        grid-template-columns: repeat(4, 1fr);
-      }
-    }
-
-    /* Tablet (iPad) - Portrait & Landscape (768px - 1024px) */
     @media screen and (max-width: 1024px) and (min-width: 769px) {
-      .container {
-        padding: 20px;
-        margin: 0 auto 15px auto;
-        border-radius: 8px;
-      }
-
-      .title {
-        font-size: 28px;
-      }
-
-      .cards-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
-
-      .responsibilities-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-      }
-
-      .competencies-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-      }
-
-      .meeting-grid {
-grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    margin-top: 15px;
-      }
-
-       .meeting-column-header {
-    font-size: 13px;
-    padding: 9px 11px;
-    border-left-width: 2px;
-    line-height: 1.4;
-  }
-
-  .meeting-item {
-    padding: 9px 11px;
-    font-size: 12px;
-    border-radius: 6px;
-  }
-
-  .meeting-item input {
-    font-size: 12px;
-  }
-
-      .link-buttons {
-        flex-wrap: wrap;
-      }
-
-      .intro-box {
-        padding: 20px;
-        margin-bottom: 20px;
-      }
-
-      .tools-section,
-      .competencies-section,
-      .metrics-section {
-        padding: 20px;
-        margin-bottom: 20px;
-      }
+      .container { padding: 18px; }
+      .title { font-size: 26px; }
+      .cards-grid { grid-template-columns: 1fr; gap: 12px; }
+      .responsibilities-grid { grid-template-columns: 1fr; gap: 20px; }
+      .competencies-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+      .meeting-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .intro-box { padding: 18px; }
+      .tools-section, .competencies-section, .metrics-section { padding: 18px; }
     }
 
-    /* Mobile - Landscape & Portrait (481px - 768px) */
     @media screen and (max-width: 768px) {
-      body {
-        background: #fff;
-      }
+      body { background: #fff; }
+      .container { padding: 12px; margin: 0; border-radius: 0; box-shadow: none; }
+      .title { font-size: 20px; margin-bottom: 6px; }
+      .subtitle { font-size: 13px; }
+      .link-buttons { flex-direction: column; gap: 10px; margin-top: 15px; }
+      .link-btn { width: 100%; justify-content: center; padding: 10px 12px; font-size: 12px; }
 
-      .container {
-        padding: 15px;
-        margin: 0;
-        border-radius: 0;
-        box-shadow: none;
-      }
+      .intro-box { padding: 14px; margin-bottom: 14px; border-radius: 8px; }
+      .intro-title { font-size: 15px; margin-bottom: 8px; }
+      .intro-text { font-size: 12px; line-height: 1.5; }
 
-      .title {
-        font-size: 24px;
-        letter-spacing: -0.3px;
-        margin-bottom: 8px;
-      }
+      .cards-grid { grid-template-columns: 1fr; gap: 10px; margin-bottom: 16px; }
+      .pm-card { padding: 12px; }
+      .card-title { font-size: 14px; }
+      .card-list li { font-size: 11px; padding: 5px 0; }
 
-      .subtitle {
-        font-size: 14px;
-      }
+      .tools-section { padding: 14px; margin-bottom: 16px; }
+      .tools-title { font-size: 16px; }
+      .responsibilities-grid { grid-template-columns: 1fr; gap: 14px; }
+      .responsibility-col h4 { font-size: 13px; margin-bottom: 10px; }
+      .responsibility-col li { font-size: 12px; padding: 4px 0; }
 
-      .link-buttons {
-        flex-direction: column;
-        gap: 10px;
-        margin-top: 15px;
-      }
+      .competencies-section { padding: 14px; margin-bottom: 16px; }
+      .section-title { font-size: 16px; margin-bottom: 8px; }
+      .section-subtitle { font-size: 12px; margin-bottom: 14px; }
+      .competencies-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .competency-item { padding: 10px 8px; font-size: 11px; min-height: 50px; }
 
-      .link-btn {
-        width: 100%;
-        justify-content: center;
-        padding: 12px 16px;
-        font-size: 13px;
-      }
+      .metrics-section { padding: 14px; margin-bottom: 16px; }
+      .metrics-table td { padding: 10px 8px; font-size: 12px; }
 
-      .link-btn img {
-        width: 24px !important;
-        height: 24px !important;
-      }
+      .section { padding: 14px; margin-bottom: 14px; }
+      .section-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .section-header h3 { font-size: 14px; }
+      .edit-btn { width: 100%; }
 
-      .intro-box {
-        padding: 16px;
-        margin-bottom: 16px;
-        border-radius: 8px;
-      }
-
-      .intro-title {
-        font-size: 16px;
-        margin-bottom: 10px;
-      }
-
-      .intro-text {
-        font-size: 13px;
-        line-height: 1.6;
-      }
-
-      .cards-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
-        margin-bottom: 20px;
-      }
-
-      .pm-card {
-        padding: 12px;
-        border-radius: 8px;
-      }
-
-      .card-header {
-        gap: 8px;
-        margin-bottom: 10px;
-      }
-
-      .card-icon {
-        font-size: 20px;
-      }
-
-      .card-title {
-        font-size: 15px;
-      }
-
-      .card-list li {
-        font-size: 12px;
-        padding: 5px 0;
-        gap: 6px;
-      }
-
-      .card-list li:before {
-        width: 18px;
-        height: 18px;
-        font-size: 11px;
-      }
-
-      .tools-section {
-        background: #fff9e6;
-        padding: 16px;
-        margin-bottom: 20px;
-        border-radius: 8px;
-      }
-
-      .tools-header {
-        gap: 8px;
-        margin-bottom: 16px;
-      }
-
-      .tools-title {
-        font-size: 18px;
-      }
-
-      .responsibilities-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
-
-      .responsibility-col h4 {
-        font-size: 14px;
-        margin-bottom: 10px;
-      }
-
-      .responsibility-col li {
-        padding: 5px 0;
-        font-size: 13px;
-      }
-
-      .competencies-section {
-        padding: 16px;
-        margin-bottom: 20px;
-        border-radius: 8px;
-      }
-
-      .section-title {
-        font-size: 18px;
-        margin-bottom: 8px;
-      }
-
-      .section-subtitle {
-        font-size: 13px;
-        margin-bottom: 16px;
-      }
-
-      .competencies-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-      }
-
-      .meeting-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    margin-top: 15px;
-      }
-
-       .meeting-column-header {
-    font-size: 12px;
-    padding: 8px 10px;
-    border-left-width: 2px;
-    line-height: 1.3;
-    word-break: break-word;
-  }
-
-      .competency-item {
-        padding: 10px 12px;
-        font-size: 12px;
-        border-radius: 6px;
-      }
-
-      .metrics-section {
-        padding: 16px;
-        margin-bottom: 20px;
-        border-radius: 8px;
-      }
-
-      .metrics-table td {
-        padding: 12px 8px;
-        font-size: 13px;
-      }
-
-      .section {
-        padding: 16px;
-        margin-bottom: 16px;
-        border-radius: 8px;
-      }
-
-      .section-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-        margin-bottom: 15px;
-      }
-
-      .section-header h3 {
-        font-size: 16px;
-        margin: 0;
-      }
-
-      .section-header h3 img {
-        width: 20px !important;
-        height: 20px !important;
-      }
-
-      .edit-btn {
-        width: 100%;
-        padding: 8px 12px;
-        font-size: 13px;
-      }
-
-      .meeting-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-        margin-top: 15px;
-      }
-
-      .meeting-column-header {
-        font-size: 12px;
-        padding: 8px 10px;
-        border-left-width: 2px;
-      }
-
-  .meeting-item {
-    padding: 8px 10px;
-    font-size: 12px;
-    border-radius: 6px;
-    line-height: 1.3;
-    word-break: break-word;
-  }
-
-  .meeting-item input {
-    font-size: 12px;
-    word-break: break-word;
-  }
-
-      .btn-add {
-        padding: 8px 10px;
-        font-size: 13px;
-        margin-top: 6px;
-      }
-
-      table {
-        font-size: 12px;
-      }
-
-      table th,
-      table td {
-        padding: 8px 6px;
-      }
-
-      .save-status {
-        font-size: 11px;
-        margin-top: 6px;
-      }
+      .meeting-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 12px; }
+      .meeting-column-header { font-size: 11px; padding: 8px; }
+      .meeting-item { padding: 8px; font-size: 11px; min-height: 28px; }
     }
 
-    /* Small Mobile - Portrait Only (max 480px) */
     @media screen and (max-width: 480px) {
-      .container {
-        padding: 12px;
-        margin: 0;
-        border-radius: 0;
-        box-shadow: none;
-      }
+      .container { padding: 10px; margin: 0; border-radius: 0; }
+      .title { font-size: 16px; margin-bottom: 4px; }
+      .subtitle { font-size: 11px; }
+      .link-buttons { margin-top: 10px; gap: 8px; }
+      .link-btn { padding: 9px 10px; font-size: 11px; }
 
-      .header-section {
-        margin-bottom: 16px;
-      }
+      .intro-box { padding: 10px; margin-bottom: 10px; }
+      .intro-title { font-size: 13px; margin-bottom: 6px; }
+      .intro-text { font-size: 11px; }
 
-      .title {
-        font-size: 18px;
-        margin-bottom: 6px;
-        letter-spacing: -0.3px;
-      }
+      .cards-grid { gap: 8px; margin-bottom: 12px; }
+      .pm-card { padding: 10px; }
+      .card-icon { font-size: 18px; }
+      .card-title { font-size: 12px; }
+      .card-list li { font-size: 10px; }
 
-      .subtitle {
-        font-size: 12px;
-        line-height: 1.4;
-      }
+      .tools-section { padding: 10px; margin-bottom: 12px; }
+      .tools-title { font-size: 14px; }
+      .responsibilities-grid { gap: 10px; }
+      .responsibility-col h4 { font-size: 12px; }
+      .responsibility-col li { font-size: 10px; }
 
-      .link-buttons {
-        flex-direction: column;
-        gap: 8px;
-        margin-top: 12px;
-      }
+      .competencies-section { padding: 10px; margin-bottom: 12px; }
+      .section-title { font-size: 14px; }
+      .section-subtitle { font-size: 10px; margin-bottom: 10px; }
+      .competencies-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+      .competency-item { padding: 8px 6px; font-size: 10px; min-height: 44px; }
 
-      .link-btn {
-        width: 100%;
-        padding: 10px 12px;
-        font-size: 12px;
-        gap: 6px;
-      }
+      .metrics-section { padding: 10px; }
+      .metrics-table td { padding: 8px 6px; font-size: 10px; }
 
-      .link-btn img {
-        width: 20px !important;
-        height: 20px !important;
-      }
+      .section { padding: 10px; margin-bottom: 10px; }
+      .section-header h3 { font-size: 12px; }
+      .edit-btn { padding: 6px 10px; font-size: 11px; }
 
-      .intro-box {
-        padding: 12px;
-        margin-bottom: 12px;
-        border-radius: 6px;
-        background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
-      }
-
-      .intro-title {
-        font-size: 14px;
-        margin-bottom: 8px;
-      }
-
-      .intro-text {
-        font-size: 12px;
-        line-height: 1.5;
-      }
-
-      .cards-grid {
-        grid-template-columns: 1fr;
-        gap: 8px;
-        margin-bottom: 16px;
-      }
-
-      .pm-card {
-        padding: 10px;
-        border-radius: 6px;
-      }
-
-      .card-header {
-        gap: 6px;
-        margin-bottom: 8px;
-      }
-
-      .card-icon {
-        font-size: 18px;
-      }
-
-      .card-title {
-        font-size: 13px;
-        font-weight: 700;
-      }
-
-      .card-list li {
-        font-size: 11px;
-        padding: 4px 0;
-        gap: 5px;
-      }
-
-      .card-list li:before {
-        width: 16px;
-        height: 16px;
-        font-size: 10px;
-      }
-
-      .tools-section {
-        padding: 12px;
-        margin-bottom: 16px;
-        border-radius: 6px;
-      }
-
-      .tools-header {
-        gap: 6px;
-        margin-bottom: 12px;
-      }
-
-      .tools-title {
-        font-size: 15px;
-      }
-
-      .tools-header img {
-        width: 20px !important;
-        height: 20px !important;
-      }
-
-      .responsibilities-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
-
-      .responsibility-col h4 {
-        font-size: 13px;
-        margin-bottom: 8px;
-      }
-
-      .responsibility-col li {
-        padding: 4px 0;
-        font-size: 11px;
-      }
-
-      .competencies-section {
-        padding: 12px;
-        margin-bottom: 16px;
-        border-radius: 6px;
-      }
-
-      .section-title {
-        font-size: 15px;
-        margin-bottom: 6px;
-      }
-
-      .section-subtitle {
-        font-size: 11px;
-        margin-bottom: 12px;
-      }
-
-      .competencies-grid {
-  grid-template-columns: repeat(2, 1fr);
-        gap: 6px;
-      }
-
-      .competency-item {
-        padding: 8px 10px;
-        font-size: 11px;
-        border-radius: 5px;
-      }
-
-      .metrics-section {
-        padding: 12px;
-        margin-bottom: 16px;
-        border-radius: 6px;
-      }
-
-      .metrics-table td {
-        padding: 10px 6px;
-        font-size: 11px;
-      }
-
-      .section {
-        padding: 12px;
-        margin-bottom: 12px;
-        border-radius: 6px;
-      }
-
-      .section-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 6px;
-        margin-bottom: 12px;
-      }
-
-      .section-header h3 {
-        font-size: 14px;
-        margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
-
-      .section-header h3 img {
-        width: 18px !important;
-        height: 18px !important;
-        margin-right: 4px;
-      }
-
-      .edit-btn {
-        width: 100%;
-        padding: 8px 10px;
-        font-size: 12px;
-      }
-
-      .meeting-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-top: 12px;
-  }
-
-   .meeting-column-header {
-    font-size: 11px;
-    padding: 7px 8px;
-    border-left-width: 2px;
-    line-height: 1.3;
-    word-break: break-word;
-  }
-
-  .meeting-item {
-    padding: 7px 8px;
-    font-size: 11px;
-    border-radius: 5px;
-    line-height: 1.3;
-    word-break: break-word;
-  }
-
-  .meeting-item input {
-    font-size: 11px;
-    word-break: break-word;
-  }
-
-  .meeting-item-actions button {
-    padding: 3px 5px;
-    font-size: 9px;
-  }
-
-      .btn-add {
-        padding: 7px 10px;
-        font-size: 12px;
-        margin-top: 6px;
-      }
-
-      table {
-        font-size: 11px;
-      }
-
-      table th,
-      table td {
-        padding: 6px 4px;
-      }
-
-      .save-status {
-        font-size: 10px;
-        margin-top: 6px;
-      }
-
-      h3 {
-        font-size: 15px;
-        margin: 16px 0 8px;
-      }
+      .meeting-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 10px; }
+      .meeting-column-header { font-size: 10px; padding: 6px; }
+      .meeting-item { padding: 6px; font-size: 10px; min-height: 24px; }
     }
 
-    /* Extra Small Mobile (< 360px) */
     @media screen and (max-width: 359px) {
-        .meeting-grid {
-    grid-template-columns: 1fr;
-    gap: 10px;
-    margin-top: 10px;
-  }
-
-  .meeting-column-header {
-    font-size: 11px;
-    padding: 6px 8px;
-    line-height: 1.3;
-    word-break: break-word;
-  }
-
-  .meeting-item {
-    padding: 6px 8px;
-    font-size: 10px;
-    line-height: 1.3;
-    word-break: break-word;
-  }
-
-  .meeting-item input {
-    font-size: 10px;
-    word-break: break-word;
-  }
-  
-      .container {
-        padding: 8px;
-      }
-
-      .title {
-        font-size: 16px;
-      }
-
-      .subtitle {
-        font-size: 11px;
-      }
-
-      .cards-grid,
-      .competencies-grid{
-gap: 10px;
-      }
-
-      .pm-card {
-        padding: 8px;
-      }
-
-      .link-btn {
-        padding: 8px 10px;
-        font-size: 11px;
-      }
+      .meeting-grid { grid-template-columns: 1fr; gap: 8px; }
+      .container { padding: 8px; }
+      .title { font-size: 14px; }
     }
   </style>
 </head>

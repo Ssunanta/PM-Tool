@@ -68,9 +68,10 @@
   padding: 25px;
   background: #fff;
   border-radius: 10px;
-  display: flex; /* เพิ่มบรรทัดนี้ */
-  flex-direction: column; /* เพิ่มบรรทัดนี้ */
-  height: 100vh; /* เพิ่มบรรทัดนี้ */
+  display: flex;
+  flex-direction: column;
+  height: auto;  /* เปลี่ยนจาก height: 100vh */
+  min-height: auto;  /* เพิ่ม */
 }
 
     .title {
@@ -180,14 +181,14 @@
     }
 
 .meeting-table-wrapper {
-  flex: 1;
+  flex: 0 0 auto;  /* เปลี่ยนจาก flex: 1 */
   overflow: auto;
   position: relative;
   border: 1px solid #ddd;
   border-radius: 0;
   margin: 0;
-  height: 100vh; /* เพิ่มบรรทัดนี้ */
-  max-height: 100vh; /* เพิ่มบรรทัดนี้ */
+  height: auto;  /* เปลี่ยนจาก height: 100vh */
+  max-height: none;  /* เปลี่ยนจาก max-height: 100vh */
 }
 
     .meeting-header-frozen {

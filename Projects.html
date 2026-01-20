@@ -1010,7 +1010,6 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-
     }
 
     .field {
@@ -1021,7 +1020,6 @@
       font-size: 15px;
       font-weight: 1000;
       margin-bottom: 8px;
-      margin-left: 10px;
       color: #111827
     }
 
@@ -1215,175 +1213,135 @@
         max-height: calc(100vh - 140px);
         /* ✅ เพิ่มความสูงให้เต็มจอมากขึ้น */
       }
-
-    } /* ✅ end @media (max-width: 768px) */
+    }
 
     /* =========================
-       ✅ iPhone: จัด filter ให้ขึ้นบรรทัดใหม่ + ลดขนาดกล่อง
-       - ไม่ยุ่ง logic
-       - ไม่กระทบ responsive อื่น (เฉพาะจอแคบมาก)
+       ✅ iPhone-only layout polish
+       - ไม่กระทบ iPad/PC
        ========================= */
     @media (max-width: 430px) {
+      /* กัน iOS ตัดพื้นที่ท้ายจอ + ให้เลื่อนลงได้สุด */
       html, body {
-        height: auto !important;
-        min-height: 100dvh !important;
-        overflow-y: auto !important;
+        min-height: 100dvh;
+        height: auto;
+        overflow-y: auto;
       }
 
       .container {
-        padding: 10px !important;
-        padding-bottom: 90px !important; /* เผื่อแถบเบราว์เซอร์มือถือ + scroll ลงได้สุด */
+        padding: 10px;
+        padding-bottom: 90px; /* เผื่อแถบ browser iOS */
       }
 
-      .title { font-size: 18px !important; }
-
+      /* ---- Filters: ให้ขึ้นบรรทัดใหม่ + ไม่ล้น ---- */
       .top-row {
-        gap: 10px !important;
+        flex-direction: column;
+        align-items: stretch;
       }
 
-      /* dropdown โปรเจค: เต็มแถว */
-      #projectDropdown { min-width: 0 !important; width: 100% !important; }
-      .custom-dropdown { width: 100% !important; }
-      .dropdown-selected {
-        width: 100% !important;
-        padding: 10px 12px !important;
-        border-radius: 12px !important;
-        font-size: 14px !important;
+      #projectDropdown {
+        min-width: 0;
+        width: 100%;
       }
-      .dropdown-items { width: 100% !important; }
 
-      /* filters: wrap เป็นหลายบรรทัด */
       .filters-row {
-        gap: 8px !important;
+        width: 100%;
+        max-width: 100%;
+        gap: 10px;
       }
 
-      .ctrl {
-        height: 40px !important;
-        min-width: 0 !important;
-        flex: 1 1 48% !important; /* 2 คอลัมน์บนมือถือ */
+      .filters-row .ctrl {
+        flex: 1 1 100%;
+        min-width: 0;
+        height: 40px;
       }
+
       .ctrl-selected {
-        padding: 0 12px !important;
-        border-radius: 12px !important;
-        font-size: 13px !important;
-      }
-      .ctrl-item {
-        font-size: 13px !important;
-        padding: 10px 10px !important;
-        border-radius: 12px !important;
+        border-radius: 12px;
+        padding: 0 12px;
+        font-size: 14px;
       }
 
-      /* ช่องค้นหาเดิมมี inline min-width:250px → override เฉพาะ iPhone */
+      /* ช่องค้นหา (เดิมมี inline min-width:250px) */
       .filters-row > div[style*="min-width:250px"] {
         min-width: 0 !important;
+        width: 100% !important;
         flex: 1 1 100% !important;
+      }
+
+      .search-ctrl, .search-ctrl input {
         width: 100% !important;
       }
-      .search-ctrl {
-        height: 40px !important;
-        border-radius: 12px !important;
-        padding: 0 12px !important;
-        min-width: 0 !important;
-        flex: 1 1 100% !important;
-      }
-      .search-ctrl input { font-size: 13px !important; }
 
-      /* ปุ่มล้างตัวกรอง: ลงบรรทัดใหม่ + เต็มแถว */
+      /* ปุ่มล้างตัวกรองลงบรรทัดใหม่เต็มแถว */
       .btn-clear {
-        height: 40px !important;
-        min-width: 0 !important;
         width: 100% !important;
         flex: 1 1 100% !important;
-        border-radius: 12px !important;
-        padding: 0 14px !important;
+        height: 40px;
+        border-radius: 12px;
       }
 
-      /* กัน table-wrap ตัดท้าย (iOS) */
-      .table-wrap { max-height: calc(100dvh - 230px) !important; }
-      body.in-members #memberSection .table-wrap { max-height: calc(100dvh - 170px) !important; }
+      /* ---- Actions icons: ลดกล่องให้พอดี ---- */
+      .actions-cell {
+        gap: 6px;
+      }
+      .icon-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+      }
+      .icon-btn img {
+        width: 20px;
+        height: 20px;
+      }
 
-      /* =========================
-         ✅ Members: กันชื่อหาย + กันปุ่มหลุด/โดนตัด
-         - ปรับเฉพาะ iPhone
-         ========================= */
-      #memberTable { table-layout: fixed !important; width: 100% !important; }
+      /* ---- Members table: กันชื่อถูกบีบหาย ---- */
+      #memberTable {
+        table-layout: fixed;
+        width: 100% !important;
+      }
 
-      /* ยกเลิก width แบบ px (220/210) ที่ทำให้คอลัมน์ชื่อโดนบีบจนหาย */
+      /* override ค่าที่เป็น px (220/210) ที่ทำให้ชื่อหายบนมือถือ */
       #memberTable thead th:nth-child(1),
-      #memberTable tbody td:nth-child(1) { width: 44% !important; }
-      #memberTable thead th:nth-child(2),
-      #memberTable tbody td:nth-child(2) { width: 18% !important; }
-      #memberTable thead th:nth-child(3),
-      #memberTable tbody td:nth-child(3) { width: 38% !important; }
-
-      /* ให้ชื่อเห็นเสมอ (อย่าให้ตัดทิ้ง) */
       #memberTable tbody td:nth-child(1) {
+        width: 48% !important;
         text-align: left !important;
-        padding-right: 8px !important;
-      }
-      #memberTable .name-chip {
-        display: inline-flex !important;
-        max-width: 100% !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-        white-space: nowrap !important;
+        padding-left: 10px;
       }
 
-      /* คอลัมน์จัดการ: ให้ปุ่มไม่ล้น/ไม่โดนตัด และจัดเป็น 2 แถว */
+      #memberTable thead th:nth-child(2),
+      #memberTable tbody td:nth-child(2) {
+        width: 18% !important;
+      }
+
+      #memberTable thead th:nth-child(3),
+      #memberTable tbody td:nth-child(3) {
+        width: 34% !important;
+      }
+
+      /* ปุ่มจัดการไม่ให้ล้น/หลุด: เรียงเป็น 2 แถวในมือถือ */
       #memberTable tbody td:nth-child(3) {
         white-space: normal !important;
-        padding-left: 6px !important;
-        padding-right: 6px !important;
       }
       #memberTable tbody td:nth-child(3) .mini-btn {
         width: 100% !important;
         min-width: 0 !important;
-        height: 34px !important;
-        margin: 6px 0 0 0 !important;
-        justify-content: center !important;
-        font-size: 13px !important;
-        padding: 0 10px !important;
-        gap: 6px !important;
+        margin: 4px 0 !important;
+        justify-content: center;
       }
 
-      /* =========================
-         ✅ Modals (Add/Edit): กัน input วันที่ทะลุขอบ + ลดขนาดกล่อง
-         ========================= */
-      .modal-overlay { padding: 12px !important; }
-      .modal-box, .modal-boxdocs {
-        max-width: 100% !important;
-        border-radius: 18px !important;
+      /* ---- Add/Edit Project: input date ไม่ทะลุขอบ ---- */
+      input, select, textarea {
+        max-width: 100%;
       }
-      .modal-title {
-        font-size: 20px !important;
-        padding: 16px 14px 6px !important;
-      }
-      .modal-content { padding: 10px 14px !important; }
-      .modal-actions { padding: 12px 14px 16px !important; }
-
-      /* input ทั้งหมดให้เท่ากัน และไม่ล้น (รวม date) */
-      .input, .select {
-        height: 42px !important;
-        border-radius: 12px !important;
-        font-size: 14px !important;
-        padding: 10px 12px !important;
+      input[type="date"], input[type="text"], input[type="url"] {
         width: 100% !important;
-        max-width: 100% !important;
-      }
-      input[type="date"].input {
-        -webkit-appearance: none;
-        appearance: none;
-        padding-right: 12px !important;
+        box-sizing: border-box;
       }
 
-      /* =========================
-         ✅ Project Preview: กันโดนบีบ/อ่านยาก
-         ========================= */
-      .modal-boxdocs { padding: 16px 14px !important; max-height: 92dvh !important; }
-      .view-card { max-width: 100% !important; padding: 12px !important; }
-      .preview-actions-bar { flex-wrap: wrap !important; }
-      .preview-actions-bar .left-actions,
-      .preview-actions-bar .right-actions { width: 100% !important; justify-content: center !important; }
+      /* ---- Preview: กันโดนบีบ ---- */
+      .view-card {
+        max-width: 100%;
+      }
     }
   </style>
 </head>
@@ -2216,15 +2174,13 @@ function renderTableWithCachedMentors(rows, mentorMap) {
           <td>
             <div class="actions-cell">
               <button class="icon-btn" title="ดูรายละเอียด"
-                onclick='openView(${JSON.stringify(r).replace(/</g,"\\u003c")}); event.stopPropagation();'
-                style="background:none;border:none;cursor:pointer;font-size:20px;">
-                👁️
+                onclick='openView(${JSON.stringify(r).replace(/</g,"\\u003c")}); event.stopPropagation();'>
+                <img src="https://img.icons8.com/?size=100&id=QPdTYbgW0Hm4&format=png&color=000000" style="width:20px;height:20px;" alt="ดูรายละเอียด">
               </button>
 
               <button class="icon-btn" title="แก้ไข"
-                onclick='openEdit(${JSON.stringify(r).replace(/</g,"\\u003c")}); event.stopPropagation();'
-                style="background:none;border:none;cursor:pointer;font-size:20px;">
-                ✏️
+                onclick='openEdit(${JSON.stringify(r).replace(/</g,"\\u003c")}); event.stopPropagation();'>
+                <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" style="width:20px;height:20px;" alt="แก้ไข">
               </button>
             </div>
           </td>

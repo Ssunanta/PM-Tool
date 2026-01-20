@@ -66,11 +66,11 @@
      ✅ CONTROLS ROW
      ========================================================= */
 
-    .intern-controls {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      flex-wrap: nowrap;
+.intern-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
       margin-bottom: 16px;
 
       padding: 14px;
@@ -91,8 +91,8 @@
       font-weight: 900;
       box-shadow: 0 6px 16px rgba(15, 23, 42, .06);
 
-      flex: 1;
-      min-width: 200px;
+  flex: 1 1 auto;
+  min-width: 200px;
     }
 
     .intern-controls input::placeholder {
@@ -119,7 +119,9 @@
       box-shadow: 0 6px 16px rgba(15, 23, 42, .06);
       transition: 0.2s;
       white-space: nowrap;
-      flex: 0 0 auto;
+  flex: 0 1 auto;
+    min-width: fit-content;
+
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -149,7 +151,8 @@
       box-shadow: var(--shadow2);
       white-space: nowrap;
       opacity: 1;
-      flex: 0 0 auto;
+  flex: 0 1 auto;
+  min-width: fit-content;
     }
 
     button.manage-btn {
@@ -215,14 +218,13 @@
     }
 
     /* ✅ ล็อกความกว้าง dropdown ไม่ให้ขยายกินทางขวา */
-    .custom-dropdown-intern {
-      position: relative;
-      flex: 0 0 auto;
-      width: 260px;
-      min-width: 260px;
-      max-width: 260px;
-    }
-
+.custom-dropdown-intern {
+  position: relative;
+  flex: 0 1 auto;
+  width: 260px;
+  min-width: 180px;
+  max-width: 260px;
+}
     .dropdown-selected-intern {
       padding: 12px 14px;
       border-radius: 14px;
@@ -334,20 +336,18 @@
       background: #fafafa;
     }
 
-    .status-items {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      width: 100%;
-      margin-top: 6px;
-      background: #f1f5f9;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 8px;
-      display: none;
-      z-index: 250;
-      box-shadow: var(--shadow);
-    }
+.status-items {
+  position: fixed;
+  margin-top: 6px;
+  background: #f1f5f9;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 8px;
+  display: none;
+  z-index: 250;
+  box-shadow: var(--shadow);
+  min-width: 140px;
+}
 
     .status-items.open {
       display: block;
@@ -2127,20 +2127,21 @@
 
       // ✅ ให้ตรงกับ CSS ของคุณ (.status-items)
       // ✅ ใช้ selectStatusDD (มีจริง) ไม่ใช่ pickStatus (ไม่มี)
-      const status =
-        '<div class="status-dd" data-row="' + rowNum + '" data-value="' + escapeAttr(rawStatus) + '">' +
-          '<div class="status-selected" onclick="toggleStatusDD(this)">' +
-            '<span class="status-text">' + escapeHtml(rawStatus) + '</span>' +
-            '<span>▾</span>' +
-          '</div>' +
-          '<div class="status-items">' +
-            '<div class="status-item" onclick="selectStatusDD(this, \'Not Started\')">Not Started</div>' +
-            '<div class="status-item" onclick="selectStatusDD(this, \'In Progress\')">In Progress</div>' +
-            '<div class="status-item" onclick="selectStatusDD(this, \'Finished\')">Finished</div>' +
-            '<div class="status-item" onclick="selectStatusDD(this, \'Delayed\')">Delayed</div>' +
-            '<div class="status-item" onclick="selectStatusDD(this, \'N/A\')">to be announced</div>' +
-          '</div>' +
-        '</div>';
+// ✅ dropdown สถานะภาษาไทย
+// ✅ dropdown สถานะภาษาไทย
+const status =
+  '<div class="status-dd" data-row="' + rowNum + '" data-value="' + escapeAttr(rawStatus) + '">' +
+    '<div class="status-selected" onclick="toggleStatusDD(this)">' +
+      '<span class="status-text">' + escapeHtml(rawStatus) + '</span>' +
+      '<span>▾</span>' +
+    '</div>' +
+    '<div class="status-items">' +
+      '<div class="status-item" onclick="selectStatusDD(this, \'ทำงาน\')">ทำงาน</div>' +
+      '<div class="status-item" onclick="selectStatusDD(this, \'ลา\')">ลา</div>' +
+      '<div class="status-item" onclick="selectStatusDD(this, \'ไม่มาทำงาน\')">ไม่มาทำงาน</div>' +
+      '<div class="status-item" onclick="selectStatusDD(this, \'จบแล้ว\')">จบแล้ว</div>' +
+    '</div>' +
+  '</div>';
 
       let fileCell = '<span style="color:#999;">-</span>';
       if (rawFileLink.trim()) {
@@ -2528,11 +2529,26 @@
       }
     }
 
-    window.toggleStatusDD = function (el) {
-      const items = el ? el.nextElementSibling : null;
-      if (!items) return;
-      items.classList.toggle("open");
-    };
+window.toggleStatusDD = function (el) {
+  const items = el ? el.nextElementSibling : null;
+  if (!items) return;
+  
+  // ปิด dropdown อื่นๆ ก่อน
+  document.querySelectorAll(".status-items.open").forEach(function (other) {
+    if (other !== items) other.classList.remove("open");
+  });
+  
+  // Toggle dropdown นี้
+  const willOpen = !items.classList.contains("open");
+  items.classList.toggle("open");
+  
+  // คำนวณตำแหน่งที่ถูกต้อง
+  if (willOpen) {
+    const rect = el.getBoundingClientRect();
+    items.style.top = (rect.bottom + 6) + "px";
+    items.style.left = rect.left + "px";
+  }
+};
 
     window.selectStatusDD = function (el, value) {
       const wrap = el ? el.closest(".status-dd") : null;
@@ -2590,8 +2606,15 @@
 
         const sync = () => { head.scrollLeft = body.scrollLeft; };
 
-        body.addEventListener("scroll", () => requestAnimationFrame(sync), { passive: true });
-        head.addEventListener("scroll", () => {
+body.addEventListener("scroll", () => {
+  requestAnimationFrame(sync);
+  // ปิด dropdown ทั้งหมดเมื่อ scroll
+  document.querySelectorAll(".status-items.open").forEach(function (items) {
+    items.classList.remove("open");
+  });
+}, { passive: true });
+
+head.addEventListener("scroll", () => {
           if (body.scrollLeft !== head.scrollLeft) body.scrollLeft = head.scrollLeft;
         }, { passive: true });
 

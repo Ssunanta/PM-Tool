@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="utf-8" />
@@ -311,7 +311,7 @@
   }
 
   .table-scroll{
-  height: 100vh;                 /* ✅ ล็อกความสูง */
+  
   max-height: none;              /* กันโดน max-height ทำให้แกว่ง */
   overflow-y: scroll !important; /* ✅ มี scrollbar ตลอด */
   overflow-x: auto;              /* แนวนอนยัง auto ได้ */
@@ -1424,6 +1424,51 @@
   }
 }
   
+
+/* =========================================================
+   ✅ PATCH: iPhone-only todos-filters full width
+   ✅ PATCH: status select typography/size match status-pill
+   (No logic changed)
+   ========================================================= */
+
+/* Match typography + size between <select> and <span class="status-pill ..."> */
+#todosPage .status-select{
+  font-family: inherit !important;
+  font-weight: 900 !important;
+  font-size: 12px !important;
+
+  /* make it visually match .status-pill */
+  height: 32px !important;
+  line-height: 32px !important;
+  padding: 0 14px !important;
+
+  border-radius: 999px !important;
+  min-width: 150px !important;
+  box-sizing: border-box !important;
+}
+
+/* Wrapper in status cell: keep centered, avoid weird stretching */
+#todosPage td:nth-child(6) > div[style*="max-width"]{
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* iPhone: filters full width stacked (safe override, mobile only) */
+@media (max-width: 430px){
+  #todosPage .todos-filters{
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  #todosPage .todos-filters .ctrl,
+  #todosPage .todos-filters .search-ctrl,
+  #todosPage .todos-filters .btn-clear{
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+}
+
 </style>
 
 </head>

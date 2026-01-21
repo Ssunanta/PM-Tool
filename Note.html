@@ -537,564 +537,581 @@
       <div class="calendar-tooltip" id="tooltip"></div>
 
       <script>
-  // =============================
-  // Notes Board - LocalStorage CRUD
-  // (เตรียมไว้สลับไป backend ใหม่ภายหลังได้ง่าย)
-  // =============================
+// =============================
+// Notes Board - LocalStorage CRUD
+// (เตรียมไว้สลับไป backend ใหม่ภายหลังได้ง่าย)
+// =============================
 
-  const NOTES_STORAGE_KEY = "pmtool_notes_v1";
+const NOTES_STORAGE_KEY = "pmtool_notes_v1";
 
-  let notesData = [];
-  let currentDate = new Date();
-  let editingNoteId = null;
+let notesData = [];
+let currentDate = new Date();
+let editingNoteId = null;
 
-  // ✅ เก็บการ์ดที่ถูกซ่อนตอน edit เพื่อคืนค่าตอน cancel
-  let editingCardEl = null;
+// ✅ เก็บการ์ดที่ถูกซ่อนตอน edit เพื่อคืนค่าตอน cancel
+let editingCardEl = null;
 
-  function safeParseJSON(str, fallback) {
-    try { return JSON.parse(str); } catch (_) { return fallback; }
-  }
+// ===== STATUS MAPPING (ตรงกับ API) =====
+const STATUS_MAP = {
+  "NOT_STARTED": { display: "Not Started", key: "notStarted" },
+  "ONGOING": { display: "In Progress", key: "inProgress" },
+  "COMPLETED": { display: "Completed", key: "completed" }
+};
 
-  function uid() {
-    // ใช้ crypto ถ้ามี (ปลอดภัยกว่า) ไม่งั้น fallback เป็นเวลา
-    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
-    return "note_" + Date.now() + "_" + Math.random().toString(16).slice(2);
-  }
+const STATUS_REVERSE = {
+  "Not Started": "NOT_STARTED",
+  "In Progress": "ONGOING",
+  "Completed": "COMPLETED"
+};
 
-  function loadFromStorage() {
-    const raw = localStorage.getItem(NOTES_STORAGE_KEY);
-    const data = safeParseJSON(raw || "[]", []);
-    return Array.isArray(data) ? data : [];
-  }
+function safeParseJSON(str, fallback) {
+  try { return JSON.parse(str); } catch (_) { return fallback; }
+}
 
-  function saveToStorage(list) {
-    localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(list || []));
-  }
+function uid() {
+  // ใช้ crypto ถ้ามี (ปลอดภัยกว่า) ไม่งั้น fallback เป็นเวลา
+  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return "note_" + Date.now() + "_" + Math.random().toString(16).slice(2);
+}
 
-  // สร้างสี tag แบบเบาๆจากข้อความ (คง UI เดิมไว้)
-  function tagColors(tag) {
-    const s = (tag || "").toString();
-    let hash = 0;
-    for (let i = 0; i < s.length; i++) hash = (hash * 31 + s.charCodeAt(i)) >>> 0;
-    const hue = hash % 360;
-    return {
-      tagBgColor: `hsl(${hue} 70% 92%)`,
-      tagTextColor: `hsl(${hue} 35% 28%)`,
-    };
-  }
+function loadFromStorage() {
+  const raw = localStorage.getItem(NOTES_STORAGE_KEY);
+  const data = safeParseJSON(raw || "[]", []);
+  return Array.isArray(data) ? data : [];
+}
 
-  // =============================
-  // Data API (ตอนนี้เป็น LocalStorage)
-  // ถ้าจะต่อ backend ใหม่: แค่เปลี่ยนฟังก์ชันใน object นี้
-  // =============================
-  const NotesAPI = {
-    getNotes() {
-      const list = loadFromStorage();
-      return list.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
-    },
+function saveToStorage(list) {
+  localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(list || []));
+}
 
-    createNote(noteData) {
-      const list = loadFromStorage();
-      const now = Date.now();
-      const base = {
-        id: uid(),
-        title: "",
-        startDate: "",
-        endDate: "",
-        status: "Not Started",
-        tag: "Design",
-        createdAt: now,
-        updatedAt: now,
-      };
-      const colors = tagColors(noteData?.tag || base.tag);
-      const note = { ...base, ...noteData, ...colors, createdAt: now, updatedAt: now };
-      list.push(note);
-      saveToStorage(list);
-      return { success: true, note };
-    },
-
-    updateNote(noteId, patch) {
-      const list = loadFromStorage();
-      const idx = list.findIndex(n => n.id === noteId);
-      if (idx < 0) return { success: false, message: "ไม่พบโน้ต" };
-
-      const now = Date.now();
-      const next = { ...list[idx], ...patch, updatedAt: now };
-
-      // ถ้า tag เปลี่ยน ให้ปรับสีตาม
-      if (patch && Object.prototype.hasOwnProperty.call(patch, "tag")) {
-        Object.assign(next, tagColors(next.tag));
-      }
-
-      list[idx] = next;
-      saveToStorage(list);
-      return { success: true, note: next };
-    },
-
-    deleteNote(noteId) {
-      const list = loadFromStorage();
-      const next = list.filter(n => n.id !== noteId);
-      saveToStorage(next);
-      return { success: true };
-    }
+// สร้างสี tag แบบเบาๆจากข้อความ (คง UI เดิมไว้)
+function tagColors(tag) {
+  const s = (tag || "").toString();
+  let hash = 0;
+  for (let i = 0; i < s.length; i++) hash = (hash * 31 + s.charCodeAt(i)) >>> 0;
+  const hue = hash % 360;
+  return {
+    tagBgColor: `hsl(${hue} 70% 92%)`,
+    tagTextColor: `hsl(${hue} 35% 28%)`,
   };
+}
 
-  // =============================
-  // UI logic (คงฟังก์ชันเดิมไว้)
-  // =============================
+// =============================
+// Data API (ตอนนี้เป็น LocalStorage)
+// ถ้าจะต่อ backend ใหม่: แค่เปลี่ยนฟังก์ชันใน object นี้
+// =============================
+const NotesAPI = {
+  getNotes() {
+    const list = loadFromStorage();
+    return list.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+  },
 
-  // Toggle add note form
-  function toggleAddForm(status, button) {
-    const formId = 'addForm' + status.replace(' ', '');
-    const form = document.getElementById(formId);
+  createNote(noteData) {
+    const list = loadFromStorage();
+    const now = Date.now();
+    const base = {
+      id: uid(),
+      title: "",
+      startDate: "",
+      endDate: "",
+      status: "NOT_STARTED", // ✅ FIX: ตรงกับ API
+      tag: "", // ✅ FIX: ไม่ hardcode
+      createdAt: now,
+      updatedAt: now,
+    };
+    const colors = tagColors(noteData?.tag || "");
+    const note = { ...base, ...noteData, ...colors, createdAt: now, updatedAt: now };
+    list.push(note);
+    saveToStorage(list);
+    return { success: true, note };
+  },
 
-    if (form.style.display === 'none' || form.style.display === '') {
-      // Hide all forms first
-      document.querySelectorAll('.add-note-form').forEach(f => f.style.display = 'none');
-      document.querySelectorAll('.notes-new-page').forEach(b => b.style.display = 'flex');
+  updateNote(noteId, patch) {
+    const list = loadFromStorage();
+    const idx = list.findIndex(n => n.id === noteId);
+    if (idx < 0) return { success: false, message: "ไม่พบโน้ต" };
 
-      // Show this form and hide the button
-      form.style.display = 'block';
-      button.style.display = 'none';
+    const now = Date.now();
+    const next = { ...list[idx], ...patch, updatedAt: now };
 
-      // Set default date
-      const dateInput = form.querySelector('input[type="date"]');
-      if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
-
-      // Focus on title input
-      const titleInput = form.querySelector('input[type="text"]');
-      if (titleInput) titleInput.focus();
-    } else {
-      form.style.display = 'none';
-      button.style.display = 'flex';
+    // ถ้า tag เปลี่ยน ให้ปรับสีตาม
+    if (patch && Object.prototype.hasOwnProperty.call(patch, "tag")) {
+      Object.assign(next, tagColors(next.tag));
     }
-  }
 
-  function cancelAddForm(formId) {
-    const form = document.getElementById(formId);
-    const button = form.previousElementSibling;
+    list[idx] = next;
+    saveToStorage(list);
+    return { success: true, note: next };
+  },
+
+  deleteNote(noteId) {
+    const list = loadFromStorage();
+    const next = list.filter(n => n.id !== noteId);
+    saveToStorage(next);
+    return { success: true };
+  }
+};
+
+// =============================
+// UI logic (คงฟังก์ชันเดิมไว้)
+// =============================
+
+// Toggle add note form
+function toggleAddForm(status, button) {
+  // ✅ FIX: ใช้ regex แทน replace เพื่อลบทั้ง space
+  const formId = 'addForm' + status.replace(/\s+/g, '');
+  const form = document.getElementById(formId);
+
+  if (form.style.display === 'none' || form.style.display === '') {
+    // Hide all forms first
+    document.querySelectorAll('.add-note-form').forEach(f => f.style.display = 'none');
+    document.querySelectorAll('.notes-new-page').forEach(b => b.style.display = 'flex');
+
+    // Show this form and hide the button
+    form.style.display = 'block';
+    button.style.display = 'none';
+
+    // Set default date
+    const dateInput = form.querySelector('input[type="date"]');
+    if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+
+    // Focus on title input
+    const titleInput = form.querySelector('input[type="text"]');
+    if (titleInput) titleInput.focus();
+  } else {
     form.style.display = 'none';
     button.style.display = 'flex';
+  }
+}
 
-    // Clear form
-    form.querySelectorAll('input').forEach(input => input.value = '');
+function cancelAddForm(formId) {
+  const form = document.getElementById(formId);
+  const button = form.previousElementSibling;
+  form.style.display = 'none';
+  button.style.display = 'flex';
+
+  // Clear form
+  form.querySelectorAll('input').forEach(input => input.value = '');
+}
+
+function saveQuickNote(status) {
+  const statusKey = status.replace(/\s+/g, ''); // ✅ FIX: regex
+  const title = document.getElementById('title' + statusKey).value.trim();
+  const date = document.getElementById('date' + statusKey).value;
+  const tag = document.getElementById('tag' + statusKey).value.trim();
+
+  if (!title) {
+    alert('กรุณากรอกชื่อโน้ต');
+    return;
   }
 
-  function saveQuickNote(status) {
-    const statusKey = status.replace(' ', '');
-    const title = document.getElementById('title' + statusKey).value.trim();
-    const date = document.getElementById('date' + statusKey).value;
-    const tag = document.getElementById('tag' + statusKey).value.trim();
+  // ใช้วันที่ปัจจุบันถ้าไม่ได้กรอก
+  const finalDate = date || new Date().toISOString().split('T')[0];
 
-    if (!title) {
-      alert('กรุณากรอกชื่อโน้ต');
-      return;
+  // ✅ FIX: แปลง display status เป็น API status
+  const apiStatus = STATUS_REVERSE[status] || "NOT_STARTED";
+
+  const noteData = {
+    title: title,
+    startDate: finalDate,
+    endDate: finalDate,
+    status: apiStatus,
+    tag: tag || ''
+  };
+
+  const result = NotesAPI.createNote(noteData);
+  if (result.success) {
+    cancelAddForm('addForm' + statusKey);
+    loadNotes();
+  } else {
+    alert('เกิดข้อผิดพลาด: ' + (result.message || 'unknown'));
+  }
+}
+
+// Load notes (LocalStorage)
+function loadNotes() {
+  notesData = NotesAPI.getNotes() || [];
+  renderBoard();
+  renderCalendar();
+}
+
+function renderBoard() {
+  // ✅ FIX: ใช้ status mapping แทน hardcoded strings
+  const columns = {
+    "NOT_STARTED": document.getElementById('notStartedColumn'),
+    "ONGOING": document.getElementById('inProgressColumn'),
+    "COMPLETED": document.getElementById('doneColumn')
+  };
+
+  const counts = { "NOT_STARTED": 0, "ONGOING": 0, "COMPLETED": 0 };
+
+  // Clear all columns
+  Object.values(columns).forEach(col => col.innerHTML = '');
+
+  notesData.forEach(note => {
+    const card = createNoteCard(note);
+    const column = columns[note.status];
+
+    if (column) {
+      column.appendChild(card);
+      counts[note.status]++;
     }
+  });
 
-    // ใช้วันที่ปัจจุบันถ้าไม่ได้กรอก
-    const finalDate = date || new Date().toISOString().split('T')[0];
+  document.getElementById('notStartedCount').textContent = counts["NOT_STARTED"];
+  document.getElementById('inProgressCount').textContent = counts["ONGOING"];
+  document.getElementById('doneCount').textContent = counts["COMPLETED"];
+}
 
-    const noteData = {
-      title: title,
-      startDate: finalDate,
-      endDate: finalDate,
-      status: status,
-      tag: tag || 'Design'
-    };
+function escHtml(s) {
+  return (s ?? "").toString()
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
-    const result = NotesAPI.createNote(noteData);
+function createNoteCard(note) {
+  const card = document.createElement('div');
+  card.className = 'notes-card';
+
+  const bgColor = note.tagBgColor || '#E8E8E8';
+  const textColor = note.tagTextColor || '#555';
+
+  card.innerHTML = `
+    <div class="notes-card-title">
+      <span>${escHtml(note.title)}</span>
+      <div class="notes-card-actions">
+        <i onclick="editNote('${note.id}')">✏️</i>
+        <i onclick="deleteNoteConfirm('${note.id}')">🗑️</i>
+      </div>
+    </div>
+    <div class="notes-date-range">📅 ${escHtml(note.startDate)}</div>
+    <span class="notes-tag" style="background: ${bgColor}; color: ${textColor}">
+      ${escHtml(note.tag || 'Untitled')}
+    </span>
+  `;
+
+  return card;
+}
+
+function openModal(status = 'NOT_STARTED') {
+  editingNoteId = null;
+  document.getElementById('noteTitle').value = '';
+  document.getElementById('noteStartDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('noteTag').value = '';
+  document.getElementById('noteStatus').value = status;
+  document.getElementById('noteModal').style.display = 'block';
+}
+
+function closeModal() {
+  document.getElementById('noteModal').style.display = 'none';
+  editingNoteId = null;
+}
+
+function editNote(noteId) {
+  const note = notesData.find(n => n.id === noteId);
+  if (!note) return;
+
+  // Close all other edit forms
+  document.querySelectorAll('.edit-note-form').forEach(f => f.remove());
+  if (editingCardEl) { editingCardEl.style.display = ''; editingCardEl = null; }
+
+  // Find the card
+  const cards = document.querySelectorAll('.notes-card');
+  let targetCard = null;
+  cards.forEach(card => {
+    const editBtn = card.querySelector('.notes-card-actions i');
+    if (editBtn && editBtn.getAttribute('onclick') && editBtn.getAttribute('onclick').includes(noteId)) {
+      targetCard = card;
+    }
+  });
+
+  if (!targetCard) return;
+
+  // ✅ FIX: ใช้ API status values ใน select options
+  const displayStatus = STATUS_MAP[note.status]?.display || "Not Started";
+
+  // Create edit form
+  const editForm = document.createElement('div');
+  editForm.className = 'add-note-form edit-note-form';
+  editForm.style.display = 'block';
+  editForm.innerHTML = `
+    <div class="form-title-wrapper">
+      <div class="form-title-left">
+        <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" style="width:18px;height:18px;vertical-align:middle;" alt="edit" class="form-input-icon">
+        <input type="text" class="form-input" placeholder="New Title" value="${escHtml(note.title)}" id="editTitle${noteId}">
+      </div>
+    </div>
+    <div class="form-input-wrapper">
+      <img src="https://img.icons8.com/?size=100&id=tWKODv40VPFu&format=png&color=000000" style="width:18px;height:18px;vertical-align:middle;" alt="calendar" class="form-input-icon">
+      <input type="date" class="form-input" value="${escHtml(note.startDate)}" id="editDate${noteId}">
+    </div>
+    <div class="form-input-wrapper">
+      <img src="https://img.icons8.com/?size=100&id=t6KCtQfLNjCU&format=png&color=000000" style="width:18px;height:18px;vertical-align:middle;" alt="tag" class="form-input-icon">
+      <input type="text" class="form-input" placeholder="Add Tag" value="${escHtml(note.tag)}" id="editTag${noteId}">
+    </div>
+    <div class="form-input-wrapper">
+      <select class="form-input" id="editStatus${noteId}">
+        <option value="NOT_STARTED" ${note.status === 'NOT_STARTED' ? 'selected' : ''}>Not Started</option>
+        <option value="ONGOING" ${note.status === 'ONGOING' ? 'selected' : ''}>In Progress</option>
+        <option value="COMPLETED" ${note.status === 'COMPLETED' ? 'selected' : ''}>Completed</option>
+      </select>
+    </div>
+    <div class="form-actions">
+      <button class="form-btn form-btn-save" onclick="saveEditedNote('${noteId}')"><span>Save</span></button>
+      <button class="form-btn form-btn-cancel" onclick="cancelEdit()"><span>Cancel</span></button>
+    </div>
+  `;
+
+  // Insert after the card
+  editingCardEl = targetCard;
+  targetCard.style.display = 'none';
+  targetCard.parentNode.insertBefore(editForm, targetCard.nextSibling);
+}
+
+function saveEditedNote(noteId) {
+  const titleEl = document.getElementById('editTitle' + noteId);
+  const dateEl = document.getElementById('editDate' + noteId);
+  const tagEl = document.getElementById('editTag' + noteId);
+  const statusEl = document.getElementById('editStatus' + noteId);
+
+  if (!titleEl || !dateEl || !tagEl || !statusEl) {
+    alert('ไม่พบฟอร์มแก้ไข (DOM) กรุณาลองใหม่');
+    return;
+  }
+
+  const title = titleEl.value.trim();
+  const startDate = dateEl.value;
+  const tag = tagEl.value.trim();
+  const status = statusEl.value; // ✅ Already API format
+
+  if (!title || !startDate) {
+    alert('กรุณากรอกชื่อและวันที่');
+    return;
+  }
+
+  const noteData = {
+    title: title,
+    startDate: startDate,
+    endDate: startDate,
+    status: status,
+    tag: tag || ''
+  };
+
+  const result = NotesAPI.updateNote(noteId, noteData);
+  if (result && result.success) {
+    cancelEdit();
+    loadNotes();
+  } else {
+    alert('เกิดข้อผิดพลาด: ' + (result?.message || 'unknown'));
+  }
+}
+
+function cancelEdit() {
+  const editForm = document.querySelector('.edit-note-form');
+  if (editForm) editForm.remove();
+
+  if (editingCardEl) {
+    editingCardEl.style.display = '';
+    editingCardEl = null;
+  }
+}
+
+function saveNote() {
+  const title = document.getElementById('noteTitle').value.trim();
+  const startDate = document.getElementById('noteStartDate').value;
+  const tag = document.getElementById('noteTag').value.trim();
+  const status = document.getElementById('noteStatus').value;
+
+  if (!title || !startDate) {
+    alert('กรุณากรอกชื่อและวันที่');
+    return;
+  }
+
+  const noteData = {
+    title: title,
+    startDate: startDate,
+    endDate: startDate,
+    status: status,
+    tag: tag || ''
+  };
+
+  if (editingNoteId) {
+    const result = NotesAPI.updateNote(editingNoteId, noteData);
     if (result.success) {
-      cancelAddForm('addForm' + statusKey);
+      closeModal();
+      loadNotes();
+    } else {
+      alert('เกิดข้อผิดพลาด: ' + (result.message || 'unknown'));
+    }
+  } else {
+    closeModal();
+  }
+}
+
+function deleteNoteConfirm(noteId) {
+  if (confirm('คุณต้องการลบ Note นี้หรือไม่?')) {
+    const result = NotesAPI.deleteNote(noteId);
+    if (result.success) {
       loadNotes();
     } else {
       alert('เกิดข้อผิดพลาด: ' + (result.message || 'unknown'));
     }
   }
+}
 
-  // Load notes (LocalStorage)
-  function loadNotes() {
-    notesData = NotesAPI.getNotes() || [];
-    renderBoard();
-    renderCalendar();
-  }
+// ✅ FIX: ใช้ API status values
+function getStatusColor(status) {
+  const colorMap = {
+    "NOT_STARTED": "calendar-note-red",
+    "ONGOING": "calendar-note-blue",
+    "COMPLETED": "calendar-note-green"
+  };
+  return colorMap[status] || "calendar-note-red";
+}
 
-  function renderBoard() {
-    const notStarted = document.getElementById('notStartedColumn');
-    const inProgress = document.getElementById('inProgressColumn');
-    const done = document.getElementById('doneColumn');
+function renderCalendar() {
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
 
-    notStarted.innerHTML = '';
-    inProgress.innerHTML = '';
-    done.innerHTML = '';
+  const monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
 
-    const counts = { "Not Started": 0, "In progress": 0, "Done": 0 };
+  document.getElementById("calendarMonth").textContent = `${monthNames[month]} ${year}`;
 
-    notesData.forEach(note => {
-      const card = createNoteCard(note);
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const daysInMonth = lastDay.getDate();
+  const startDayOfWeek = firstDay.getDay();
+  const prevMonthLastDay = new Date(year, month, 0).getDate();
 
-      if (note.status === "Not Started") {
-        notStarted.appendChild(card);
-        counts["Not Started"]++;
-      } else if (note.status === "In progress") {
-        inProgress.appendChild(card);
-        counts["In progress"]++;
-      } else if (note.status === "Done") {
-        done.appendChild(card);
-        counts["Done"]++;
-      }
-    });
+  const grid = document.getElementById("calendarGrid");
+  grid.innerHTML = "";
 
-    document.getElementById('notStartedCount').textContent = counts["Not Started"];
-    document.getElementById('inProgressCount').textContent = counts["In progress"];
-    document.getElementById('doneCount').textContent = counts["Done"];
-  }
+  const tooltip = document.getElementById("tooltip");
 
-  function escHtml(s) {
-    return (s ?? "").toString()
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  function createNoteCard(note) {
-    const card = document.createElement('div');
-    card.className = 'notes-card';
-
-    const bgColor = note.tagBgColor || '#E8E8E8';
-    const textColor = note.tagTextColor || '#555';
-
-    card.innerHTML = `
-      <div class="notes-card-title">
-        <span>${escHtml(note.title)}</span>
-        <div class="notes-card-actions">
-          <i onclick="editNote('${note.id}')">✏️</i>
-          <i onclick="deleteNoteConfirm('${note.id}')">🗑️</i>
-        </div>
-      </div>
-      <div class="notes-date-range">📅 ${escHtml(note.startDate)}</div>
-      <span class="notes-tag" style="background: ${bgColor}; color: ${textColor}">
-        ${escHtml(note.tag)}
-      </span>
-    `;
-
-    return card;
-  }
-
-  function openModal(status = 'Not Started') {
-    editingNoteId = null;
-    document.getElementById('noteTitle').value = '';
-    document.getElementById('noteStartDate').value = new Date().toISOString().split('T')[0];
-    document.getElementById('noteTag').value = '';
-    document.getElementById('noteStatus').value = status;
-    document.getElementById('noteModal').style.display = 'block';
-  }
-
-  function closeModal() {
-    document.getElementById('noteModal').style.display = 'none';
-    editingNoteId = null;
-  }
-
-  function editNote(noteId) {
-    const note = notesData.find(n => n.id === noteId);
-    if (!note) return;
-
-    // Close all other edit forms
-    document.querySelectorAll('.edit-note-form').forEach(f => f.remove());
-    if (editingCardEl) { editingCardEl.style.display = ''; editingCardEl = null; }
-
-    // Find the card
-    const cards = document.querySelectorAll('.notes-card');
-    let targetCard = null;
-    cards.forEach(card => {
-      const editBtn = card.querySelector('.notes-card-actions i');
-      if (editBtn && editBtn.getAttribute('onclick') && editBtn.getAttribute('onclick').includes(noteId)) {
-        targetCard = card;
-      }
-    });
-
-    if (!targetCard) return;
-
-    // Create edit form
-    const editForm = document.createElement('div');
-    editForm.className = 'add-note-form edit-note-form';
-    editForm.style.display = 'block';
-    editForm.innerHTML = `
-      <div class="form-title-wrapper">
-        <div class="form-title-left">
-          <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" style="width:18px;height:18px;vertical-align:middle;" alt="edit" class="form-input-icon">
-          <input type="text" class="form-input" placeholder="New Title" value="${escHtml(note.title)}" id="editTitle${noteId}">
-        </div>
-      </div>
-      <div class="form-input-wrapper">
-        <img src="https://img.icons8.com/?size=100&id=tWKODv40VPFu&format=png&color=000000" style="width:18px;height:18px;vertical-align:middle;" alt="calendar" class="form-input-icon">
-        <input type="date" class="form-input" value="${escHtml(note.startDate)}" id="editDate${noteId}">
-      </div>
-      <div class="form-input-wrapper">
-        <img src="https://img.icons8.com/?size=100&id=t6KCtQfLNjCU&format=png&color=000000" style="width:18px;height:18px;vertical-align:middle;" alt="tag" class="form-input-icon">
-        <input type="text" class="form-input" placeholder="Add Tag" value="${escHtml(note.tag)}" id="editTag${noteId}">
-      </div>
-      <div class="form-input-wrapper">
-        <select class="form-input" id="editStatus${noteId}">
-          <option value="Not Started" ${note.status === 'Not Started' ? 'selected' : ''}>Not Started</option>
-          <option value="In progress" ${note.status === 'In progress' ? 'selected' : ''}>In progress</option>
-          <option value="Done" ${note.status === 'Done' ? 'selected' : ''}>Done</option>
-        </select>
-      </div>
-      <div class="form-actions">
-        <button class="form-btn form-btn-save" onclick="saveEditedNote('${noteId}')"><span>Save</span></button>
-        <button class="form-btn form-btn-cancel" onclick="cancelEdit()"><span>Cancel</span></button>
-      </div>
-    `;
-
-    // Insert after the card
-    editingCardEl = targetCard;
-    targetCard.style.display = 'none';
-    targetCard.parentNode.insertBefore(editForm, targetCard.nextSibling);
-  }
-
-  function saveEditedNote(noteId) {
-    const titleEl = document.getElementById('editTitle' + noteId);
-    const dateEl = document.getElementById('editDate' + noteId);
-    const tagEl = document.getElementById('editTag' + noteId);
-    const statusEl = document.getElementById('editStatus' + noteId);
-
-    if (!titleEl || !dateEl || !tagEl || !statusEl) {
-      alert('ไม่พบฟอร์มแก้ไข (DOM) กรุณาลองใหม่');
-      return;
-    }
-
-    const title = titleEl.value.trim();
-    const startDate = dateEl.value;
-    const tag = tagEl.value.trim();
-    const status = statusEl.value;
-
-    if (!title || !startDate) {
-      alert('กรุณากรอกชื่อและวันที่');
-      return;
-    }
-
-    const noteData = {
-      title: title,
-      startDate: startDate,
-      endDate: startDate,
-      status: status,
-      tag: tag || 'Design'
-    };
-
-    const result = NotesAPI.updateNote(noteId, noteData);
-    if (result && result.success) {
-      cancelEdit();
-      loadNotes();
-    } else {
-      alert('เกิดข้อผิดพลาด: ' + (result?.message || 'unknown'));
-    }
-  }
-
-  function cancelEdit() {
-    const editForm = document.querySelector('.edit-note-form');
-    if (editForm) editForm.remove();
-
-    if (editingCardEl) {
-      editingCardEl.style.display = '';
-      editingCardEl = null;
-    }
-  }
-
-  function saveNote() {
-    const title = document.getElementById('noteTitle').value.trim();
-    const startDate = document.getElementById('noteStartDate').value;
-    const tag = document.getElementById('noteTag').value.trim();
-    const status = document.getElementById('noteStatus').value;
-
-    if (!title || !startDate) {
-      alert('กรุณากรอกชื่อและวันที่');
-      return;
-    }
-
-    const noteData = {
-      title: title,
-      startDate: startDate,
-      endDate: startDate,
-      status: status,
-      tag: tag || 'Design'
-    };
-
-    if (editingNoteId) {
-      const result = NotesAPI.updateNote(editingNoteId, noteData);
-      if (result.success) {
-        closeModal();
-        loadNotes();
-      } else {
-        alert('เกิดข้อผิดพลาด: ' + (result.message || 'unknown'));
-      }
-    } else {
-      // ตอนนี้สร้างใหม่ผ่าน saveQuickNote() อยู่แล้ว
-      // ถ้าจะให้ modal สร้างใหม่ด้วย: uncomment บรรทัดข้างล่าง
-      // NotesAPI.createNote(noteData); loadNotes();
-      closeModal();
-    }
-  }
-
-  function deleteNoteConfirm(noteId) {
-    if (confirm('คุณต้องการลบ Note นี้หรือไม่?')) {
-      const result = NotesAPI.deleteNote(noteId);
-      if (result.success) {
-        loadNotes();
-      } else {
-        alert('เกิดข้อผิดพลาด: ' + (result.message || 'unknown'));
-      }
-    }
-  }
-
-  function getStatusColor(status) {
-    if (status === "Not Started") return "calendar-note-red";
-    if (status === "In progress") return "calendar-note-blue";
-    if (status === "Done") return "calendar-note-green";
-    return "calendar-note-red";
-  }
-
-  function renderCalendar() {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-
-    const monthNames = ["January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"];
-
-    document.getElementById("calendarMonth").textContent = `${monthNames[month]} ${year}`;
-
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startDayOfWeek = firstDay.getDay();
-    const prevMonthLastDay = new Date(year, month, 0).getDate();
-
-    const grid = document.getElementById("calendarGrid");
-    grid.innerHTML = "";
-
-    const tooltip = document.getElementById("tooltip");
-
-    const dayHeaders = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    dayHeaders.forEach(day => {
-      const header = document.createElement("div");
-      header.className = "calendar-day-header";
-      header.textContent = day;
-      grid.appendChild(header);
-    });
-
-    for (let i = startDayOfWeek - 1; i >= 0; i--) {
-      const day = document.createElement("div");
-      day.className = "calendar-day other-month";
-      day.innerHTML = `<div class="calendar-day-number">${prevMonthLastDay - i}</div>`;
-      grid.appendChild(day);
-    }
-
-    const today = new Date();
-    for (let i = 1; i <= daysInMonth; i++) {
-      const day = document.createElement("div");
-      day.className = "calendar-day";
-
-      if (year === today.getFullYear() &&
-        month === today.getMonth() &&
-        i === today.getDate()) {
-        day.classList.add("today");
-      }
-
-      const dayNumber = document.createElement("div");
-      dayNumber.className = "calendar-day-number";
-      dayNumber.textContent = i;
-      day.appendChild(dayNumber);
-
-      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-      const dayNotes = notesData.filter(note =>
-        note.startDate === dateStr || note.endDate === dateStr
-      );
-
-      dayNotes.forEach(note => {
-        const noteItem = document.createElement("div");
-        noteItem.className = `calendar-note-item ${getStatusColor(note.status)}`;
-        noteItem.textContent = note.tag || "Note";
-
-        noteItem.addEventListener("mouseenter", function () {
-          tooltip.innerHTML = `
-            <strong>${escHtml(note.title)}</strong><br>
-            <span style="display:inline-flex;align-items:center;gap:4px;">
-              <img src="https://img.icons8.com/?size=100&id=t6KCtQfLNjCU&format=png&color=000000" style="width:12px;height:12px;"> ${escHtml(note.tag)}
-            </span><br>
-            <span style="display:inline-flex;align-items:center;gap:4px;">
-              <img src="https://img.icons8.com/?size=100&id=tWKODv40VPFu&format=png&color=000000" style="width:12px;height:12px;"> ${escHtml(note.startDate)}
-            </span>
-          `;
-
-          const rect = this.getBoundingClientRect();
-          tooltip.style.left = (rect.left + rect.width / 2) + "px";
-          tooltip.style.top = (rect.top - 10) + "px";
-          tooltip.style.transform = "translate(-50%, -100%)";
-          tooltip.classList.add("show");
-        });
-
-        noteItem.addEventListener("mouseleave", function () {
-          tooltip.classList.remove("show");
-        });
-
-        noteItem.addEventListener("click", function (e) {
-          e.stopPropagation();
-          editNote(note.id);
-        });
-
-        day.appendChild(noteItem);
-      });
-
-      grid.appendChild(day);
-    }
-
-    const totalCells = grid.children.length - 7;
-    const remainingCells = 42 - totalCells - 7;
-    for (let i = 1; i <= remainingCells; i++) {
-      const day = document.createElement("div");
-      day.className = "calendar-day other-month";
-      day.innerHTML = `<div class="calendar-day-number">${i}</div>`;
-      grid.appendChild(day);
-    }
-  }
-
-  function previousMonth() {
-    currentDate.setMonth(currentDate.getMonth() - 1);
-    renderCalendar();
-  }
-
-  function nextMonth() {
-    currentDate.setMonth(currentDate.getMonth() + 1);
-    renderCalendar();
-  }
-
-  window.onclick = function (event) {
-    const modal = document.getElementById('noteModal');
-    if (event.target === modal) closeModal();
-  }
-
-  // ทำให้เรียกจาก onclick ได้ (กรณี browser strict)
-  Object.assign(window, {
-    toggleAddForm,
-    cancelAddForm,
-    saveQuickNote,
-    loadNotes,
-    renderBoard,
-    renderCalendar,
-    openModal,
-    closeModal,
-    editNote,
-    saveEditedNote,
-    cancelEdit,
-    saveNote,
-    deleteNoteConfirm,
-    previousMonth,
-    nextMonth
+  const dayHeaders = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  dayHeaders.forEach(day => {
+    const header = document.createElement("div");
+    header.className = "calendar-day-header";
+    header.textContent = day;
+    grid.appendChild(header);
   });
 
-  // Initialize
-  loadNotes();
+  for (let i = startDayOfWeek - 1; i >= 0; i--) {
+    const day = document.createElement("div");
+    day.className = "calendar-day other-month";
+    day.innerHTML = `<div class="calendar-day-number">${prevMonthLastDay - i}</div>`;
+    grid.appendChild(day);
+  }
+
+  const today = new Date();
+  for (let i = 1; i <= daysInMonth; i++) {
+    const day = document.createElement("div");
+    day.className = "calendar-day";
+
+    if (year === today.getFullYear() &&
+      month === today.getMonth() &&
+      i === today.getDate()) {
+      day.classList.add("today");
+    }
+
+    const dayNumber = document.createElement("div");
+    dayNumber.className = "calendar-day-number";
+    dayNumber.textContent = i;
+    day.appendChild(dayNumber);
+
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+    const dayNotes = notesData.filter(note =>
+      note.startDate === dateStr || note.endDate === dateStr
+    );
+
+    dayNotes.forEach(note => {
+      const noteItem = document.createElement("div");
+      noteItem.className = `calendar-note-item ${getStatusColor(note.status)}`;
+      noteItem.textContent = note.tag || "Note";
+
+      noteItem.addEventListener("mouseenter", function () {
+        tooltip.innerHTML = `
+          <strong>${escHtml(note.title)}</strong><br>
+          <span style="display:inline-flex;align-items:center;gap:4px;">
+            <img src="https://img.icons8.com/?size=100&id=t6KCtQfLNjCU&format=png&color=000000" style="width:12px;height:12px;"> ${escHtml(note.tag || 'Untitled')}
+          </span><br>
+          <span style="display:inline-flex;align-items:center;gap:4px;">
+            <img src="https://img.icons8.com/?size=100&id=tWKODv40VPFu&format=png&color=000000" style="width:12px;height:12px;"> ${escHtml(note.startDate)}
+          </span>
+        `;
+
+        const rect = this.getBoundingClientRect();
+        tooltip.style.left = (rect.left + rect.width / 2) + "px";
+        tooltip.style.top = (rect.top - 10) + "px";
+        tooltip.style.transform = "translate(-50%, -100%)";
+        tooltip.classList.add("show");
+      });
+
+      noteItem.addEventListener("mouseleave", function () {
+        tooltip.classList.remove("show");
+      });
+
+      noteItem.addEventListener("click", function (e) {
+        e.stopPropagation();
+        editNote(note.id);
+      });
+
+      day.appendChild(noteItem);
+    });
+
+    grid.appendChild(day);
+  }
+
+  const totalCells = grid.children.length - 7;
+  const remainingCells = 42 - totalCells - 7;
+  for (let i = 1; i <= remainingCells; i++) {
+    const day = document.createElement("div");
+    day.className = "calendar-day other-month";
+    day.innerHTML = `<div class="calendar-day-number">${i}</div>`;
+    grid.appendChild(day);
+  }
+}
+
+function previousMonth() {
+  currentDate.setMonth(currentDate.getMonth() - 1);
+  renderCalendar();
+}
+
+function nextMonth() {
+  currentDate.setMonth(currentDate.getMonth() + 1);
+  renderCalendar();
+}
+
+window.onclick = function (event) {
+  const modal = document.getElementById('noteModal');
+  if (event.target === modal) closeModal();
+}
+
+// ทำให้เรียกจาก onclick ได้ (กรณี browser strict)
+Object.assign(window, {
+  toggleAddForm,
+  cancelAddForm,
+  saveQuickNote,
+  loadNotes,
+  renderBoard,
+  renderCalendar,
+  openModal,
+  closeModal,
+  editNote,
+  saveEditedNote,
+  cancelEdit,
+  saveNote,
+  deleteNoteConfirm,
+  previousMonth,
+  nextMonth
+});
+
+// Initialize
+loadNotes();
 </script>
 </body>
 

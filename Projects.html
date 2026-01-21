@@ -1805,7 +1805,7 @@
     </div>
   </div>
 
-  <script>
+    <script>
     function byId(id){ return document.getElementById(id); }
 
     const TRASH_SVG = `
@@ -1832,7 +1832,7 @@
     /* =========================
        ✅ Local "DB" (No backend)
        ========================= */
-    const LS_KEY = "PMTOOL_PROJECTS_DB_V1";
+const API_BASE_URL = "http://localhost:3000"; // เปลี่ยนตาม backend ของคุณ
 
     function uid(prefix="p"){
       return prefix + "_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
@@ -1859,58 +1859,282 @@
       return diff >= 0 ? diff : "-";
     }
 
-    function loadDB(){
-      try{
-        const raw = localStorage.getItem(LS_KEY);
-        if (raw){
-          const parsed = JSON.parse(raw);
-          if (parsed && Array.isArray(parsed.projects)) return parsed;
-        }
-      }catch(e){}
-      // seed demo
-      const seed = {
-        projects: [
-          {
-            id: uid("p"),
-            name: "Demo Project A",
-            startISO: todayISO(),
-            endISO: "",
-            note: "ตัวอย่างโปรเจค (แก้/ลบได้)",
-            status: "อยู่ในกำหนด",
-            mentors: ["mentor", "webdev"],
-            preview: "Project Preview\n- เป้าหมาย\n- ขอบเขตงาน\n- Timeline",
-            members: [
-              { tag: uid("m"), name: "Gift", position: "BA" },
-              { tag: uid("m"), name: "Ton", position: "UXUI" },
-            ],
-          },
-          {
-            id: uid("p"),
-            name: "Demo Project B",
-            startISO: todayISO(),
-            endISO: "",
-            note: "ใส่หมายเหตุได้ยาวๆ",
-            status: "ยังไม่เริ่มงาน",
-            mentors: ["datasci"],
-            preview: "",
-            members: [],
-          }
-        ]
-      };
-      saveDB(seed);
-      return seed;
+/* =========================
+   ✅ API Configuration & Helpers
+   ========================= */
+
+// Utility functions (เก็บไว้)
+function uid(prefix="p"){
+  return prefix + "_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+}
+function todayISO(){
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth()+1).padStart(2,"0");
+  const dd = String(d.getDate()).padStart(2,"0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+function formatDMY(iso){
+  const s = String(iso||"").trim();
+  if (!s) return "-";
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  const [y,m,d] = s.split("-");
+  return `${Number(d)}/${Number(m)}/${y}`;
+}
+function daysBetween(startISO, endISO){
+  const a = Date.parse(startISO||"");
+  const b = Date.parse(endISO||"");
+  if (Number.isNaN(a) || Number.isNaN(b)) return "-";
+  const diff = Math.round((b-a)/(1000*60*60*24));
+  return diff >= 0 ? diff : "-";
+}
+
+/* =========================
+   ✅ Status Mapping (Thai ↔ API)
+   ========================= */
+function mapStatusToAPI(thaiStatus) {
+  const map = {
+    'ยังไม่เริ่มงาน': 'NOT_STARTED',
+    'อยู่ในกำหนด': 'ONGOING',
+    'เสร็จแล้ว': 'COMPLETED',
+    'ช้ากว่ากำหนด': 'ON_HOLD'
+  };
+  return map[thaiStatus] || 'ONGOING';
+}
+
+function mapStatusFromAPI(apiStatus) {
+  const map = {
+    'NOT_STARTED': 'ยังไม่เริ่มงาน',
+    'ONGOING': 'อยู่ในกำหนด',
+    'COMPLETED': 'เสร็จแล้ว',
+    'ON_HOLD': 'ช้ากว่ากำหนด'
+  };
+  return map[apiStatus] || 'อยู่ในกำหนด';
+}
+
+/* =========================
+   ✅ API Functions - Projects
+   ========================= */
+
+async function fetchProjectsFromAPI() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/projects?limit=100&sortBy=createdAt&order=desc`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    return data.data || [];
+  } catch (e) {
+    console.error('Failed to fetch projects:', e);
+    alert('ไม่สามารถโหลดโปรเจคได้ กรุณาตรวจสอบ backend');
+    return [];
+  }
+}
+
+async function getProjectByIdAPI(projectId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/projects/${projectId}`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return await response.json();
+  } catch (e) {
+    console.error('Failed to get project:', e);
+    return null;
+  }
+}
+
+async function createProjectAPI(projectData) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/projects`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: projectData.name,
+        description: projectData.note || '',
+        startDate: projectData.startISO || undefined,
+        plannedEndDate: projectData.endISO || undefined,
+        note: projectData.note || '',
+        figmaURL: projectData.figma || '',
+        status: mapStatusToAPI(projectData.status),
+        completionPercent: 0,
+        members: []
+      })
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to create project');
     }
-    function saveDB(db){
-      localStorage.setItem(LS_KEY, JSON.stringify(db));
+    
+    return await response.json();
+  } catch (e) {
+    console.error('Failed to create project:', e);
+    throw e;
+  }
+}
+
+async function updateProjectAPI(projectId, updates) {
+  try {
+    const payload = {};
+    if (updates.name !== undefined) payload.name = updates.name;
+    if (updates.startISO !== undefined) payload.startDate = updates.startISO || null;
+    if (updates.endISO !== undefined) payload.plannedEndDate = updates.endISO || null;
+    if (updates.note !== undefined) payload.note = updates.note;
+    if (updates.figma !== undefined) payload.figmaURL = updates.figma;
+    if (updates.status !== undefined) payload.status = mapStatusToAPI(updates.status);
+    
+    const response = await fetch(`${API_BASE_URL}/projects/${projectId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return await response.json();
+  } catch (e) {
+    console.error('Failed to update project:', e);
+    throw e;
+  }
+}
+
+async function deleteProjectAPI(projectId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/projects/${projectId}`, {
+      method: 'DELETE'
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return true;
+  } catch (e) {
+    console.error('Failed to delete project:', e);
+    throw e;
+  }
+}
+
+/* =========================
+   ✅ API Functions - Members
+   ========================= */
+
+async function fetchProjectMembersAPI(projectId) {
+  try {
+    const project = await getProjectByIdAPI(projectId);
+    if (!project || !project.members || !project.members.length) {
+      return [];
     }
-    function getProjectByName(name){
-      const db = loadDB();
-      return db.projects.find(p => String(p.name||"").trim() === String(name||"").trim()) || null;
-    }
-    function getProjectById(id){
-      const db = loadDB();
-      return db.projects.find(p => String(p.id) === String(id)) || null;
-    }
+    
+    // Fetch all members in parallel
+    const memberPromises = project.members.map(memberId =>
+      fetch(`${API_BASE_URL}/members/${memberId}`).then(r => r.json())
+    );
+    
+    const members = await Promise.all(memberPromises);
+    
+    return members.map(m => ({
+      tag: m._id,
+      name: m.displayName || m.nickname || '-',
+      position: m.position || '-'
+    }));
+  } catch (e) {
+    console.error('Failed to fetch members:', e);
+    return [];
+  }
+}
+
+async function createMemberAPI(memberData) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/members`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        displayName: memberData.name,
+        position: memberData.position,
+        role: 'INTERN' // default
+      })
+    });
+    
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return await response.json();
+  } catch (e) {
+    console.error('Failed to create member:', e);
+    throw e;
+  }
+}
+
+async function updateMemberAPI(memberId, updates) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/members/${memberId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        displayName: updates.name,
+        position: updates.position
+      })
+    });
+    
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return await response.json();
+  } catch (e) {
+    console.error('Failed to update member:', e);
+    throw e;
+  }
+}
+
+async function assignMemberToProjectAPI(projectId, memberId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/members/${memberId}/project/${projectId}`, {
+      method: 'PATCH'
+    });
+    
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return true;
+  } catch (e) {
+    console.error('Failed to assign member:', e);
+    throw e;
+  }
+}
+
+async function removeMemberFromProjectAPI(projectId, memberId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/members/${memberId}/project/${projectId}`, {
+      method: 'DELETE'
+    });
+    
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return true;
+  } catch (e) {
+    console.error('Failed to remove member:', e);
+    throw e;
+  }
+}
+
+async function deleteMemberAPI(memberId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/members/${memberId}`, {
+      method: 'DELETE'
+    });
+    
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return true;
+  } catch (e) {
+    console.error('Failed to delete member:', e);
+    throw e;
+  }
+}
+
+/* =========================
+   ✅ Helper: Convert API Project to Local Format
+   ========================= */
+function convertAPIProjectToLocal(apiProject) {
+  return {
+    id: apiProject._id,
+    name: apiProject.name,
+    startISO: apiProject.startDate || '',
+    endISO: apiProject.plannedEndDate || '',
+    start: formatDMY(apiProject.startDate || ''),
+    end: formatDMY(apiProject.plannedEndDate || ''),
+    days: daysBetween(apiProject.startDate || '', apiProject.plannedEndDate || ''),
+    note: apiProject.note || apiProject.description || '',
+    figma: apiProject.figmaURL || '',
+    status: mapStatusFromAPI(apiProject.status),
+    rowIndex: apiProject._id
+  };
+}
 
     /* =========================
        ✅ smart wrap
@@ -2061,21 +2285,29 @@
     /* =========================
        ✅ "fetch" without backend
        ========================= */
-    function fetchProjects() {
-      const items = byId("dropdownItems");
-      const tbody = byId("projectTableBody");
-      if (items) items.innerHTML = `<div class="loading">กำลังโหลด...</div>`;
-      if (tbody) tbody.innerHTML = `<tr><td colspan="9" class="loading">กำลังโหลดข้อมูล...</td></tr>`;
+async function fetchProjects() {
+  const items = byId("dropdownItems");
+  const tbody = byId("projectTableBody");
+  if (items) items.innerHTML = `<div class="loading">กำลังโหลด...</div>`;
+  if (tbody) tbody.innerHTML = `<tr><td colspan="9" class="loading">กำลังโหลดข้อมูล...</td></tr>`;
 
-      const db = loadDB();
-      // dropdown list = db.projects
-      window.__proj.list = db.projects.map(p => ({ id: p.id, name: p.name }));
-      renderDropdown();
-
-      window.__proj.selectedId = "all";
-      byId("selectedProjectText").textContent = "All Project";
-      goBackAll();
-    }
+  try {
+    const projects = await fetchProjectsFromAPI();
+    
+    window.__proj.list = projects.map(p => ({ 
+      id: p._id, 
+      name: p.name 
+    }));
+    
+    renderDropdown();
+    window.__proj.selectedId = "all";
+    byId("selectedProjectText").textContent = "All Project";
+    goBackAll();
+  } catch (e) {
+    console.error('fetchProjects error:', e);
+    if (tbody) tbody.innerHTML = `<tr><td colspan="9" class="loading" style="color:#dc3545;">เกิดข้อผิดพลาด: ${escapeHtml(e.message)}</td></tr>`;
+  }
+}
 
     function renderDropdown() {
       const items = byId("dropdownItems");
@@ -2147,14 +2379,17 @@
       return row;
     }
 
-    function handleDeleteProject(pid, pname) {
-      if (!confirm(`ต้องการลบโปรเจค "${pname}" ใช่ไหม?`)) return;
-      const db = loadDB();
-      db.projects = db.projects.filter(p => String(p.id) !== String(pid));
-      saveDB(db);
-      fetchProjects();
-      goBackAll();
-    }
+async function handleDeleteProject(pid, pname) {
+  if (!confirm(`ต้องการลบโปรเจค "${pname}" ใช่ไหม?`)) return;
+  
+  try {
+    await deleteProjectAPI(pid);
+    await fetchProjects();
+    goBackAll();
+  } catch (e) {
+    alert(`ลบโปรเจคไม่สำเร็จ: ${e.message}`);
+  }
+}
 
     function fetchAllProjectsTable() {
       const db = loadDB();

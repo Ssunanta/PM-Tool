@@ -655,13 +655,10 @@ nav button.active {
      ✅ TAB LOADER (GAS + FETCH)
      ========================= */
 
-  const WEB_APP_URL = ""; 
-  const API_BASE_URL = "http://localhost:3000";
+  const WEB_APP_URL = ""; // ไม่บังคับใช้ในโหมดนี้
 
   let loadedTabs = {};
   let currentTab = "dashboard";
-  let currentProjectId = null;
-
 
   // ===== FIX: รอให้ init ของแต่ละแท็บพร้อมก่อน =====
   window.__tabInitRetry = window.__tabInitRetry || {};
@@ -1103,33 +1100,15 @@ nav button.active {
     ];
   }
 
-// แทนที่ฟังก์ชัน loadDashboardProjectsLocal()
-async function loadDashboardProjectsFromAPI() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/projects?limit=100`);
-    const data = await response.json();
-    
-    // แปลง API response เป็น format ที่ Dashboard ใช้
-    return data.data.map(p => ({
-      id: p._id,
-      name: p.name,
-      status: mapAPIStatusToDashboard(p.status)
-    }));
-  } catch (e) {
-    console.error('Failed to load projects:', e);
-    return getMockProjectsForDashboard(); // fallback
+  function loadDashboardProjectsLocal() {
+    try {
+      const raw = localStorage.getItem(LS_DASH_PROJECTS);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    const seed = getMockProjectsForDashboard();
+    try { localStorage.setItem(LS_DASH_PROJECTS, JSON.stringify(seed)); } catch (e) {}
+    return seed;
   }
-}
-
-function mapAPIStatusToDashboard(apiStatus) {
-  const map = {
-    'NOT_STARTED': 'Not Started',
-    'ONGOING': 'In Progress',
-    'COMPLETED': 'Finished',
-    'ON_HOLD': 'Delayed'
-  };
-  return map[apiStatus] || 'Not Started';
-}
 
   function initDashboard() {
     const content = document.getElementById("dashboardContent");
@@ -1204,11 +1183,11 @@ function mapAPIStatusToDashboard(apiStatus) {
     loadDashboardData();
   }
 
-async function loadDashboardData() {
-  const projects = await loadDashboardProjectsFromAPI();
-  const stats = calcDashboardStats(projects);
-  applyDashboardData(stats, projects);
-}
+  function loadDashboardData() {
+    const projects = loadDashboardProjectsLocal();
+    const stats = calcDashboardStats(projects);
+    applyDashboardData(stats, projects);
+  }
 
   function calcDashboardStats(projects) {
     const arr = Array.isArray(projects) ? projects : [];

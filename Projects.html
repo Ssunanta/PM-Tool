@@ -1818,7 +1818,7 @@
     /* =========================
        ✅ Local "DB" (No backend)
        ========================= */
-    const LS_KEY = "PMTOOL_PROJECTS_DB_V1";
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:3000";
 
     function uid(prefix="p"){
       return prefix + "_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
@@ -1845,58 +1845,43 @@
       return diff >= 0 ? diff : "-";
     }
 
-    function loadDB(){
-      try{
-        const raw = localStorage.getItem(LS_KEY);
-        if (raw){
-          const parsed = JSON.parse(raw);
-          if (parsed && Array.isArray(parsed.projects)) return parsed;
-        }
-      }catch(e){}
-      // seed demo
-      const seed = {
-        projects: [
-          {
-            id: uid("p"),
-            name: "Demo Project A",
-            startISO: todayISO(),
-            endISO: "",
-            note: "ตัวอย่างโปรเจค (แก้/ลบได้)",
-            status: "อยู่ในกำหนด",
-            mentors: ["mentor", "webdev"],
-            preview: "Project Preview\n- เป้าหมาย\n- ขอบเขตงาน\n- Timeline",
-            members: [
-              { tag: uid("m"), name: "Gift", position: "BA" },
-              { tag: uid("m"), name: "Ton", position: "UXUI" },
-            ],
-          },
-          {
-            id: uid("p"),
-            name: "Demo Project B",
-            startISO: todayISO(),
-            endISO: "",
-            note: "ใส่หมายเหตุได้ยาวๆ",
-            status: "ยังไม่เริ่มงาน",
-            mentors: ["datasci"],
-            preview: "",
-            members: [],
-          }
-        ]
-      };
-      saveDB(seed);
-      return seed;
-    }
-    function saveDB(db){
-      localStorage.setItem(LS_KEY, JSON.stringify(db));
-    }
-    function getProjectByName(name){
-      const db = loadDB();
-      return db.projects.find(p => String(p.name||"").trim() === String(name||"").trim()) || null;
-    }
-    function getProjectById(id){
-      const db = loadDB();
-      return db.projects.find(p => String(p.id) === String(id)) || null;
-    }
+// Status Mapping Helpers
+function mapStatusToAPI(thaiStatus) {
+  const map = {
+    'ยังไม่เริ่มงาน': 'NOT_STARTED',
+    'อยู่ในกำหนด': 'ONGOING',
+    'เสร็จแล้ว': 'COMPLETED',
+    'ช้ากว่ากำหนด': 'ON_HOLD'
+  };
+  return map[thaiStatus] || 'ONGOING';
+}
+
+function mapStatusFromAPI(apiStatus) {
+  const map = {
+    'NOT_STARTED': 'ยังไม่เริ่มงาน',
+    'ONGOING': 'อยู่ในกำหนด',
+    'COMPLETED': 'เสร็จแล้ว',
+    'ON_HOLD': 'ช้ากว่ากำหนด'
+  };
+  return map[apiStatus] || 'อยู่ในกำหนด';
+}
+
+// API Helper: Convert API Project to Local Format
+function convertAPIProjectToLocal(apiProject) {
+  return {
+    id: apiProject._id,
+    name: apiProject.name,
+    startISO: apiProject.startDate || '',
+    endISO: apiProject.plannedEndDate || '',
+    start: formatDMY(apiProject.startDate || ''),
+    end: formatDMY(apiProject.plannedEndDate || ''),
+    days: daysBetween(apiProject.startDate || '', apiProject.plannedEndDate || ''),
+    note: apiProject.note || apiProject.description || '',
+    figma: apiProject.figmaURL || '',
+    status: mapStatusFromAPI(apiProject.status),
+    rowIndex: apiProject._id
+  };
+}
 
     /* =========================
        ✅ smart wrap
@@ -2047,21 +2032,30 @@
     /* =========================
        ✅ "fetch" without backend
        ========================= */
-    function fetchProjects() {
-      const items = byId("dropdownItems");
-      const tbody = byId("projectTableBody");
-      if (items) items.innerHTML = `<div class="loading">กำลังโหลด...</div>`;
-      if (tbody) tbody.innerHTML = `<tr><td colspan="9" class="loading">กำลังโหลดข้อมูล...</td></tr>`;
+async function fetchProjects() {
+  const items = byId("dropdownItems");
+  const tbody = byId("projectTableBody");
+  if (items) items.innerHTML = `<div class="loading">กำลังโหลด...</div>`;
+  if (tbody) tbody.innerHTML = `<tr><td colspan="9" class="loading">กำลังโหลดข้อมูล...</td></tr>`;
 
-      const db = loadDB();
-      // dropdown list = db.projects
-      window.__proj.list = db.projects.map(p => ({ id: p.id, name: p.name }));
-      renderDropdown();
+  try {
+    const response = await fetch(`${API_BASE_URL}/projects?limit=100&sortBy=createdAt&order=desc`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    
+    const projects = data.data || [];
+    window.__proj.list = projects.map(p => ({ id: p._id, name: p.name }));
+    renderDropdown();
 
-      window.__proj.selectedId = "all";
-      byId("selectedProjectText").textContent = "All Project";
-      goBackAll();
-    }
+    window.__proj.selectedId = "all";
+    byId("selectedProjectText").textContent = "All Project";
+    goBackAll();
+  } catch (e) {
+    console.error('fetchProjects error:', e);
+    if (tbody) tbody.innerHTML = `<tr><td colspan="9" class="loading" style="color:#dc3545;">เกิดข้อผิดพลาด: ${escapeHtml(e.message)}</td></tr>`;
+    alert(`ไม่สามารถโหลดโปรเจคได้: ${e.message}`);
+  }
+}
 
     function renderDropdown() {
       const items = byId("dropdownItems");
@@ -2133,41 +2127,230 @@
       return row;
     }
 
-    function handleDeleteProject(pid, pname) {
-      if (!confirm(`ต้องการลบโปรเจค "${pname}" ใช่ไหม?`)) return;
-      const db = loadDB();
-      db.projects = db.projects.filter(p => String(p.id) !== String(pid));
-      saveDB(db);
-      fetchProjects();
-      goBackAll();
+async function handleDeleteProject(pid, pname) {
+  if (!confirm(`ต้องการลบโปรเจค "${pname}" ใช่ไหม?`)) return;
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/projects/${pid}`, {
+      method: 'DELETE'
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    
+    await fetchProjects();
+    goBackAll();
+  } catch (e) {
+    console.error('Failed to delete project:', e);
+    alert(`ลบโปรเจคไม่สำเร็จ: ${e.message}`);
+  }
+}
+
+async function fetchProjectMembersAPI(projectId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/projects/${projectId}`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const project = await response.json();
+    
+    if (!project.members || !project.members.length) return [];
+    
+    // Fetch member details in parallel
+    const memberPromises = project.members.map(memberId =>
+      fetch(`${API_BASE_URL}/members/${memberId}`).then(r => r.json())
+    );
+    
+    const members = await Promise.all(memberPromises);
+    return members.map(m => ({
+      tag: m._id,
+      name: m.displayName || m.nickname || '-',
+      position: m.position || '-'
+    }));
+  } catch (e) {
+    console.error('Failed to fetch members:', e);
+    return [];
+  }
+}
+
+async function createProjectAPI(projectData) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/projects`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: projectData.name,
+        description: projectData.note || '',
+        startDate: projectData.startISO || undefined,
+        plannedEndDate: projectData.endISO || undefined,
+        note: projectData.note || '',
+        figmaURL: projectData.figma || '',
+        status: mapStatusToAPI(projectData.status),
+        completionPercent: 0,
+        members: []
+      })
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to create project');
     }
+    
+    return await response.json();
+  } catch (e) {
+    console.error('Failed to create project:', e);
+    throw e;
+  }
+}
 
-    function fetchAllProjectsTable() {
-      const db = loadDB();
-      const rows = db.projects.map(p => ({
-        id: p.id,
-        name: p.name,
-        startISO: p.startISO || "",
-        endISO: p.endISO || "",
-        start: formatDMY(p.startISO || ""),
-        end: formatDMY(p.endISO || ""),
-        days: daysBetween(p.startISO || "", p.endISO || ""),
-        note: p.note || "",
-        status: p.status || "-",
-            figma: p.figma || "",  // ✅ เพิ่มบรรทัดนี้
+async function updateProjectAPI(projectId, updates) {
+  try {
+    const payload = {};
+    if (updates.name !== undefined) payload.name = updates.name;
+    if (updates.startISO !== undefined) payload.startDate = updates.startISO || null;
+    if (updates.endISO !== undefined) payload.plannedEndDate = updates.endISO || null;
+    if (updates.note !== undefined) payload.note = updates.note;
+    if (updates.figma !== undefined) payload.figmaURL = updates.figma;
+    if (updates.status !== undefined) payload.status = mapStatusToAPI(updates.status);
+    
+    const response = await fetch(`${API_BASE_URL}/projects/${projectId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return await response.json();
+  } catch (e) {
+    console.error('Failed to update project:', e);
+    throw e;
+  }
+}
 
-        rowIndex: p.id, // ใช้ id แทน rowIndex
-      }));
+async function deleteProjectAPI(projectId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/projects/${projectId}`, {
+      method: 'DELETE'
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return true;
+  } catch (e) {
+    console.error('Failed to delete project:', e);
+    throw e;
+  }
+}
 
-      window.__proj.tableRows = rows;
+async function createMemberAPI(memberData) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/members`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        displayName: memberData.name,
+        position: memberData.position,
+        role: 'INTERN'
+      })
+    });
+    
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return await response.json();
+  } catch (e) {
+    console.error('Failed to create member:', e);
+    throw e;
+  }
+}
 
-      const names = rows.map(r => String(r.name || "").trim()).filter(Boolean);
-      window.__proj.mentorMap = fetchMentorsForProjects(names); // local
-      window.__proj.peopleMap = fetchPeopleMapForProjects(names); // local
+async function updateMemberAPI(memberId, updates) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/members/${memberId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        displayName: updates.name,
+        position: updates.position
+      })
+    });
+    
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return await response.json();
+  } catch (e) {
+    console.error('Failed to update member:', e);
+    throw e;
+  }
+}
 
-      applySortFilterAndRender();
-      requestAnimationFrame(adjustHeaderForScrollbar);
+async function assignMemberToProjectAPI(projectId, memberId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/members/${memberId}/project/${projectId}`, {
+      method: 'PATCH'
+    });
+    
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return true;
+  } catch (e) {
+    console.error('Failed to assign member:', e);
+    throw e;
+  }
+}
+
+async function removeMemberFromProjectAPI(projectId, memberId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/members/${memberId}/project/${projectId}`, {
+      method: 'DELETE'
+    });
+    
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return true;
+  } catch (e) {
+    console.error('Failed to remove member:', e);
+    throw e;
+  }
+}
+
+async function deleteMemberAPI(memberId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/members/${memberId}`, {
+      method: 'DELETE'
+    });
+    
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return true;
+  } catch (e) {
+    console.error('Failed to delete member:', e);
+    throw e;
+  }
+}
+
+async function fetchAllProjectsTable() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/projects?limit=100`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    
+    const projects = data.data || [];
+    const rows = projects.map(p => convertAPIProjectToLocal(p));
+
+    window.__proj.tableRows = rows;
+
+    // Fetch members for each project
+    const peopleMap = {};
+    for (const project of projects) {
+      if (project.members && project.members.length) {
+        try {
+          const members = await fetchProjectMembersAPI(project._id);
+          const key = normalizeKey(project.name);
+          peopleMap[key] = members.map(m => m.name);
+        } catch (e) {
+          console.warn(`Failed to fetch members for ${project.name}:`, e);
+        }
+      }
     }
+    window.__proj.peopleMap = peopleMap;
+    window.__proj.mentorMap = {}; // Not used in API version
+
+    applySortFilterAndRender();
+    requestAnimationFrame(adjustHeaderForScrollbar);
+  } catch (e) {
+    console.error('fetchAllProjectsTable error:', e);
+    alert(`เกิดข้อผิดพลาดในการโหลดข้อมูล: ${e.message}`);
+  }
+}
 
     function normalizeKey(s){
       return String(s || "")
@@ -2175,31 +2358,6 @@
         .trim()
         .replace(/\s+/g, " ")
         .toLowerCase();
-    }
-
-    // local mentor map from db.projects[].mentors
-    function fetchMentorsForProjects(projectNames) {
-      const db = loadDB();
-      const map = {};
-      projectNames.forEach(name => {
-        const p = getProjectByName(name);
-        const key = normalizeKey(name);
-        map[key] = p && Array.isArray(p.mentors) ? p.mentors : [];
-      });
-      return map;
-    }
-
-    // local people map from db.projects[].members (names)
-    function fetchPeopleMapForProjects(projectNames){
-      const db = loadDB();
-      const map = {};
-      projectNames.forEach(name => {
-        const p = getProjectByName(name);
-        const key = normalizeKey(name);
-        const arr = (p && Array.isArray(p.members)) ? p.members.map(m => m.name).filter(Boolean) : [];
-        map[key] = arr;
-      });
-      return map;
     }
 
     function applySortFilterAndRender(){
@@ -2446,31 +2604,6 @@ function renderTableWithCachedMentors(rows, mentorMap) {
       if (s) s.style.display = "none";
     }
 
-    function saveOutlineEdit(){
-      var name = String(window.__outlineProjectName || "").trim();
-      var ta = document.getElementById("outlineEditor");
-      var box = document.getElementById("outlineBox");
-      var btnSave = document.getElementById("btnOutlineSave");
-      if (!name || !ta || !box) return;
-
-      var newText = String(ta.value || "");
-      if (btnSave) btnSave.disabled = true;
-
-      const db = loadDB();
-      const p = db.projects.find(x => String(x.name||"").trim() === name);
-      if (p){
-        p.preview = newText;
-        saveDB(db);
-      }
-
-      if (btnSave) btnSave.disabled = false;
-
-      newText = wrapTextSmart(newText, 85);
-      window.__outlineCache = newText;
-      box.innerHTML = '<div class="outline-html">' + formatOutlineTextToHtml(newText) + '</div>';
-      cancelOutlineEdit();
-    }
-
     function statusPill(status) {
       const raw = String(status || "").trim();
       const mapped = mapStatusLabel(raw);
@@ -2543,14 +2676,24 @@ function renderTableWithCachedMentors(rows, mentorMap) {
       fetchAllProjectsTable();
     }
 
-    function fetchPeopleTable(projectName) {
-      const tbody = byId("memberTableBody");
-      if (tbody) tbody.innerHTML = `<tr><td colspan="3" class="loading">กำลังโหลดสมาชิก...</td></tr>`;
+async function fetchPeopleTable(projectName) {
+  const tbody = byId("memberTableBody");
+  if (tbody) tbody.innerHTML = `<tr><td colspan="3" class="loading">กำลังโหลดสมาชิก...</td></tr>`;
 
-      const p = getProjectByName(projectName);
-      const rows = p && Array.isArray(p.members) ? p.members : [];
-      renderPeopleTable({ projectName, rows });
+  try {
+    const project = window.__proj.list.find(p => p.name === projectName);
+    if (!project) {
+      if (tbody) tbody.innerHTML = `<tr><td colspan="3" class="loading">ไม่พบโปรเจค</td></tr>`;
+      return;
     }
+
+    const members = await fetchProjectMembersAPI(project.id);
+    renderPeopleTable({ projectName, rows: members });
+  } catch (e) {
+    console.error('fetchPeopleTable error:', e);
+    if (tbody) tbody.innerHTML = `<tr><td colspan="3" class="loading" style="color:#dc3545;">เกิดข้อผิดพลาด</td></tr>`;
+  }
+}
 
     function positionPillClass(pos){
       const p = normalizeKey(pos);
@@ -2626,76 +2769,74 @@ function renderTableWithCachedMentors(rows, mentorMap) {
 
     function closeMemberModal(){ byId("memberModal").classList.remove("show"); }
 
-    function submitMemberModal(){
-      const projectName = window.__proj.selectedProjectName;
-      if (!projectName) return;
+async function submitMemberModal(){
+  const projectName = window.__proj.selectedProjectName;
+  if (!projectName) return;
 
-      const name = byId("m_name").value.trim();
-      const pos = byId("m_pos").value.trim();
-      if (!name){ alert("กรอกชื่อ"); return; }
-      if (!pos){ alert("กรอกตำแหน่ง"); return; }
+  const name = byId("m_name").value.trim();
+  const pos = byId("m_pos").value.trim();
+  if (!name){ alert("กรอกชื่อ"); return; }
+  if (!pos){ alert("กรอกตำแหน่ง"); return; }
 
-      const btn = byId("btnMemberSave");
-      btn.disabled = true;
+  const btn = byId("btnMemberSave");
+  btn.disabled = true;
 
-      const db = loadDB();
-      const p = db.projects.find(x => String(x.name||"").trim() === String(projectName||"").trim());
-      if (!p){
-        btn.disabled = false;
-        alert("ไม่พบโปรเจค");
-        return;
-      }
+  try {
+    const project = window.__proj.list.find(p => p.name === projectName);
+    if (!project) {
+      alert("ไม่พบโปรเจค");
+      return;
+    }
 
-      if (!Array.isArray(p.members)) p.members = [];
-
-      if (window.__proj.memberMode === "add"){
-        p.members.push({ tag: uid("m"), name, position: pos });
-        saveDB(db);
-
-        btn.disabled = false;
-        closeMemberModal();
-        fetchPeopleTable(projectName);
-
-        fetchAllProjectsTable();
-        openMembers(projectName);
-        return;
-      }
-
+    if (window.__proj.memberMode === "add") {
+      // 1. Create member
+      const member = await createMemberAPI({ name, position: pos });
+      
+      // 2. Assign to project
+      await assignMemberToProjectAPI(project.id, member._id);
+    } else {
+      // Edit mode
       const oldTag = window.__proj.memberEditOldTag;
-      const m = p.members.find(x => String(x.tag) === String(oldTag));
-      if (m){
-        m.name = name;
-        m.position = pos;
-        saveDB(db);
-      }
-
-      btn.disabled = false;
-      closeMemberModal();
-      fetchPeopleTable(projectName);
-      fetchAllProjectsTable();
-      openMembers(projectName);
+      await updateMemberAPI(oldTag, { name, position: pos });
     }
 
-    function deleteMemberTag(row){
-      const projectName = window.__proj.selectedProjectName;
-      if (!projectName) return;
+    closeMemberModal();
+    await fetchPeopleTable(projectName);
+    await fetchAllProjectsTable();
+    openMembers(projectName);
+  } catch (e) {
+    alert(`บันทึกไม่สำเร็จ: ${e.message}`);
+  } finally {
+    btn.disabled = false;
+  }
+}
 
-      const tag = String(row.tag || "");
-      if (!tag) return;
+async function deleteMemberTag(row){
+  const projectName = window.__proj.selectedProjectName;
+  if (!projectName) return;
 
-      if (!confirm(`ลบ "${row.name}" ใช่ไหม?`)) return;
+  const memberId = String(row.tag || "");
+  if (!memberId) return;
 
-      const db = loadDB();
-      const p = db.projects.find(x => String(x.name||"").trim() === String(projectName||"").trim());
-      if (!p || !Array.isArray(p.members)) return;
+  if (!confirm(`ลบ "${row.name}" ใช่ไหม?`)) return;
 
-      p.members = p.members.filter(m => String(m.tag) !== String(tag));
-      saveDB(db);
+  try {
+    const project = window.__proj.list.find(p => p.name === projectName);
+    if (!project) return;
 
-      fetchPeopleTable(projectName);
-      fetchAllProjectsTable();
-      openMembers(projectName);
-    }
+    // 1. Remove from project
+    await removeMemberFromProjectAPI(project.id, memberId);
+    
+    // 2. Optional: Delete member entirely
+    // await deleteMemberAPI(memberId);
+
+    await fetchPeopleTable(projectName);
+    await fetchAllProjectsTable();
+    openMembers(projectName);
+  } catch (e) {
+    alert(`ลบไม่สำเร็จ: ${e.message}`);
+  }
+}
 
     function openAdd() {
       var _di = byId("dropdownItems");
@@ -2709,47 +2850,29 @@ function renderTableWithCachedMentors(rows, mentorMap) {
     }
     function closeAdd() { byId("addModal").classList.remove("show"); }
 
-    function submitAdd() {
-      const name = byId("add_name").value.trim();
-      const start = byId("add_start").value || "";
-      const end = byId("add_end").value || "";
-      const note = byId("add_note").value.trim();
-        const figma = byId("add_figma").value.trim();  // ✅ เพิ่มบรรทัดนี้
+async function submitAdd() {
+  const name = byId("add_name").value.trim();
+  const start = byId("add_start").value || "";
+  const end = byId("add_end").value || "";
+  const note = byId("add_note").value.trim();
+  const figma = byId("add_figma").value.trim();
+  const status = byId("add_status").value;
+  
+  if (!name) { alert("กรอกชื่อโปรเจค"); return; }
 
-      const status = byId("add_status").value;
-      if (!name) { alert("กรอกชื่อโปรเจค"); return; }
+  const btn = byId("btnAddSave");
+  btn.disabled = true;
 
-      const btn = byId("btnAddSave");
-      btn.disabled = true;
-
-      const db = loadDB();
-      const exist = db.projects.some(p => String(p.name||"").trim().toLowerCase() === name.toLowerCase());
-      if (exist){
-        btn.disabled = false;
-        alert("มีชื่อโปรเจคนี้อยู่แล้ว");
-        return;
-      }
-
-      db.projects.push({
-        id: uid("p"),
-        name,
-        startISO: start,
-        endISO: end,
-        note,
-            figma,  // ✅ เพิ่มบรรทัดนี้
-
-        status,
-        mentors: [],
-        preview: "",
-        members: []
-      });
-      saveDB(db);
-
-      btn.disabled = false;
-      closeAdd();
-      fetchProjects();
-      goBackAll();
-    }
+  try {
+    await createProjectAPI({ name, startISO: start, endISO: end, note, figma, status });
+    closeAdd();
+    await fetchProjects();
+  } catch (e) {
+    alert(`สร้างโปรเจคไม่สำเร็จ: ${e.message}`);
+  } finally {
+    btn.disabled = false;
+  }
+}
 
     function openEdit(row) {
       window.__proj.selectedRow = row;
@@ -2767,62 +2890,39 @@ function renderTableWithCachedMentors(rows, mentorMap) {
 
     function closeEdit() { byId("editModal").classList.remove("show"); }
 
-    function submitEdit() {
-      const row = window.__proj.selectedRow;
-      if (!row) return;
+    async function submitEdit() {
+  const row = window.__proj.selectedRow;
+  if (!row) return;
 
-      const name = byId("edit_name").value.trim();
-      const start = byId("edit_start").value || "";
-      const end = byId("edit_end").value || "";
-      const note = byId("edit_note").value.trim();
-        const figma = byId("edit_figma").value.trim();  // ✅ เพิ่มบรรทัดนี้
+  const name = byId("edit_name").value.trim();
+  const start = byId("edit_start").value || "";
+  const end = byId("edit_end").value || "";
+  const note = byId("edit_note").value.trim();
+  const figma = byId("edit_figma").value.trim();
+  const status = byId("edit_status").value;
 
-      const status = byId("edit_status").value;
+  if (!name) { alert("กรอกชื่อโปรเจค"); return; }
 
-      if (!name) { alert("กรอกชื่อโปรเจค"); return; }
+  const btn = byId("btnEditSave");
+  btn.disabled = true;
 
-      const btn = byId("btnEditSave");
-      btn.disabled = true;
-
-      const db = loadDB();
-      const p = db.projects.find(x => String(x.id) === String(row.rowIndex));
-      if (!p){
-        btn.disabled = false;
-        alert("ไม่พบโปรเจค");
-        return;
-      }
-
-      // กันชื่อซ้ำกับโปรเจคอื่น
-      const dup = db.projects.some(x => x !== p && String(x.name||"").trim().toLowerCase() === name.toLowerCase());
-      if (dup){
-        btn.disabled = false;
-        alert("ชื่อโปรเจคซ้ำกับรายการอื่น");
-        return;
-      }
-
-      const oldName = p.name;
-
-      p.name = name;
-      p.startISO = start;
-      p.endISO = end;
-      p.note = note;
-        p.figma = figma;  // ✅ เพิ่มบรรทัดนี้
-      p.status = status;
-
-      saveDB(db);
-
-      // ถ้าเปลี่ยนชื่อ แล้วกำลังอยู่ใน member view ของชื่อเดิม → sync
-      if (window.__proj.selectedProjectName && window.__proj.selectedProjectName === oldName){
-        window.__proj.selectedProjectName = name;
-        byId("memberProjectTag").textContent = name;
-        byId("pageTitle").innerHTML = `<span class="dot"></span>${escapeHtml(name)}`;
-      }
-
-      btn.disabled = false;
-      closeEdit();
-      fetchProjects();
-      goBackAll();
+  try {
+    await updateProjectAPI(row.rowIndex, { name, startISO: start, endISO: end, note, figma, status });
+    
+    if (window.__proj.selectedProjectName && window.__proj.selectedProjectName === row.name){
+      window.__proj.selectedProjectName = name;
+      byId("memberProjectTag").textContent = name;
+      byId("pageTitle").innerHTML = `<span class="dot"></span>${escapeHtml(name)}`;
     }
+
+    closeEdit();
+    await fetchProjects();
+  } catch (e) {
+    alert(`แก้ไขโปรเจคไม่สำเร็จ: ${e.message}`);
+  } finally {
+    btn.disabled = false;
+  }
+}
 
     function clearAllFilters() {
       window.__proj.sortBy = "start";

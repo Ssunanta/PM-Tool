@@ -656,7 +656,7 @@ nav button.active {
      ========================= */
 
   const WEB_APP_URL = ""; 
-const API_BASE_URL = "https://pmapi.ideatrade1.com";
+const API_BASE_URL = "http://localhost:3000";
 
   let loadedTabs = {};
   let currentTab = "dashboard";
@@ -1105,30 +1105,52 @@ const API_BASE_URL = "https://pmapi.ideatrade1.com";
 
 // แทนที่ฟังก์ชัน loadDashboardProjectsLocal()
 async function loadDashboardProjectsFromAPI() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/projects?limit=100`);
+  // โหลด "ทุกหน้า" จาก GET /projects (มี pagination)
+  // ตามเอกสาร API: GET /projects จะคืน { data: [...], pagination: { page, limit, total, totalPages } }
+  const limit = 100;
+  let page = 1;
+  const all = [];
+
+  while (true) {
+    const url = `${API_BASE_URL}/projects?page=${page}&limit=${limit}`;
+    const response = await fetch(url, { headers: { "Accept": "application/json" } });
+    if (!response.ok) {
+      throw new Error(`GET /projects failed: ${response.status} ${response.statusText}`);
+    }
+
     const data = await response.json();
-    
-    // แปลง API response เป็น format ที่ Dashboard ใช้
-    return data.data.map(p => ({
-      id: p._id,
-      name: p.name,
-      status: mapAPIStatusToDashboard(p.status)
-    }));
-  } catch (e) {
-    console.error('Failed to load projects:', e);
-    return getMockProjectsForDashboard(); // fallback
+    const rows = Array.isArray(data?.data) ? data.data : [];
+    all.push(...rows);
+
+    const totalPages = Number(data?.pagination?.totalPages || 1);
+    if (page >= totalPages) break;
+    page += 1;
   }
+
+  // แปลง API response เป็น format ที่ Dashboard ใช้
+  return all.map(p => ({
+    id: p._id,
+    name: p.name,
+    status: mapAPIStatusToDashboard(p.status)
+  }));
 }
 
 function mapAPIStatusToDashboard(apiStatus) {
-  const map = {
-    'NOT_STARTED': 'Not Started',
-    'ONGOING': 'In Progress',
-    'COMPLETED': 'Finished',
-    'ON_HOLD': 'Delayed'
-  };
-  return map[apiStatus] || 'Not Started';
+  const s = String(apiStatus || "").toLowerCase().trim();
+
+  // ✅ enum จริงของ backend: not_started | on_track | delayed | completed
+  if (s === "not_started") return "Not Started";
+  if (s === "on_track") return "In Progress";
+  if (s === "delayed") return "Delayed";
+  if (s === "completed") return "Finished";
+
+  // เผื่อค่าเก่าหรือค่าอื่น
+  if (s.includes("not started")) return "Not Started";
+  if (s.includes("on") || s.includes("progress") || s.includes("ongoing")) return "In Progress";
+  if (s.includes("delay") || s.includes("hold")) return "Delayed";
+  if (s.includes("finish") || s.includes("done") || s.includes("complete")) return "Finished";
+
+  return "to be announced";
 }
 
   function initDashboard() {
@@ -1205,9 +1227,22 @@ function mapAPIStatusToDashboard(apiStatus) {
   }
 
 async function loadDashboardData() {
-  const projects = await loadDashboardProjectsFromAPI();
-  const stats = calcDashboardStats(projects);
-  applyDashboardData(stats, projects);
+  try {
+    const projects = await loadDashboardProjectsFromAPI();
+    const stats = calcDashboardStats(projects);
+    applyDashboardData(stats, projects);
+  } catch (e) {
+    console.error("Dashboard load failed:", e);
+    // แสดง error ใน status-body โดยไม่ใช้ mock
+    const tbody = document.getElementById("dashProjectRows");
+    const showing = document.getElementById("dashShowing");
+    if (showing) showing.textContent = "Showing 0/0";
+    if (tbody) {
+      tbody.innerHTML = `<tr><td colspan="2" style="padding:14px;color:#ef4444;font-weight:700;">โหลดข้อมูลโปรเจคไม่สำเร็จ</td></tr>`;
+    }
+    // อัปเดตการ์ดซ้ายเป็น 0
+    applyDashboardData({ total: 0, notStarted: 0, inProgress: 0, finished: 0, delayed: 0, pending: 0 }, []);
+  }
 }
 
   function calcDashboardStats(projects) {
@@ -1274,8 +1309,7 @@ async function loadDashboardData() {
 
     dashboardFilteredProjects = dashboardAllProjects.slice();
     renderDashboardProjectRows();
-
-    try { hideGlobalLoading(); } catch (e) {}
+try { hideGlobalLoading(); } catch (e) {}
   }
 
   function filterDashboardProjects() {
@@ -1285,8 +1319,8 @@ async function loadDashboardData() {
     dashboardFilteredProjects = !kw
       ? dashboardAllProjects.slice()
       : dashboardAllProjects.filter(p =>
-          p.name.toLowerCase().includes(kw) ||
-          p.status.toLowerCase().includes(kw)
+          String(p.name || "").toLowerCase().includes(kw) ||
+          String(p.status || "").toLowerCase().includes(kw)
         );
 
     renderDashboardProjectRows();
@@ -1307,8 +1341,8 @@ async function loadDashboardData() {
 
     tbody.innerHTML = rows.map(p => `
       <tr>
-        <td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(p.name)}</td>
-        <td>${statusPill(p.status)}</td>
+        <td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(p.name || "")}</td>
+        <td style="text-align:right;">${statusPill(p.status)}</td>
       </tr>
     `).join("");
   }

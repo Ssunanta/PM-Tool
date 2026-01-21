@@ -1845,124 +1845,42 @@ tbody td:first-child {
     let tempMeetingRow = null;
     let tempMeetingDay = null;
     const projectColors = {};
+    let memberCache = {}; // cache สำหรับเก็บ member data
 
-    /* =========================
-       ✅ BACKEND ADAPTER (READY TO SWAP)
-       ========================= */
-    const BACKEND = (() => {
-      const LS_KEYS = {
-        MEETING: "PMT_MEETING_SCHEDULE_V1",
-        INTERNS: "PMT_INTERNS_V1",
-        PROJECTS: "PMT_PROJECTS_V1",
-      };
+    async function getMemberIdByName(displayName) {
+  if (memberCache[displayName]) {
+    return memberCache[displayName];
+  }
 
-      const hasGAS = () => (window.google && google.script && google.script.run);
+  try {
+    const response = await apiRequest(`${API_CONFIG.endpoints.members}?search=${encodeURIComponent(displayName)}&limit=1`);
+    
+    if (response.data && response.data.length > 0) {
+      const memberId = response.data[0]._id;
+      memberCache[displayName] = memberId;
+      return memberId;
+    }
+  } catch (err) {
+    console.error('Cannot find member:', displayName);
+  }
+  
+  return null;
+}
 
-      // ---------- (A) เก็บ "ของเดิม" ไว้รอ (ไม่ใช้ตอนนี้) ----------
-      const gas = {
-        getInternData: () => {
-          // ✅ รอเสียบ backend ใหม่ / หรือเอากลับไปใช้ภายหลัง
-          // if (!hasGAS()) return Promise.reject(new Error("GAS not available"));
-          // return new Promise((resolve, reject) => {
-          //   google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getInternData();
-          // });
-        },
-        getProjectList: () => {
-          // if (!hasGAS()) return Promise.reject(new Error("GAS not available"));
-          // return new Promise((resolve, reject) => {
-          //   google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getProjectList();
-          // });
-        },
-        getMeetingScheduleData: () => {
-          // if (!hasGAS()) return Promise.reject(new Error("GAS not available"));
-          // return new Promise((resolve, reject) => {
-          //   google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getMeetingScheduleData();
-          // });
-        },
-        saveMeetingScheduleData: (filteredData) => {
-          // if (!hasGAS()) return Promise.reject(new Error("GAS not available"));
-          // return new Promise((resolve, reject) => {
-          //   google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).saveMeetingScheduleData(filteredData);
-          // });
-        }
-      };
+/* ==========================================
+   🔧 BACKEND CONFIGURATION
+   ========================================== */
 
-      // ---------- (B) API ที่หน้าเว็บเรียกจริง (ตอนนี้เป็น localStorage/mock) ----------
-      function safeJsonParse(str, fallback) {
-        try { return JSON.parse(str); } catch { return fallback; }
-      }
-
-      function getMeetingFromLS() {
-        const raw = localStorage.getItem(LS_KEYS.MEETING);
-        const data = safeJsonParse(raw, []);
-        return Array.isArray(data) ? data : (data && typeof data === "object" ? Object.values(data) : []);
-      }
-
-      function saveMeetingToLS(data) {
-        localStorage.setItem(LS_KEYS.MEETING, JSON.stringify(data || []));
-      }
-
-      function seedMockIfEmpty() {
-        // seed interns
-        if (!localStorage.getItem(LS_KEYS.INTERNS)) {
-          const mockInterns = [
-            { name: "ต้น", position: "Web Dev" },
-            { name: "ฟ้า", position: "UX/UI" },
-            { name: "บีม", position: "BA" },
-          ];
-          localStorage.setItem(LS_KEYS.INTERNS, JSON.stringify(mockInterns));
-        }
-
-        // seed projects
-        if (!localStorage.getItem(LS_KEYS.PROJECTS)) {
-          const mock = {
-            projects: [
-              { name: "Project A" },
-              { name: "Project B" },
-              { name: "Project C" },
-            ]
-          };
-          localStorage.setItem(LS_KEYS.PROJECTS, JSON.stringify(mock));
-        }
-
-        // seed meeting schedule (ถ้ายังไม่มี)
-        if (!localStorage.getItem(LS_KEYS.MEETING)) {
-          const mockMeeting = [
-            { order: "1", mon: [], tue: [], wed: [], thu: [], fri: [] },
-            { order: "2", mon: [], tue: [], wed: [], thu: [], fri: [] },
-            { order: "3", mon: [], tue: [], wed: [], thu: [], fri: [] },
-          ];
-          localStorage.setItem(LS_KEYS.MEETING, JSON.stringify(mockMeeting));
-        }
-      }
-
-      // mock api
-      const api = {
-        async getInternData() {
-          seedMockIfEmpty();
-          const raw = localStorage.getItem(LS_KEYS.INTERNS);
-          const data = safeJsonParse(raw, []);
-          return Array.isArray(data) ? data : [];
-        },
-        async getProjectList() {
-          seedMockIfEmpty();
-          const raw = localStorage.getItem(LS_KEYS.PROJECTS);
-          const data = safeJsonParse(raw, { projects: [] });
-          return data && typeof data === "object" ? data : { projects: [] };
-        },
-        async getMeetingScheduleData() {
-          seedMockIfEmpty();
-          return getMeetingFromLS();
-        },
-        async saveMeetingScheduleData(filteredData) {
-          seedMockIfEmpty();
-          saveMeetingToLS(filteredData || []);
-          return true;
-        }
-      };
-
-      return { api, gas, hasGAS };
-    })();
+// ✅ ตั้งค่า API Base URL
+const API_CONFIG = {
+  baseURL: 'https://pmapi.ideatrade1.com', 
+  endpoints: {
+    members: '/members',
+    projects: '/projects',
+    weeklyTemplates: '/weekly-templates',
+    weeklyMeetings: '/weekly-meeting'
+  }
+};
 
     /* ========== Color Generation ========== */
     function generateColorFromString(str) {
@@ -2583,47 +2501,46 @@ function toggleEditMeeting() {
     }
 
     /* ========== Save Data (NOW: localStorage via BACKEND.api) ========== */
-    async function saveMeetingData() {
-      if (!confirm("ต้องการบันทึกการเปลี่ยนแปลงใช่หรือไม่?")) return;
+async function saveMeetingData() {
+  if (!confirm("ต้องการบันทึกการเปลี่ยนแปลงใช่หรือไม่?")) return;
 
-      // กรอง row ที่มีข้อมูล
-      const filteredData = meetingData.filter(row => {
-        const days = ["mon", "tue", "wed", "thu", "fri"];
-        return days.some(day => (row[day] || []).length > 0);
-      });
+  const filteredData = meetingData.filter(row => {
+    const days = ["mon", "tue", "wed", "thu", "fri"];
+    return days.some(day => (row[day] || []).length > 0);
+  });
 
-      const saveBtn = document.getElementById("saveMeetingBtn");
-      const originalText = saveBtn ? saveBtn.innerHTML : "";
-      if (saveBtn) {
-        saveBtn.innerHTML = '<img src="https://img.icons8.com/?size=100&id=p8s7a0zN9p8T&format=png&color=000000" style="width:16px;height:16px;margin-right:4px;vertical-align:middle;" alt="loading"> กำลังบันทึก...';
-        saveBtn.disabled = true;
-      }
+  const saveBtn = document.getElementById("saveMeetingBtn");
+  const originalText = saveBtn ? saveBtn.innerHTML : "";
+  if (saveBtn) {
+    saveBtn.innerHTML = '<img src="https://img.icons8.com/?size=100&id=p8s7a0zN9p8T&format=png&color=000000" style="width:16px;height:16px;margin-right:4px;vertical-align:middle;" alt="loading"> กำลังบันทึก...';
+    saveBtn.disabled = true;
+  }
 
-      try {
-        await BACKEND.api.saveMeetingScheduleData(filteredData);
+  try {
+    await BACKEND.api.saveMeetingScheduleData(filteredData);
 
-        alert("✅ บันทึกข้อมูลสำเร็จ! (localStorage)");
-        isEditingMeeting = false;
-        meetingData = filteredData;
-        originalMeetingData = JSON.parse(JSON.stringify(filteredData));
+    alert("✅ บันทึกข้อมูลสำเร็จ!"); // ✅ ลบ (localStorage) ออก
+    isEditingMeeting = false;
+    meetingData = filteredData;
+    originalMeetingData = JSON.parse(JSON.stringify(filteredData));
 
-        document.getElementById("checkinAllBtn").style.display = "block";
-        document.getElementById("exportMeetingBtn").style.display = "block";
-        document.getElementById("editMeetingBtn").style.display = "block";
-        document.getElementById("saveMeetingBtn").style.display = "none";
-        document.getElementById("cancelMeetingBtn").style.display = "none";
+    document.getElementById("checkinAllBtn").style.display = "block";
+    document.getElementById("exportMeetingBtn").style.display = "block";
+    document.getElementById("editMeetingBtn").style.display = "block";
+    document.getElementById("saveMeetingBtn").style.display = "none";
+    document.getElementById("cancelMeetingBtn").style.display = "none";
 
-        renderMeeting(meetingData);
-      } catch (err) {
-        console.error("❌ saveMeetingData FAILED:", err);
-        alert("เกิดข้อผิดพลาด: " + (err.message || err));
-      } finally {
-        if (saveBtn) {
-          saveBtn.innerHTML = originalText;
-          saveBtn.disabled = false;
-        }
-      }
+    renderMeeting(meetingData);
+  } catch (err) {
+    console.error("❌ saveMeetingData FAILED:", err);
+    alert("เกิดข้อผิดพลาด: " + (err.message || err));
+  } finally {
+    if (saveBtn) {
+      saveBtn.innerHTML = originalText;
+      saveBtn.disabled = false;
     }
+  }
+}
 
     /* ========== Load Meeting (NOW: localStorage via BACKEND.api) ========== */
     async function loadMeeting() {

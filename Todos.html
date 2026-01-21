@@ -1712,751 +1712,676 @@
     </div>
 
     <script>
-  const $ = (id) => document.getElementById(id);
+  // ==================== API CONFIG ====================
+const API_BASE = "https://pmapi.ideatrade1.com";
+const API_TASKS = `${API_BASE}/tasks`;
+const API_PROJECTS = `${API_BASE}/projects`;
+const API_MEMBERS = `${API_BASE}/members`;
 
-  // =========================
-  // LocalStorage (No backend)
-  // =========================
-  const TODOS_STORE_KEY = "pmtool_todos_v1"; // เปลี่ยน key ได้ตอนย้าย backend ใหม่
-
-  function loadTodosState() {
-    try {
-      const raw = localStorage.getItem(TODOS_STORE_KEY);
-      const obj = raw ? JSON.parse(raw) : null;
-      return obj && Array.isArray(obj.todos) ? obj : { todos: [] };
-    } catch (e) {
-      console.error("loadTodosState error:", e);
-      return { todos: [] };
-    }
-  }
-
-  function saveTodosState(state) {
-    try {
-      localStorage.setItem(TODOS_STORE_KEY, JSON.stringify(state || { todos: [] }));
-    } catch (e) {
-      console.error("saveTodosState error:", e);
-    }
-  }
-
-  function uid() {
-    return "td_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 7);
-  }
-
-  // ✅ Mockup data (ถ้าไม่มีข้อมูลในเครื่อง)
-  function ensureMockTodosOnce() {
-    const st = loadTodosState();
-    if (st.todos && st.todos.length) return;
-
-    const today = new Date();
-    const fmt = (d) => {
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, "0");
-      const dd = String(d.getDate()).padStart(2, "0");
-      return `${y}-${m}-${dd}`;
-    };
-
-    const d1 = new Date(today.getTime());
-    const d2 = new Date(today.getTime() + 3 * 86400000);
-    const d3 = new Date(today.getTime() + 7 * 86400000);
-    const d4 = new Date(today.getTime() - 2 * 86400000);
-
-    st.todos = [
-      {
-        id: uid(),
-        projectId: "PM Tool",
-        title: "ปรับ UI ตาราง Todos ให้คอลัมน์ไม่ทับกัน",
-        assignedTo: "Pattamachart",
-        startDate: fmt(d1),
-        dueDate: fmt(d3),
-        submittedDate: "",
-        status: "In Progress",
-      },
-      {
-        id: uid(),
-        projectId: "Intern",
-        title: "เพิ่มฟังก์ชันค้นหาชื่อ + กันหน้าเด้งเวลา scroll",
-        assignedTo: "Team",
-        startDate: fmt(d4),
-        dueDate: fmt(d2),
-        submittedDate: "",
-        status: "Overdue",
-      },
-      {
-        id: uid(),
-        projectId: "Meeting",
-        title: "ทำ drag & drop meeting schedule + สีโปรเจกต์อัตโนมัติ",
-        assignedTo: "Aom",
-        startDate: fmt(d1),
-        dueDate: fmt(d2),
-        submittedDate: fmt(d1),
-        status: "Finished",
-      },
-      {
-        id: uid(),
-        projectId: "PM Tool",
-        title: "เตรียมโครง backend ใหม่ (ใช้ LocalStorage ชั่วคราว)",
-        assignedTo: "Pattamachart",
-        startDate: fmt(d1),
-        dueDate: "",
-        submittedDate: "",
-        status: "Not scheduled",
-      },
-    ];
-
-    saveTodosState(st);
-  }
-
-  // =========================
-  // State in memory (เดิม)
-  // =========================
-  let todosProjectList = [];
-  let todosSelectedProject = null;
-  let todosCache = [];
-  let manageMode = false; // default OFF: actions show only when Manage is active (green)
-  let todoOwnerList = [];
-
-  let ownerSearchText = "";
-  let sortField = "none";
-  let sortDir = "desc";
-  let statusFilter = "all";
-
-  function colSpanCount() {
-    return manageMode ? 8 : 7;
-  }
-
-  // =========================
-  // Init
-  // =========================
-  function initTodos() {
-    ensureMockTodosOnce();  // ✅ มี mockup ให้ทันที
-
-    // load lists + todos
-    refreshProjectAndOwnerLists();
-
-    // ✅ sync manage UI on first load (actions only when button is green)
-    applyManageBtnVisual();
-    const ah0 = $("actionsHeader");
-    if (ah0) ah0.style.display = manageMode ? "" : "none";
-
-    loadTodos(null);
-
-    // bind click outside dropdowns
-    if (!window.__todosDocClickBound) {
-      window.__todosDocClickBound = true;
-
-      document.addEventListener("click", (e) => {
-        const dd = $("todosDropdown");
-        const items = $("todosDropdownItems");
-        if (dd && items && !dd.contains(e.target)) {
-          items.classList.remove("open");
-        }
-
-        ["sortFieldCtrl", "sortDirCtrl", "statusFilterCtrl"].forEach((id) => {
-          const ctrl = $(id);
-          if (ctrl && !ctrl.contains(e.target)) {
-            const ctrlItems = ctrl.querySelector(".ctrl-items");
-            if (ctrlItems) ctrlItems.classList.remove("open");
-          }
-        });
-      });
-    }
-
-    // close modal when click overlay
-    const modal = $("todoModal");
-    if (modal) {
-      modal.addEventListener("click", (e) => {
-        if (e.target === modal) closeTodoModal();
-      });
-    }
-  }
-
-  function refreshProjectAndOwnerLists() {
-    const st = loadTodosState();
-    const todos = Array.isArray(st.todos) ? st.todos : [];
-
-    // projects
-    const mapP = new Map();
-    todos.forEach((t) => {
-      const p = String(t.projectId || "").trim();
-      if (!p) return;
-      mapP.set(p, true);
+// ==================== FETCH HELPERS ====================
+async function fetchAPI(url, options = {}) {
+  try {
+    const response = await fetch(url, {
+      headers: { "Content-Type": "application/json", ...options.headers },
+      ...options,
     });
-    todosProjectList = Array.from(mapP.keys()).sort((a, b) => a.localeCompare(b, "th"));
-
-    // owners
-    const mapO = new Map();
-    todos.forEach((t) => {
-      const o = String(t.assignedTo || "").trim();
-      if (!o) return;
-      mapO.set(o, true);
-    });
-    todoOwnerList = Array.from(mapO.keys()).sort((a, b) => a.localeCompare(b, "th"));
-
-    renderTodosDropdown();
-    renderTodoProjectSelect();
-    renderTodoOwnerSelect();
+    if (!response.ok) {
+      console.error(`API Error: ${response.status}`);
+      return null;
+    }
+    return await response.json();
+  } catch (e) {
+    console.error("Fetch error:", e);
+    return null;
   }
+}
 
-  // =========================
-  // Dropdowns / Filters (เดิม)
-  // =========================
-  function toggleCtrlDropdown(ctrlId) {
-    const ctrl = $(ctrlId);
-    if (!ctrl) return;
-    const items = ctrl.querySelector(".ctrl-items");
-    if (!items) return;
+// ==================== STATE ====================
+const $ = (id) => document.getElementById(id);
 
-    ["sortFieldCtrl", "sortDirCtrl", "statusFilterCtrl"].forEach((id) => {
-      if (id !== ctrlId) {
-        const other = $(id);
-        if (other) {
-          const otherItems = other.querySelector(".ctrl-items");
-          if (otherItems) otherItems.classList.remove("open");
-        }
+let todosProjectList = [];
+let todosSelectedProject = null;
+let todosCache = [];
+let manageMode = false;
+let todoOwnerList = [];
+
+let ownerSearchText = "";
+let sortField = "none";
+let sortDir = "desc";
+let statusFilter = "all";
+
+function colSpanCount() {
+  return manageMode ? 8 : 7;
+}
+
+// ==================== INIT ====================
+async function initTodos() {
+  await refreshProjectAndOwnerLists();
+  applyManageBtnVisual();
+  const ah0 = $("actionsHeader");
+  if (ah0) ah0.style.display = manageMode ? "" : "none";
+
+  await loadTodos(null);
+
+  // bind click outside dropdowns
+  if (!window.__todosDocClickBound) {
+    window.__todosDocClickBound = true;
+
+    document.addEventListener("click", (e) => {
+      const dd = $("todosDropdown");
+      const items = $("todosDropdownItems");
+      if (dd && items && !dd.contains(e.target)) {
+        items.classList.remove("open");
       }
-    });
 
-    items.classList.toggle("open");
-  }
-
-  function selectSortField(value, text) {
-    sortField = value;
-    const el = $("sortFieldText");
-    if (el) el.textContent = text;
-    const items = $("sortFieldItems");
-    if (items) items.classList.remove("open");
-    applyTodoView();
-  }
-
-  function selectSortDir(value, text) {
-    sortDir = value;
-    const el = $("sortDirText");
-    if (el) el.textContent = text;
-    const items = $("sortDirItems");
-    if (items) items.classList.remove("open");
-    applyTodoView();
-  }
-
-  function selectStatusFilter(value, text) {
-    statusFilter = value;
-    const el = $("statusFilterText");
-    if (el) el.textContent = text;
-    const items = $("statusFilterItems");
-    if (items) items.classList.remove("open");
-    applyTodoView();
-  }
-
-  function clearTodoFilters() {
-    const s = $("ownerSearchInput");
-    if (s) s.value = "";
-
-    sortField = "none";
-    sortDir = "desc";
-    statusFilter = "all";
-
-    const sortFieldText = $("sortFieldText");
-    const sortDirText = $("sortDirText");
-    const statusFilterText = $("statusFilterText");
-
-    if (sortFieldText) sortFieldText.textContent = "ไม่เรียง";
-    if (sortDirText) sortDirText.textContent = "ใหม่ → เก่า";
-    if (statusFilterText) statusFilterText.textContent = "ทั้งหมด";
-
-    ownerSearchText = "";
-    applyTodoView();
-  }
-
-  function toggleTodosDropdown() {
-    const menu = $("todosDropdownItems");
-    if (!menu) return;
-    menu.classList.toggle("open");
-  }
-
-  function selectTodosProject(projectName) {
-    todosSelectedProject = projectName;
-    const label = $("todosSelectedProjectText");
-    if (label) label.textContent = projectName || "All Projects";
-
-    const menu = $("todosDropdownItems");
-    if (menu) menu.classList.remove("open");
-
-    loadTodos(projectName);
-  }
-
-  function renderTodosDropdown() {
-    const container = $("todosDropdownItems");
-    if (!container) return;
-    container.innerHTML = "";
-
-    const allItem = document.createElement("div");
-    allItem.className = "dropdown-item";
-    allItem.textContent = "ทั้งหมด";
-    allItem.onclick = () => selectTodosProject(null);
-    container.appendChild(allItem);
-
-    todosProjectList.forEach((name) => {
-      const item = document.createElement("div");
-      item.className = "dropdown-item";
-      item.textContent = name;
-      item.onclick = () => selectTodosProject(name);
-      container.appendChild(item);
-    });
-  }
-
-  function renderTodoProjectSelect() {
-    const dl = $("todoProjectDatalist");
-    if (!dl) return;
-    dl.innerHTML = "";
-    todosProjectList.forEach((name) => {
-      const opt = document.createElement("option");
-      opt.value = name;
-      dl.appendChild(opt);
-    });
-  }
-
-  function renderTodoOwnerSelect() {
-    const sel = $("todoOwnerSelect");
-    if (!sel) return;
-    sel.innerHTML = `<option value="">เลือกผู้รับผิดชอบ</option>`;
-    todoOwnerList.forEach((name) => {
-      sel.innerHTML += `<option value="${escAttr(name)}">${escHtml(name)}</option>`;
-    });
-  }
-
-  /* =========================================================
-     ✅ FIX: manage button สีต้องเปลี่ยนแน่ (CSS + JS inline)
-     ========================================================= */
-  function applyManageBtnVisual() {
-    const btn = $("manageBtn");
-    if (!btn) return;
-
-    btn.classList.toggle("active", manageMode);
-
-    if (manageMode) {
-      btn.style.background = "#10b981";
-      btn.style.color = "#fff";
-      btn.style.border = "none";
-    } else {
-      btn.style.background = "#111";
-      btn.style.color = "#fff";
-      btn.style.border = "none";
-    }
-  }
-
-  function toggleManageMode() {
-    manageMode = !manageMode;
-
-    applyManageBtnVisual();
-
-    const ah = $("actionsHeader");
-    if (ah) ah.style.display = manageMode ? "" : "none";
-
-    applyTodoView();
-  }
-
-  // =========================
-  // Load / View
-  // =========================
-  function loadTodos(projectName) {
-    const st = loadTodosState();
-    const all = Array.isArray(st.todos) ? st.todos : [];
-    if (projectName) {
-      todosCache = all.filter((t) => String(t.projectId || "") === String(projectName));
-    } else {
-      todosCache = all;
-    }
-    applyTodoView();
-  }
-
-  function applyTodoView() {
-    ownerSearchText = String($("ownerSearchInput")?.value || "").trim();
-    let list = Array.isArray(todosCache) ? [...todosCache] : [];
-
-    // status filter
-    if (statusFilter !== "all") {
-      list = list.filter((t) => normalizeStatus(t?.status) === statusFilter);
-    }
-
-    // owner search
-    if (ownerSearchText) {
-      const q = ownerSearchText.toLowerCase();
-      list = list.filter((t) => String(t?.assignedTo || "").toLowerCase().includes(q));
-    }
-
-    // sort
-    if (sortField !== "none") {
-      const key =
-        sortField === "start"
-          ? "startDate"
-          : sortField === "deadline"
-          ? "dueDate"
-          : "submittedDate";
-
-      list.sort((a, b) => {
-        const ta = parseDateSafe(a?.[key]);
-        const tb = parseDateSafe(b?.[key]);
-
-        const aNull = ta === null;
-        const bNull = tb === null;
-        if (aNull && bNull) return 0;
-        if (aNull) return 1;
-        if (bNull) return -1;
-
-        const diff = ta - tb;
-        return sortDir === "asc" ? diff : -diff;
+      ["sortFieldCtrl", "sortDirCtrl", "statusFilterCtrl"].forEach((id) => {
+        const ctrl = $(id);
+        if (ctrl && !ctrl.contains(e.target)) {
+          const ctrlItems = ctrl.querySelector(".ctrl-items");
+          if (ctrlItems) ctrlItems.classList.remove("open");
+        }
       });
-    }
-
-    renderTodos(list);
-  }
-
-  function parseDateSafe(v) {
-    const s = String(v || "").trim();
-    if (!s || s === "-") return null;
-
-    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
-    if (m) {
-      const y = Number(m[1]),
-        mo = Number(m[2]) - 1,
-        d = Number(m[3]);
-      const dt = new Date(y, mo, d);
-      if (isNaN(dt.getTime())) return null;
-      return dt.getTime();
-    }
-
-    const dt2 = new Date(s);
-    if (isNaN(dt2.getTime())) return null;
-    return dt2.getTime();
-  }
-
-  // =========================
-  // Render table
-  // =========================
-  function renderTodos(todos) {
-    const tbody = $("todoTableBody");
-    if (!tbody) return;
-
-    tbody.innerHTML = "";
-
-    if (!todos || todos.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="${colSpanCount()}" class="empty-state"><div class="empty-state-icon">📋</div><div style="font-size:16px;font-weight:900;">ไม่มีงาน</div></td></tr>`;
-      if (manageMode) appendAddRow(tbody);
-      attachSelectColorListeners();
-      return;
-    }
-
-    todos.forEach((todo) => {
-      const rawStatus = String(todo.status || "").trim();
-      const norm = normalizeStatus(rawStatus);
-      const stClass = statusClassFromRaw(rawStatus, norm);
-
-      const statusCellHtml = manageMode
-        ? `
-          <div style="width:100%;max-width:100%;">
-            <select class="status-select ${stClass}"
-              onchange="changeTodoStatus('${escAttr(todo.id)}', this.value)">
-              <option value="Not scheduled" ${norm === "Not scheduled" ? "selected" : ""}>Not scheduled</option>
-              <option value="In Progress" ${norm === "In Progress" ? "selected" : ""}>In Progress</option>
-              <option value="Finished" ${norm === "Finished" ? "selected" : ""}>Finished</option>
-              <option value="Overdue" ${norm === "Overdue" ? "selected" : ""}>Overdue</option>
-            </select>
-          </div>
-        `
-        : statusPillHtml(rawStatus, norm);
-
-      const actionsTd = manageMode
-        ? `
-          <td class="col-actions">
-            <div class="actions-cell">
-              <button class="icon-btn" title="แก้ไข" onclick="openEditTodo('${escAttr(todo.id)}')"
-                style="background: none; border: none; cursor: pointer; padding: 4px;">
-                <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" alt="Edit" style="width: 20px; height: 20px;">
-              </button>
-              <button class="icon-btn danger" title="ลบ" onclick="deleteTodoUI('${escAttr(todo.id)}')"
-                style="background: none; border: none; cursor: pointer; padding: 4px;">
-                <img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000" alt="Delete" style="width: 20px; height: 20px;">
-              </button>
-            </div>
-          </td>
-        `
-        : ``;
-
-      tbody.insertAdjacentHTML(
-        "beforeend",
-        `
-        <tr>
-          <td><div class="wrap-3" title="${escAttr(todo.title || "-")}">${escHtml(todo.title || "-")}</div></td>
-          <td>${escHtml(todo.projectId || "-")}</td>
-          <td>${escHtml(todo.startDate || "-")}</td>
-          <td>${escHtml(todo.dueDate || "-")}</td>
-          <td>${escHtml(todo.submittedDate || "-")}</td>
-          <td>${statusCellHtml}</td>
-          <td><span class="owner-text" title="${escAttr(todo.assignedTo || "-")}">${escHtml(todo.assignedTo || "-")}</span></td>
-          ${actionsTd}
-        </tr>
-      `
-      );
     });
+  }
 
+  // close modal when click overlay
+  const modal = $("todoModal");
+  if (modal) {
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeTodoModal();
+    });
+  }
+}
+
+// ==================== DATA LOADING ====================
+async function refreshProjectAndOwnerLists() {
+  const result = await fetchAPI(`${API_TASKS}?limit=1000`);
+  const tasks = result?.data || [];
+
+  // Extract projects
+  const mapP = new Map();
+  tasks.forEach((t) => {
+    if (t.project?.name) mapP.set(t.project.name, true);
+  });
+  todosProjectList = Array.from(mapP.keys()).sort();
+
+  // Extract owners/assignees
+  const mapO = new Map();
+  tasks.forEach((t) => {
+    if (t.assignee?.displayName) mapO.set(t.assignee.displayName, true);
+  });
+  todoOwnerList = Array.from(mapO.keys()).sort();
+
+  renderTodosDropdown();
+  renderTodoProjectSelect();
+  renderTodoOwnerSelect();
+}
+
+async function loadTodos(projectName) {
+  let url = `${API_TASKS}?limit=1000`;
+  
+  const result = await fetchAPI(url);
+  const allTasks = result?.data || [];
+
+  if (projectName) {
+    todosCache = allTasks.filter((t) => t.project?.name === projectName);
+  } else {
+    todosCache = allTasks;
+  }
+  applyTodoView();
+}
+
+// ==================== FILTERING & SORTING ====================
+function applyTodoView() {
+  ownerSearchText = String($("ownerSearchInput")?.value || "").trim();
+  let list = Array.isArray(todosCache) ? [...todosCache] : [];
+
+  // Status filter
+  if (statusFilter !== "all") {
+    list = list.filter((t) => normalizeStatus(t?.status) === statusFilter);
+  }
+
+  // Owner search
+  if (ownerSearchText) {
+    const q = ownerSearchText.toLowerCase();
+    list = list.filter((t) =>
+      String(t?.assignee?.displayName || "").toLowerCase().includes(q)
+    );
+  }
+
+  // Sort
+  if (sortField !== "none") {
+    const key =
+      sortField === "start"
+        ? "startDate"
+        : sortField === "deadline"
+        ? "deadline"
+        : "finishedAt";
+
+    list.sort((a, b) => {
+      const ta = parseDateSafe(a?.[key]);
+      const tb = parseDateSafe(b?.[key]);
+
+      const aNull = ta === null;
+      const bNull = tb === null;
+      if (aNull && bNull) return 0;
+      if (aNull) return 1;
+      if (bNull) return -1;
+
+      const diff = ta - tb;
+      return sortDir === "asc" ? diff : -diff;
+    });
+  }
+
+  renderTodos(list);
+}
+
+function parseDateSafe(v) {
+  if (!v) return null;
+  const s = String(v).trim();
+  if (!s || s === "-") return null;
+
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s);
+  if (m) {
+    const y = Number(m[1]),
+      mo = Number(m[2]) - 1,
+      d = Number(m[3]);
+    const dt = new Date(y, mo, d);
+    return isNaN(dt.getTime()) ? null : dt.getTime();
+  }
+
+  const dt = new Date(s);
+  return isNaN(dt.getTime()) ? null : dt.getTime();
+}
+
+// ==================== DROPDOWNS ====================
+function toggleCtrlDropdown(ctrlId) {
+  const ctrl = $(ctrlId);
+  if (!ctrl) return;
+  const items = ctrl.querySelector(".ctrl-items");
+  if (!items) return;
+
+  ["sortFieldCtrl", "sortDirCtrl", "statusFilterCtrl"].forEach((id) => {
+    if (id !== ctrlId) {
+      const other = $(id);
+      if (other) {
+        const otherItems = other.querySelector(".ctrl-items");
+        if (otherItems) otherItems.classList.remove("open");
+      }
+    }
+  });
+
+  items.classList.toggle("open");
+}
+
+function selectSortField(value, text) {
+  sortField = value;
+  const el = $("sortFieldText");
+  if (el) el.textContent = text;
+  const items = $("sortFieldItems");
+  if (items) items.classList.remove("open");
+  applyTodoView();
+}
+
+function selectSortDir(value, text) {
+  sortDir = value;
+  const el = $("sortDirText");
+  if (el) el.textContent = text;
+  const items = $("sortDirItems");
+  if (items) items.classList.remove("open");
+  applyTodoView();
+}
+
+function selectStatusFilter(value, text) {
+  statusFilter = value;
+  const el = $("statusFilterText");
+  if (el) el.textContent = text;
+  const items = $("statusFilterItems");
+  if (items) items.classList.remove("open");
+  applyTodoView();
+}
+
+function clearTodoFilters() {
+  const s = $("ownerSearchInput");
+  if (s) s.value = "";
+
+  sortField = "none";
+  sortDir = "desc";
+  statusFilter = "all";
+
+  const sortFieldText = $("sortFieldText");
+  const sortDirText = $("sortDirText");
+  const statusFilterText = $("statusFilterText");
+
+  if (sortFieldText) sortFieldText.textContent = "ไม่เรียง";
+  if (sortDirText) sortDirText.textContent = "ใหม่ → เก่า";
+  if (statusFilterText) statusFilterText.textContent = "ทั้งหมด";
+
+  ownerSearchText = "";
+  applyTodoView();
+}
+
+function toggleTodosDropdown() {
+  const menu = $("todosDropdownItems");
+  if (!menu) return;
+  menu.classList.toggle("open");
+}
+
+function selectTodosProject(projectName) {
+  todosSelectedProject = projectName;
+  const label = $("todosSelectedProjectText");
+  if (label) label.textContent = projectName || "All Projects";
+
+  const menu = $("todosDropdownItems");
+  if (menu) menu.classList.remove("open");
+
+  loadTodos(projectName);
+}
+
+function renderTodosDropdown() {
+  const container = $("todosDropdownItems");
+  if (!container) return;
+  container.innerHTML = "";
+
+  const allItem = document.createElement("div");
+  allItem.className = "dropdown-item";
+  allItem.textContent = "ทั้งหมด";
+  allItem.onclick = () => selectTodosProject(null);
+  container.appendChild(allItem);
+
+  todosProjectList.forEach((name) => {
+    const item = document.createElement("div");
+    item.className = "dropdown-item";
+    item.textContent = name;
+    item.onclick = () => selectTodosProject(name);
+    container.appendChild(item);
+  });
+}
+
+function renderTodoProjectSelect() {
+  const dl = $("todoProjectDatalist");
+  if (!dl) return;
+  dl.innerHTML = "";
+  todosProjectList.forEach((name) => {
+    const opt = document.createElement("option");
+    opt.value = name;
+    dl.appendChild(opt);
+  });
+}
+
+function renderTodoOwnerSelect() {
+  const sel = $("todoOwnerSelect");
+  if (!sel) return;
+  sel.innerHTML = `<option value="">เลือกผู้รับผิดชอบ</option>`;
+  todoOwnerList.forEach((name) => {
+    sel.innerHTML += `<option value="${escAttr(name)}">${escHtml(name)}</option>`;
+  });
+}
+
+// ==================== MANAGE MODE ====================
+function applyManageBtnVisual() {
+  const btn = $("manageBtn");
+  if (!btn) return;
+
+  btn.classList.toggle("active", manageMode);
+
+  if (manageMode) {
+    btn.style.background = "#10b981";
+    btn.style.color = "#fff";
+    btn.style.border = "none";
+  } else {
+    btn.style.background = "#111";
+    btn.style.color = "#fff";
+    btn.style.border = "none";
+  }
+}
+
+function toggleManageMode() {
+  manageMode = !manageMode;
+
+  applyManageBtnVisual();
+
+  const ah = $("actionsHeader");
+  if (ah) ah.style.display = manageMode ? "" : "none";
+
+  applyTodoView();
+}
+
+// ==================== RENDER TABLE ====================
+function renderTodos(todos) {
+  const tbody = $("todoTableBody");
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+
+  if (!todos || todos.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="${colSpanCount()}" class="empty-state"><div class="empty-state-icon">📋</div><div style="font-size:16px;font-weight:900;">ไม่มีงาน</div></td></tr>`;
     if (manageMode) appendAddRow(tbody);
     attachSelectColorListeners();
+    return;
   }
 
-  function appendAddRow(tbody) {
-    const defaultProject = todosSelectedProject || "";
+  todos.forEach((todo) => {
+    const rawStatus = String(todo.status || "NOT_STARTED").trim();
+    const norm = normalizeStatus(rawStatus);
+    const stClass = statusClassFromRaw(rawStatus, norm);
+
+    const statusCellHtml = manageMode
+      ? `
+        <div style="width:100%;max-width:100%;">
+          <select class="status-select ${stClass}"
+            onchange="changeTodoStatus('${escAttr(todo._id)}', this.value)">
+            <option value="NOT_STARTED" ${norm === "NOT_STARTED" ? "selected" : ""}>Not scheduled</option>
+            <option value="ONGOING" ${norm === "ONGOING" ? "selected" : ""}>In Progress</option>
+            <option value="COMPLETED" ${norm === "COMPLETED" ? "selected" : ""}>Finished</option>
+            <option value="BLOCKED" ${norm === "BLOCKED" ? "selected" : ""}>Blocked</option>
+          </select>
+        </div>
+      `
+      : statusPillHtml(rawStatus, norm);
+
+    const actionsTd = manageMode
+      ? `
+        <td class="col-actions">
+          <div class="actions-cell">
+            <button class="icon-btn" title="แก้ไข" onclick="openEditTodo('${escAttr(todo._id)}')"
+              style="background: none; border: none; cursor: pointer; padding: 4px;">
+              <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" alt="Edit" style="width: 20px; height: 20px;">
+            </button>
+            <button class="icon-btn danger" title="ลบ" onclick="deleteTodoUI('${escAttr(todo._id)}')"
+              style="background: none; border: none; cursor: pointer; padding: 4px;">
+              <img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000" alt="Delete" style="width: 20px; height: 20px;">
+            </button>
+          </div>
+        </td>
+      `
+      : ``;
+
+    const startDate = todo.startDate ? formatDate(todo.startDate) : "-";
+    const deadline = todo.deadline ? formatDate(todo.deadline) : "-";
+    const finished = todo.finishedAt ? formatDate(todo.finishedAt) : "-";
+    const project = todo.project?.name || "-";
+    const assignee = todo.assignee?.displayName || "-";
+
     tbody.insertAdjacentHTML(
       "beforeend",
       `
       <tr>
-        <td colspan="${colSpanCount()}">
-          <div class="add-row-wrap">
-            <div class="add-row-btn" title="เพิ่มงานใหม่" onclick="openAddTodo('${escAttr(defaultProject)}')" style="font-size:20px;">＋</div>
-          </div>
-        </td>
+        <td><div class="wrap-3" title="${escAttr(todo.title || "-")}">${escHtml(todo.title || "-")}</div></td>
+        <td>${escHtml(project)}</td>
+        <td>${escHtml(startDate)}</td>
+        <td>${escHtml(deadline)}</td>
+        <td>${escHtml(finished)}</td>
+        <td>${statusCellHtml}</td>
+        <td><span class="owner-text" title="${escAttr(assignee)}">${escHtml(assignee)}</span></td>
+        ${actionsTd}
       </tr>
     `
     );
+  });
+
+  if (manageMode) appendAddRow(tbody);
+  attachSelectColorListeners();
+}
+
+function appendAddRow(tbody) {
+  const defaultProject = todosSelectedProject || "";
+  tbody.insertAdjacentHTML(
+    "beforeend",
+    `
+    <tr>
+      <td colspan="${colSpanCount()}">
+        <div class="add-row-wrap">
+          <div class="add-row-btn" title="เพิ่มงานใหม่" onclick="openAddTodo('${escAttr(defaultProject)}')" style="font-size:20px;">＋</div>
+        </div>
+      </td>
+    </tr>
+  `
+  );
+}
+
+// ==================== STATUS HANDLING ====================
+async function changeTodoStatus(todoId, newStatus) {
+  // Update colors immediately
+  const allSelects = document.querySelectorAll(".status-select");
+  allSelects.forEach((sel) => updateSelectColor(sel, sel.value));
+
+  // Send to backend
+  const result = await fetchAPI(`${API_TASKS}/${todoId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ status: newStatus }),
+  });
+
+  if (result) {
+    await refreshProjectAndOwnerLists();
+    await loadTodos(todosSelectedProject);
+  }
+}
+
+function updateSelectColor(selectEl, status) {
+  selectEl.classList.remove("st-notscheduled", "st-inprogress", "st-finished", "st-overdue");
+
+  if (status === "NOT_STARTED") selectEl.classList.add("st-notscheduled");
+  else if (status === "ONGOING") selectEl.classList.add("st-inprogress");
+  else if (status === "COMPLETED") selectEl.classList.add("st-finished");
+  else if (status === "BLOCKED") selectEl.classList.add("st-overdue");
+
+  // บังคับ inline style
+  if (status === "NOT_STARTED") {
+    selectEl.style.background = "#e9ecef";
+    selectEl.style.color = "#333333";
+    selectEl.style.WebkitTextFillColor = "#333333";
+  } else if (status === "ONGOING") {
+    selectEl.style.background = "#dbeafe";
+    selectEl.style.color = "#000066";
+    selectEl.style.WebkitTextFillColor = "#000066";
+  } else if (status === "COMPLETED") {
+    selectEl.style.background = "#d4edda";
+    selectEl.style.color = "#004d1a";
+    selectEl.style.WebkitTextFillColor = "#004d1a";
+  } else if (status === "BLOCKED") {
+    selectEl.style.background = "#fee";
+    selectEl.style.color = "#990000";
+    selectEl.style.WebkitTextFillColor = "#990000";
+  }
+}
+
+function attachSelectColorListeners() {
+  const allSelects = document.querySelectorAll(".status-select");
+  allSelects.forEach((sel) => {
+    updateSelectColor(sel, sel.value);
+  });
+}
+
+// ==================== MODAL CRUD ====================
+function openTodoModal() {
+  const m = $("todoModal");
+  if (m) m.classList.add("show");
+}
+
+function closeTodoModal() {
+  const m = $("todoModal");
+  if (m) m.classList.remove("show");
+}
+
+function openAddTodo(defaultProject) {
+  $("todoModalTitle").textContent = "เพิ่มงาน";
+  $("todoIdHidden").value = "";
+  $("todoName").value = "";
+  const ownerSel = $("todoOwnerSelect");
+  if (ownerSel) ownerSel.value = "";
+
+  $("todoStartDate").value = "";
+  $("todoDeadline").value = "";
+  $("todoSubmittedDate").value = "";
+  $("todoStatus").value = "ONGOING";
+
+  const inp = $("todoProjectInput");
+  if (inp) inp.value = defaultProject || (todosSelectedProject || "");
+
+  openTodoModal();
+}
+
+async function openEditTodo(todoId) {
+  const result = await fetchAPI(`${API_TASKS}/${todoId}`);
+  if (!result) return;
+
+  const item = result;
+
+  $("todoModalTitle").textContent = "แก้ไขงาน";
+  $("todoIdHidden").value = item._id || "";
+  $("todoName").value = item.title || "";
+
+  const ownerSel = $("todoOwnerSelect");
+  if (ownerSel && item.assignee?.displayName) {
+    ownerSel.value = item.assignee.displayName;
   }
 
-  // =========================
-  // Status change (LocalStorage)
-  // =========================
-  function changeTodoStatus(todoId, newStatus) {
-    // อัปเดตสี select ทันที
-    const allSelects = document.querySelectorAll(".status-select");
-    allSelects.forEach((sel) => updateSelectColor(sel, sel.value));
+  $("todoStartDate").value = item.startDate ? item.startDate.substring(0, 10) : "";
+  $("todoDeadline").value = item.deadline ? item.deadline.substring(0, 10) : "";
+  $("todoSubmittedDate").value = item.finishedAt ? item.finishedAt.substring(0, 10) : "";
+  $("todoStatus").value = item.status || "ONGOING";
 
-    const st = loadTodosState();
-    const item = (st.todos || []).find((x) => String(x.id) === String(todoId));
-    if (item) item.status = newStatus;
-    saveTodosState(st);
-
-    // refresh lists เผื่อโปรเจกต์/owner เปลี่ยน
-    refreshProjectAndOwnerLists();
-    loadTodos(todosSelectedProject);
+  const inp = $("todoProjectInput");
+  if (inp && item.project?.name) {
+    inp.value = item.project.name;
   }
 
-  function updateSelectColor(selectEl, status) {
-    selectEl.classList.remove("st-notscheduled", "st-inprogress", "st-finished", "st-overdue");
+  openTodoModal();
+}
 
-    if (status === "Not scheduled") selectEl.classList.add("st-notscheduled");
-    else if (status === "In Progress") selectEl.classList.add("st-inprogress");
-    else if (status === "Finished") selectEl.classList.add("st-finished");
-    else if (status === "Overdue") selectEl.classList.add("st-overdue");
+async function deleteTodoUI(todoId) {
+  if (!confirm("ยืนยันลบงานนี้?")) return;
 
-    // บังคับ inline style ให้ชัวร์
-    if (status === "Not scheduled") {
-      selectEl.style.background = "#e9ecef";
-      selectEl.style.color = "#333333";
-      selectEl.style.WebkitTextFillColor = "#333333";
-      selectEl.style.textShadow = "0 0 0 #333333";
-    } else if (status === "In Progress") {
-      selectEl.style.background = "#dbeafe";
-      selectEl.style.color = "#000066";
-      selectEl.style.WebkitTextFillColor = "#000066";
-      selectEl.style.textShadow = "0 0 0 #000066";
-    } else if (status === "Finished") {
-      selectEl.style.background = "#d4edda";
-      selectEl.style.color = "#004d1a";
-      selectEl.style.WebkitTextFillColor = "#004d1a";
-      selectEl.style.textShadow = "0 0 0 #004d1a";
-    } else if (status === "Overdue") {
-      selectEl.style.background = "#fee";
-      selectEl.style.color = "#990000";
-      selectEl.style.WebkitTextFillColor = "#990000";
-      selectEl.style.textShadow = "0 0 0 #990000";
-    }
+  const result = await fetchAPI(`${API_TASKS}/${todoId}`, { method: "DELETE" });
+  if (result) {
+    await refreshProjectAndOwnerLists();
+    await loadTodos(todosSelectedProject);
+  }
+}
+
+async function submitTodo() {
+  const id = ($("todoIdHidden").value || "").trim();
+  const projectName = ($("todoProjectInput").value || "").trim();
+  const title = ($("todoName").value || "").trim();
+  const assigneeName = ($("todoOwnerSelect").value || "").trim();
+
+  const startDate = ($("todoStartDate").value || "").trim();
+  const dueDate = ($("todoDeadline").value || "").trim();
+  const finishedDate = ($("todoSubmittedDate").value || "").trim();
+  const status = ($("todoStatus").value || "ONGOING").trim();
+
+  if (!title) {
+    alert("กรุณากรอกชื่องาน");
+    return;
   }
 
-  function attachSelectColorListeners() {
-    const allSelects = document.querySelectorAll(".status-select");
-    allSelects.forEach((sel) => {
-      updateSelectColor(sel, sel.value);
-      sel.removeEventListener("change", onSelectChange);
-      sel.addEventListener("change", onSelectChange);
+  // Find project ID
+  const allTasks = await fetchAPI(`${API_TASKS}?limit=1000`);
+  const projectObj = allTasks?.data?.find(t => t.project?.name === projectName)?.project;
+  
+  // Find assignee ID
+  const membersResult = await fetchAPI(`${API_MEMBERS}?search=${encodeURIComponent(assigneeName)}&limit=100`);
+  const assigneeObj = membersResult?.data?.find(m => m.displayName === assigneeName);
+
+  const payload = {
+    title,
+    description: "",
+    project: projectObj?._id || "",
+    assignee: assigneeObj?._id || null,
+    startDate: startDate || undefined,
+    deadline: dueDate || undefined,
+    finishedAt: finishedDate || undefined,
+    status: status || "ONGOING",
+    isOngoing: status === "ONGOING",
+  };
+
+  let result;
+  if (id) {
+    result = await fetchAPI(`${API_TASKS}/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    });
+  } else {
+    result = await fetchAPI(API_TASKS, {
+      method: "POST",
+      body: JSON.stringify(payload),
     });
   }
 
-  function onSelectChange(e) {
-    updateSelectColor(e.target, e.target.value);
-  }
-
-  // =========================
-  // Modal open/close + CRUD
-  // =========================
-  function openTodoModal() {
-    const m = $("todoModal");
-    if (m) m.classList.add("show");
-  }
-
-  function closeTodoModal() {
-    const m = $("todoModal");
-    if (m) m.classList.remove("show");
-  }
-
-  function openAddTodo(defaultProject) {
-    $("todoModalTitle").textContent = "เพิ่มงาน";
-    $("todoIdHidden").value = "";
-    $("todoName").value = "";
-    const ownerSel = $("todoOwnerSelect");
-    if (ownerSel) ownerSel.value = "";
-
-    $("todoStartDate").value = "";
-    $("todoDeadline").value = "";
-    $("todoSubmittedDate").value = "";
-    $("todoStatus").value = "In Progress";
-
-    const inp = $("todoProjectInput");
-    if (inp) inp.value = defaultProject || (todosSelectedProject || "");
-
-    openTodoModal();
-  }
-
-  function openEditTodo(todoId) {
-    const st = loadTodosState();
-    const item = (st.todos || []).find((x) => String(x.id) === String(todoId));
-    if (!item) return;
-
-    $("todoModalTitle").textContent = "แก้ไขงาน";
-    $("todoIdHidden").value = item.id || "";
-    $("todoName").value = item.title || "";
-
-    const ownerSel = $("todoOwnerSelect");
-    if (ownerSel) ownerSel.value = (item.assignedTo && item.assignedTo !== "-") ? item.assignedTo : "";
-
-    $("todoStartDate").value = item.startDate || "";
-    $("todoDeadline").value = item.dueDate || "";
-    $("todoSubmittedDate").value = item.submittedDate || "";
-    $("todoStatus").value = normalizeStatus(item.status || "In Progress");
-
-    const inp = $("todoProjectInput");
-    if (inp) inp.value = item.projectId || "";
-
-    openTodoModal();
-  }
-
-  function deleteTodoUI(todoId) {
-    if (!confirm("ยืนยันลบงานนี้?")) return;
-
-    const st = loadTodosState();
-    st.todos = (st.todos || []).filter((x) => String(x.id) !== String(todoId));
-    saveTodosState(st);
-
-    refreshProjectAndOwnerLists();
-    loadTodos(todosSelectedProject);
-  }
-
-  function submitTodo() {
-    const id = ($("todoIdHidden").value || "").trim();
-    const projectId = ($("todoProjectInput").value || "").trim();
-    const title = ($("todoName").value || "").trim();
-    const assignedTo = ($("todoOwnerSelect").value || "").trim();
-
-    const startDate = ($("todoStartDate").value || "").trim();
-    const dueDate = ($("todoDeadline").value || "").trim();
-    const submittedDate = ($("todoSubmittedDate").value || "").trim();
-    const status = ($("todoStatus").value || "In Progress").trim();
-
-    if (!title) {
-      alert("กรุณากรอกชื่องาน");
-      return;
-    }
-
-    const st = loadTodosState();
-    const payload = {
-      id: id || uid(),
-      projectId: projectId || "-",
-      title,
-      assignedTo: assignedTo || "-",
-      startDate: startDate || "-",
-      dueDate: dueDate || "-",
-      submittedDate: submittedDate || "-",
-      status: status || "In Progress",
-    };
-
-    if (id) {
-      const idx = (st.todos || []).findIndex((x) => String(x.id) === String(id));
-      if (idx >= 0) st.todos[idx] = payload;
-      else st.todos = [...(st.todos || []), payload];
-    } else {
-      st.todos = [...(st.todos || []), payload];
-    }
-
-    saveTodosState(st);
+  if (result) {
     closeTodoModal();
-
-    refreshProjectAndOwnerLists();
-
-    // ถ้าเลือกโปรเจกต์อยู่ ให้คงการมองเห็นตามนั้น
-    loadTodos(todosSelectedProject);
+    await refreshProjectAndOwnerLists();
+    await loadTodos(todosSelectedProject);
+  } else {
+    alert("เกิดข้อผิดพลาด กรุณาลองใหม่");
   }
+}
 
-  // =========================
-  // Utils (เดิม)
-  // =========================
-  function normalizeStatus(raw) {
-    const s0 = String(raw || "").trim();
-    const s = s0.toLowerCase();
-
-    if (!s0) return "In Progress";
-
-    if (s0.includes("ยังไม่ได้กำหนดวันเสร็จงาน")) return "Not scheduled";
-    if (s0.includes("อยู่ในกำหนด") || s0.includes("กำลัง") || s0.includes("ดำเนิน")) return "In Progress";
-    if (s0.includes("เสร็จ") || s0.includes("done")) return "Finished";
-    if (s0.includes("เกินกำหนด") || s0.includes("overdue")) return "Overdue";
-
-    // fallback อังกฤษ
-    if (s.includes("not")) return "Not scheduled";
-    if (s.includes("progress")) return "In Progress";
-    if (s.includes("finish")) return "Finished";
-    if (s.includes("overdue")) return "Overdue";
-
-    return s0; // ถ้าเป็นค่าเดิมอยู่แล้ว
+// ==================== UTILS ====================
+function formatDate(dateStr) {
+  if (!dateStr) return "-";
+  try {
+    return dateStr.substring(0, 10);
+  } catch (e) {
+    return "-";
   }
+}
 
-  function statusClassFromRaw(raw, norm) {
-    const n = String(norm || "").trim();
-    if (n === "Not scheduled") return "st-notscheduled";
-    if (n === "In Progress") return "st-inprogress";
-    if (n === "Finished") return "st-finished";
-    if (n === "Overdue") return "st-overdue";
-    return "";
-  }
+function normalizeStatus(raw) {
+  const s = String(raw || "").toUpperCase().trim();
 
-  function statusPillHtml(rawStatus, norm) {
-    const n = String(norm || "").trim();
-    const cls =
-      n === "Not scheduled"
-        ? "notscheduled"
-        : n === "In Progress"
-        ? "inprogress"
-        : n === "Finished"
-        ? "finished"
-        : n === "Overdue"
-        ? "overdue"
-        : "inprogress";
+  if (s.includes("NOT_STARTED") || s.includes("NOT SCHEDULED")) return "NOT_STARTED";
+  if (s.includes("ONGOING") || s.includes("PROGRESS")) return "ONGOING";
+  if (s.includes("COMPLETED") || s.includes("FINISHED")) return "COMPLETED";
+  if (s.includes("BLOCKED") || s.includes("OVERDUE")) return "BLOCKED";
 
-    const text = rawStatus ? String(rawStatus) : n;
-    return `<span class="status-pill ${cls}">${escHtml(text)}</span>`;
-  }
+  return "ONGOING";
+}
 
-  function escHtml(s) {
-    return String(s ?? "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
-  }
+function statusClassFromRaw(raw, norm) {
+  const n = String(norm || "").trim();
+  if (n === "NOT_STARTED") return "st-notscheduled";
+  if (n === "ONGOING") return "st-inprogress";
+  if (n === "COMPLETED") return "st-finished";
+  if (n === "BLOCKED") return "st-overdue";
+  return "";
+}
 
-  function escAttr(s) {
-    return escHtml(s).replace(/"/g, "&quot;");
-  }
-  // ✅ ให้ Todos รู้ว่าโดน inject แล้ว
+function statusPillHtml(rawStatus, norm) {
+  const n = String(norm || "").trim();
+  const cls =
+    n === "NOT_STARTED"
+      ? "notscheduled"
+      : n === "ONGOING"
+      ? "inprogress"
+      : n === "COMPLETED"
+      ? "finished"
+      : n === "BLOCKED"
+      ? "overdue"
+      : "inprogress";
+
+  const text = rawStatus ? String(rawStatus) : n;
+  return `<span class="status-pill ${cls}">${escHtml(text)}</span>`;
+}
+
+function escHtml(s) {
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function escAttr(s) {
+  return escHtml(s).replace(/"/g, "&quot;");
+}
+
+// ✅ Tab loaded event
 window.addEventListener("tab:loaded", (e) => {
   if (!e?.detail || e.detail.tabName !== "todos") return;
 
-  // เรียก init ของ todos ถ้ามี
   if (typeof window.initTodos === "function") window.initTodos();
   else if (typeof window.loadTodos === "function") window.loadTodos();
 });

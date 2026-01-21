@@ -2463,5 +2463,41 @@ window.addEventListener("tab:loaded", (e) => {
 
 </script>
   </div>
+
+<!-- === TODOS MOBILE-ONLY FIXES v3 (Phones) === -->
+<style>
+@media (max-width: 479px) {
+  #todosPage .todos-filters,
+  #todosTab .todos-filters,
+  .todos-filters {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  #todosPage .todos-filters .ctrl,
+  #todosPage .todos-filters .ctrl-selected,
+  #todosPage .todos-filters .search-ctrl,
+  #todosPage .todos-filters .search-ctrl input,
+  #todosPage .todos-filters .btn-clear,
+  #todosTab .todos-filters .ctrl,
+  #todosTab .todos-filters .ctrl-selected,
+  #todosTab .todos-filters .search-ctrl,
+  #todosTab .todos-filters .search-ctrl input,
+  #todosTab .todos-filters .btn-clear,
+  .todos-filters .ctrl,
+  .todos-filters .ctrl-selected,
+  .todos-filters .search-ctrl,
+  .todos-filters .search-ctrl input,
+  .todos-filters .btn-clear {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+}
+</style>
 </body>
 </html>

@@ -3020,6 +3020,51 @@ function renderTableWithCachedMentors(rows, mentorMap) {
   }
 }
 </style>
+
+<!-- === MOBILE-ONLY FIXES v4 (Phones) === -->
+<style>
+/* Hide filters/top row when viewing Members (JS toggles .show-members) */
+#projectsTab.show-members #topRow,
+#projectsTab.show-members .top-row {
+  display: none !important;
+}
+
+/* Modal + label tweaks */
+.modal {
+  padding: 10px !important;
+}
+.label {
+  margin-left: 10px !important;
+}
+</style>
+
+<script>
+(function() {
+  try {
+    var tab = document.getElementById("projectsTab");
+    var member = document.getElementById("memberSection");
+    if (!tab || !member) return;
+
+    function sync() {
+      var st = (member.getAttribute("style") || "").toLowerCase();
+      var visible = st.indexOf("display: block") !== -1 ||
+        (member.offsetParent !== null && getComputedStyle(member).display !== "none");
+      if (visible) tab.classList.add("show-members");
+      else tab.classList.remove("show-members");
+    }
+
+    sync();
+
+    var mo = new MutationObserver(sync);
+    mo.observe(member, { attributes: true, attributeFilter: ["style", "class"] });
+
+    var proj = document.getElementById("projectSection");
+    if (proj) mo.observe(proj, { attributes: true, attributeFilter: ["style", "class"] });
+
+    document.addEventListener("click", function() { setTimeout(sync, 0); }, true);
+  } catch (e) {}
+})();
+</script>
 </body>
 
 </html>

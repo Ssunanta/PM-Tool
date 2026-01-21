@@ -1882,6 +1882,338 @@ const API_CONFIG = {
   }
 };
 
+/* ==========================================
+   🔧 BACKEND API HANDLER (FIXED - ตาม API Doc)
+   ========================================== */
+
+const BACKEND = {
+  api: {
+    // ✅ 1. Get Meeting Schedule Data
+    async getMeetingScheduleData() {
+      try {
+        console.log('📡 Fetching meeting schedule...');
+        
+        // ✅ ดึง active template
+        const response = await fetch(
+          `${API_CONFIG.baseURL}${API_CONFIG.endpoints.weeklyTemplates}?active=true&limit=1`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            }
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const result = await response.json();
+        console.log('✅ Raw API Response:', result);
+        
+        // ✅ ตรวจสอบว่ามี data หรือไม่
+        if (!result || !result.data || result.data.length === 0) {
+          console.log('⚠️ No template found, returning empty array');
+          return [];
+        }
+
+        // ✅ ใช้ template แรก (active)
+        const template = result.data[0];
+        const weekPattern = template.weekPattern || {};
+
+        // ✅ แปลง weekPattern เป็น array format
+        const scheduleData = await this.convertWeekPatternToSchedule(weekPattern);
+        
+        console.log('✅ Formatted Schedule:', scheduleData);
+        return scheduleData;
+
+      } catch (err) {
+        console.error('❌ getMeetingScheduleData Error:', err);
+        throw err;
+      }
+    },
+
+    // ✅ 2. แปลง weekPattern เป็น schedule array
+    async convertWeekPatternToSchedule(weekPattern) {
+      // หา max rows จากทุกวัน
+      const days = ['MON', 'TUE', 'WED', 'THU', 'FRI'];
+      const maxRows = Math.max(
+        ...days.map(day => (weekPattern[day] || []).length),
+        1 // อย่างน้อย 1 แถว
+      );
+
+      // สร้าง array ตาม max rows
+      const schedule = [];
+      
+      for (let rowIndex = 0; rowIndex < maxRows; rowIndex++) {
+        const row = {
+          order: (rowIndex + 1).toString(),
+          mon: [],
+          tue: [],
+          wed: [],
+          thu: [],
+          fri: []
+        };
+
+        // แปลงแต่ละวัน
+        for (const day of days) {
+          const dayKey = day.toLowerCase(); // mon, tue, wed, thu, fri
+          const dayData = weekPattern[day] || [];
+          
+          if (dayData[rowIndex]) {
+            const item = dayData[rowIndex];
+            
+            // ✅ ดึงข้อมูล member จาก memberId
+            const memberInfo = await this.getMemberInfo(item.memberId);
+            
+            if (memberInfo) {
+              row[dayKey].push({
+                text: `${memberInfo.nickname || memberInfo.displayName} ${memberInfo.position || ''}`,
+                isProject: false
+              });
+
+              // ✅ เพิ่ม project ถ้ามี
+              if (item.project) {
+                row[dayKey].push({
+                  text: item.project,
+                  isProject: true
+                });
+              }
+            }
+          }
+        }
+
+        schedule.push(row);
+      }
+
+      return schedule;
+    },
+
+    // ✅ 3. Get Member Info
+    async getMemberInfo(memberId) {
+      try {
+        if (!memberId) return null;
+
+        const response = await fetch(
+          `${API_CONFIG.baseURL}${API_CONFIG.endpoints.members}/${memberId}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            }
+          }
+        );
+
+        if (!response.ok) return null;
+        
+        return await response.json();
+      } catch (err) {
+        console.error('❌ getMemberInfo Error:', err);
+        return null;
+      }
+    },
+
+    // ✅ 4. Save Meeting Schedule Data
+    async saveMeetingScheduleData(data) {
+      try {
+        console.log('💾 Saving meeting schedule...', data);
+
+        // ✅ แปลง data format เป็น weekPattern
+        const weekPattern = {
+          MON: [],
+          TUE: [],
+          WED: [],
+          THU: [],
+          FRI: []
+        };
+
+        const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
+        const dayMap = {
+          mon: 'MON',
+          tue: 'TUE',
+          wed: 'WED',
+          thu: 'THU',
+          fri: 'FRI'
+        };
+
+        // วน loop แต่ละ row
+        for (const row of data) {
+          for (const dayKey of days) {
+            const items = row[dayKey] || [];
+            const dayUpper = dayMap[dayKey];
+
+            if (items.length === 0) continue;
+
+            let currentMemberId = null;
+            let currentProject = null;
+
+            for (const item of items) {
+              const itemObj = typeof item === 'object' ? item : { text: item, isProject: false };
+
+              if (itemObj.isProject) {
+                currentProject = itemObj.text;
+              } else {
+                // ✅ แยก name และ position
+                const text = itemObj.text;
+                const parts = text.split(/\s+/);
+                const nickname = parts[0];
+
+                // ✅ หา memberId จาก nickname
+                currentMemberId = await getMemberIdByName(nickname);
+
+                if (currentMemberId) {
+                  weekPattern[dayUpper].push({
+                    memberId: currentMemberId,
+                    project: currentProject || ''
+                  });
+                }
+
+                currentProject = null; // reset
+              }
+            }
+          }
+        }
+
+        console.log('📤 WeekPattern Payload:', weekPattern);
+
+        // ✅ ดึง active template ก่อน
+        const getResponse = await fetch(
+          `${API_CONFIG.baseURL}${API_CONFIG.endpoints.weeklyTemplates}?active=true&limit=1`,
+          {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+          }
+        );
+
+        let templateId = null;
+        if (getResponse.ok) {
+          const getResult = await getResponse.json();
+          if (getResult.data && getResult.data.length > 0) {
+            templateId = getResult.data[0]._id;
+          }
+        }
+
+        let response;
+
+        // ✅ ถ้ามี template อยู่แล้ว = PATCH, ถ้าไม่มี = POST
+        if (templateId) {
+          console.log('🔄 Updating existing template:', templateId);
+          
+          response = await fetch(
+            `${API_CONFIG.baseURL}${API_CONFIG.endpoints.weeklyTemplates}/${templateId}`,
+            {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ weekPattern, active: true })
+            }
+          );
+        } else {
+          console.log('➕ Creating new template');
+          
+          response = await fetch(
+            `${API_CONFIG.baseURL}${API_CONFIG.endpoints.weeklyTemplates}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ weekPattern, active: true })
+            }
+          );
+        }
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`HTTP ${response.status}: ${errorText}`);
+        }
+        
+        const result = await response.json();
+        console.log('✅ Save Response:', result);
+        return result;
+
+      } catch (err) {
+        console.error('❌ saveMeetingScheduleData Error:', err);
+        throw err;
+      }
+    },
+
+    // ✅ 5. Get Intern Data (Members)
+    async getInternData() {
+      try {
+        console.log('📡 Fetching members...');
+
+        const response = await fetch(
+          `${API_CONFIG.baseURL}${API_CONFIG.endpoints.members}?limit=100`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            }
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('✅ Members Response:', result);
+        
+        const members = (result.data || []).map(member => ({
+          name: member.nickname || member.displayName,
+          position: member.position || ''
+        }));
+
+        console.log('✅ Formatted Members:', members);
+        return members;
+
+      } catch (err) {
+        console.error('❌ getInternData Error:', err);
+        return [];
+      }
+    },
+
+    // ✅ 6. Get Project List
+    async getProjectList() {
+      try {
+        console.log('📡 Fetching projects...');
+
+        const response = await fetch(
+          `${API_CONFIG.baseURL}${API_CONFIG.endpoints.projects}?limit=100`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            }
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('✅ Projects Response:', result);
+        
+        const projects = {
+          projects: (result.data || []).map(project => ({
+            name: project.name || project.title
+          }))
+        };
+
+        console.log('✅ Formatted Projects:', projects);
+        return projects;
+
+      } catch (err) {
+        console.error('❌ getProjectList Error:', err);
+        return { projects: [] };
+      }
+    }
+  }
+};
+
     /* ========== Color Generation ========== */
     function generateColorFromString(str) {
       let hash = 0;
@@ -3002,9 +3334,51 @@ async function saveMeetingData() {
     window.deselectAllCheckin = deselectAllCheckin;
     window.exportCheckinList = exportCheckinList;
 
+    /* ==========================================
+   🧪 TEST API CONNECTION
+   ========================================== */
+
+async function testAPIConnection() {
+  console.log('🧪 Testing API Connection...');
+  console.log('API Base URL:', API_CONFIG.baseURL);
+  console.log('Endpoints:', API_CONFIG.endpoints);
+
+  try {
+    // Test 1: Weekly Templates
+    console.log('\n📋 Test 1: Weekly Templates');
+    const templates = await BACKEND.api.getMeetingScheduleData();
+    console.log('✅ Result:', templates);
+
+    // Test 2: Members
+    console.log('\n👥 Test 2: Members');
+    const members = await BACKEND.api.getInternData();
+    console.log('✅ Result:', members);
+
+    // Test 3: Projects
+    console.log('\n📁 Test 3: Projects');
+    const projects = await BACKEND.api.getProjectList();
+    console.log('✅ Result:', projects);
+
+    console.log('\n✅ All API tests passed!');
+    return true;
+
+  } catch (err) {
+    console.error('\n❌ API Test Failed:', err);
+    return false;
+  }
+}
+
     /* ========== AUTO LOAD ========== */
-    document.addEventListener("DOMContentLoaded", function () {
-      loadMeeting();
+    document.addEventListener("DOMContentLoaded", async function () {
+  // ✅ Test API ก่อน
+  const isAPIReady = await testAPIConnection();
+  
+  if (!isAPIReady) {
+    console.warn('⚠️ API not ready, using empty data');
+  }
+
+  // โหลดข้อมูล
+  loadMeeting();
 
       // เพิ่มส่วนนี้
       const tableWrapper = document.querySelector('.meeting-table-wrapper');

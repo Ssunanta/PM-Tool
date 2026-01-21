@@ -948,7 +948,7 @@
       max-width: 640px;
       background: #ffffff;
       border-radius: 22px;
-      padding: 0;
+      padding: 10px;
       /* ✅ ย้าย padding ไปที่ส่วนเนื้อหา */
       box-shadow: 0 18px 60px rgba(0, 0, 0, .28);
       border: 1px solid rgba(15, 23, 42, .08);
@@ -1497,6 +1497,20 @@
     box-sizing: border-box !important;
   }
 }
+@media (max-width: 479px) {
+  #sortControls .btn-clear,
+  #projectsTab #sortControls .btn-clear,
+  button.btn-clear {
+    height: 50px !important;
+    min-height: 50px !important;
+    line-height: 50px !important;  /* อันนี้สำคัญมาก */
+    padding: 0 16px !important;     /* กัน padding เดิมทำให้เตี้ย */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+}
+
 </style>
 </head>
 
@@ -2935,6 +2949,7 @@ function renderTableWithCachedMentors(rows, mentorMap) {
   #sortControls .ctrl-selected {
     width: 100% !important;
     justify-content: space-between !important;
+    height: 50px;
   }
 
   /* override inline min-width on search wrapper */
@@ -3065,6 +3080,77 @@ function renderTableWithCachedMentors(rows, mentorMap) {
   } catch (e) {}
 })();
 </script>
+
+<!-- === MOBILE-ONLY FIXES v5 (Projects tweaks) === -->
+<style>
+/* 1) Projects main: make ctrl-selected taller */
+#projectsTab .ctrl-selected {
+  height: 50px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* 2) Members list: allow scrolling + tighter columns on phones */
+@media (max-width: 479px) {
+  /* allow both vertical + horizontal scroll inside member area */
+  #projectsTab.show-members #memberSection .table-wrap,
+  #memberSection .table-wrap {
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x pan-y !important;
+    max-width: 100% !important;
+  }
+
+  /* make table fit screen more (narrower columns), but still scroll if needed */
+  #projectsTab.show-members #memberTable,
+  #memberTable {
+    width: 100% !important;
+    min-width: 100% !important;
+    table-layout: fixed !important;
+  }
+
+  /* tighter padding so it looks cleaner */
+  #memberTable th, #memberTable td {
+    padding: 10px 8px !important;
+  }
+
+  /* narrower column percentages */
+  #memberTable thead th:nth-child(1),
+  #memberTable tbody td:nth-child(1) {
+    width: 20% !important;
+    min-width: 0 !important;
+    text-align: left !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  #memberTable thead th:nth-child(2),
+  #memberTable tbody td:nth-child(2) {
+    width: 20% !important;
+    min-width: 0 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+  }
+  #memberTable thead th:nth-child(3),
+  #memberTable tbody td:nth-child(3) {
+    width: 40% !important;
+    min-width: 0 !important;
+    text-align: center !important;
+  }
+
+  /* keep action buttons inside if present */
+  #memberTable tbody td:nth-child(3) {
+    white-space: normal !important;
+  }
+  #memberTable tbody td:nth-child(3) .mini-btn {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 4px 0 !important;
+    box-sizing: border-box !important;
+  }
+}
+</style>
 </body>
 
 </html>

@@ -731,7 +731,8 @@ function setTabHTML(tabElement, html, tabName) {
   if (oldExtra) oldExtra.remove();
 
   if (rawCss) {
-    // ⚠️ ✅ เพิ่มเงื่อนไข: ถ้าเป็น intern หรือ todos ไม่ต้อง scope CSS
+    // ✅ FIX: เปลี่ยนเงื่อนไข - เฉพาะ intern, todos ที่ไม่ scope
+    // notes (note) ให้ scope CSS ปกติ เพื่อให้เหมือน standalone
     const noScopeTabs = ["intern", "todos"];
     const finalCss = noScopeTabs.includes(tabName)
       ? rawCss 
@@ -743,7 +744,8 @@ function setTabHTML(tabElement, html, tabName) {
     document.head.appendChild(styleEl);
   }
 
-  if (tabName === "notes") {
+  // ✅ Notes ยังคงใช้ extra style สำหรับ title
+  if (tabName === "note") {
     const extraStyle = document.createElement("style");
     extraStyle.id = `${styleId}-extra`;
     extraStyle.textContent = `#notesTab .notes-main-title { margin-top: 0 !important; }`;

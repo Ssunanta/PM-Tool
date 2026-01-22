@@ -7,7 +7,7 @@
 
   <title>Notes Board</title>
   <style>
- * { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
     body { 
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
       background: #f3f3f3;
@@ -40,28 +40,233 @@
     .notes-new-page { margin-top: 8px; padding: 14px; border: 1px dashed rgba(255, 255, 255, 0.4); border-radius: 10px; display: flex; gap: 8px; align-items: center; justify-content: center; font-size: 14px; opacity: 0.8; cursor: pointer; transition: all 0.3s ease; }
     .notes-new-page:hover { opacity: 1; background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.7); transform: translateY(-2px); }
 
-    .notes-calendar-section { margin-top: 20px; }
+    .notes-calendar-section { margin-top: 20px; overflow-x: hidden; }
     .notes-calendar-title { font-size: 18px; font-weight: 600; padding: 8px 16px; background: #e8e8e8; border-radius: 8px; display: inline-block; margin-bottom: 16px; color: #555; }
-    .calendar-container { background: #fafafa; border: 1px solid #eee; border-radius: 12px; padding: 20px; }
-    .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .calendar-month { font-size: 18px; font-weight: 600; color: #333; }
-    .calendar-nav { display: flex; gap: 10px; }
-    .calendar-nav button { padding: 8px 16px; border: 1px solid #ddd; background: #fff; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 14px; color: #555; }
-    .calendar-nav button:hover { background: #f5f5f5; border-color: #bbb; }
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
-    .calendar-day-header { text-align: center; font-weight: 600; font-size: 14px; color: #666; padding: 12px 0; background: #f9f9f9; border-radius: 6px; }
-    .calendar-day { min-height: 90px; border: 1px solid #e5e5e5; border-radius: 8px; padding: 10px; cursor: pointer; transition: all 0.2s; position: relative; background: #fff; }
-    .calendar-day:hover { background: #f9f9f9; border-color: #ccc; transform: translateY(-2px); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); }
-    .calendar-day.other-month { opacity: 0.3; background: #fafafa; }
-    .calendar-day.today { border: 2px solid #4A90E2; background: #F0F7FF; }
-    .calendar-day-number { font-size: 14px; font-weight: 600; margin-bottom: 6px; color: #333; }
-    .calendar-note-item { font-size: 11px; padding: 4px 8px; border-radius: 4px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; transition: all 0.2s ease; }
-    .calendar-note-item:hover { transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); }
-    .calendar-note-red { background: #FFE0E0; color: #8B4A52; }
-    .calendar-note-blue { background: #E0EEFF; color: #2C3E6F; }
-    .calendar-note-green { background: #E0FFE0; color: #3E5132; }
-    .calendar-tooltip { position: fixed; background: rgba(0, 0, 0, 0.9); color: white; padding: 12px 16px; border-radius: 8px; font-size: 13px; z-index: 9999; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity 0.2s ease; max-width: 250px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); }
-    .calendar-tooltip.show { opacity: 1; visibility: visible; }
+    
+    .calendar-container { 
+      background: #fafafa; 
+      border: 1px solid #eee; 
+      border-radius: 12px; 
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .calendar-header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 20px; 
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .calendar-month { 
+      font-size: 18px; 
+      font-weight: 600; 
+      color: #333;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .calendar-nav { 
+      display: flex; 
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .calendar-nav button { 
+      padding: 10px 20px; 
+      border: 1px solid #ddd; 
+      background: #fff; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      transition: all 0.2s; 
+      font-size: 14px; 
+      color: #555;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .calendar-nav button:hover { 
+      background: #f5f5f5; 
+      border-color: #999;
+      transform: translateY(-1px);
+    }
+
+    .calendar-grid-wrapper {
+      display: flex;
+      gap: 15px;
+      align-items: flex-start;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 10px;
+      scroll-behavior: smooth;
+      position: relative;
+    }
+
+    .calendar-grid-wrapper::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .calendar-grid-wrapper::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    .calendar-grid-wrapper::-webkit-scrollbar-thumb {
+      background: #bbb;
+      border-radius: 10px;
+    }
+
+    .calendar-grid-wrapper::-webkit-scrollbar-thumb:hover {
+      background: #999;
+    }
+
+    .calendar-scroll-buttons {
+      display: none;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 12px;
+      flex-shrink: 0;
+    }
+
+    .calendar-scroll-buttons button {
+      padding: 10px 16px;
+      border: 1px solid #ddd;
+      background: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: #555;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .calendar-scroll-buttons button:hover {
+      background: #f5f5f5;
+      border-color: #999;
+      transform: translateY(-1px);
+    }
+
+    .calendar-grid { 
+      display: grid; 
+      grid-template-columns: repeat(7, minmax(60px, 1fr)); 
+      gap: 8px;
+      flex-shrink: 0;
+      width: fit-content;
+      min-width: 100%;
+    }
+
+    .calendar-day-header { 
+      text-align: center; 
+      font-weight: 600; 
+      font-size: 14px; 
+      color: #666; 
+      padding: 12px 4px; 
+      background: #f9f9f9; 
+      border-radius: 6px;
+      word-break: break-word;
+    }
+
+    .calendar-day { 
+      aspect-ratio: 1; 
+      border: 1px solid #e5e5e5; 
+      border-radius: 8px; 
+      padding: 8px; 
+      cursor: pointer; 
+      transition: all 0.2s; 
+      position: relative; 
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 70px;
+    }
+
+    .calendar-day:hover { 
+      background: #f9f9f9; 
+      border-color: #ccc; 
+      transform: translateY(-2px); 
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); 
+    }
+
+    .calendar-day.other-month { 
+      opacity: 0.3; 
+      background: #fafafa; 
+    }
+
+    .calendar-day.today { 
+      border: 2px solid #4A90E2; 
+      background: #F0F7FF; 
+    }
+
+    .calendar-day-number { 
+      font-size: 14px; 
+      font-weight: 600; 
+      margin-bottom: 4px; 
+      color: #333;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .calendar-note-item { 
+      font-size: 11px; 
+      padding: 3px 6px; 
+      border-radius: 4px; 
+      margin-bottom: 2px; 
+      white-space: nowrap; 
+      overflow: hidden; 
+      text-overflow: ellipsis; 
+      cursor: pointer; 
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .calendar-note-item:hover { 
+      transform: translateY(-1px); 
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); 
+    }
+
+    .calendar-note-red { 
+      background: #FFE0E0; 
+      color: #8B4A52; 
+    }
+
+    .calendar-note-blue { 
+      background: #E0EEFF; 
+      color: #2C3E6F; 
+    }
+
+    .calendar-note-green { 
+      background: #E0FFE0; 
+      color: #3E5132; 
+    }
+
+    .calendar-tooltip { 
+      position: fixed; 
+      background: rgba(0, 0, 0, 0.9); 
+      color: white; 
+      padding: 12px 16px; 
+      border-radius: 8px; 
+      font-size: 13px; 
+      z-index: 9999; 
+      pointer-events: none; 
+      opacity: 0; 
+      visibility: hidden; 
+      transition: opacity 0.2s ease; 
+      max-width: 250px; 
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); 
+    }
+
+    .calendar-tooltip.show { 
+      opacity: 1; 
+      visibility: visible; 
+    }
 
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); }
     .modal-content { background-color: #8B4A52; margin: 5% auto; padding: 30px; border-radius: 16px; width: 90%; max-width: 450px; color: white; }
@@ -93,237 +298,178 @@
     .form-btn-cancel { background: rgba(255, 255, 255, 0.25); color: white; border: 1px solid rgba(255, 255, 255, 0.3); }
     .form-btn-cancel:hover { background: rgba(255, 255, 255, 0.35); border-color: rgba(255, 255, 255, 0.5); }
 
-/* ===== CALENDAR MOBILE RESPONSIVE FIX ===== */
+    /* ===== RESPONSIVE ===== */
+    @media screen and (max-width: 1024px) {
+      .container { padding: 16px; }
+      .calendar-container { padding: 16px; }
+      .calendar-grid { gap: 6px; grid-template-columns: repeat(7, minmax(50px, 1fr)); }
+      .calendar-day { min-height: 60px; padding: 6px; }
+      .calendar-day-header { padding: 8px 2px; font-size: 13px; }
+      .calendar-day-number { font-size: 13px; margin-bottom: 2px; }
+      .calendar-note-item { font-size: 10px; padding: 2px 4px; }
+    }
 
-/* Base Calendar Styles (Desktop) */
-.calendar-container { 
-  padding: 20px; 
-}
+    @media screen and (max-width: 768px) {
+      .container { padding: 12px; margin: 10px auto; }
+      .calendar-container { 
+        padding: 12px; 
+        border-radius: 8px;
+      }
+      
+      .calendar-header { 
+        margin-bottom: 12px;
+        gap: 8px;
+      }
+      
+      .calendar-month { 
+        font-size: 16px;
+        min-width: auto;
+      }
+      
+      .calendar-nav { 
+        gap: 6px;
+        display: none;
+      }
+      
+      .calendar-nav button { 
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+      
+      .calendar-grid { 
+        gap: 5px; 
+        grid-template-columns: repeat(7, minmax(45px, 1fr));
+      }
+      
+      .calendar-day-header { 
+        font-size: 12px; 
+        padding: 6px 2px;
+      }
+      
+      .calendar-day { 
+        padding: 5px;
+        min-height: 50px;
+      }
+      
+      .calendar-day-number { 
+        font-size: 12px;
+        margin-bottom: 2px;
+      }
+      
+      .calendar-note-item { 
+        font-size: 9px; 
+        padding: 2px 3px; 
+        margin-bottom: 1px;
+      }
 
-.calendar-header { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center; 
-  margin-bottom: 20px; 
-  gap: 10px;
-}
+      .notes-column { min-width: 280px; width: 280px; padding: 14px; }
 
-.calendar-month { 
-  font-size: 18px; 
-  font-weight: 600; 
-  color: #333; 
-}
+      .calendar-scroll-buttons {
+        display: flex;
+      }
+    }
 
-.calendar-nav button { 
-  padding: 8px 16px; 
-  font-size: 14px; 
-}
+    @media screen and (max-width: 480px) {
+      .container { 
+        padding: 10px; 
+        margin: 8px auto;
+      }
+      
+      .calendar-container { 
+        padding: 10px; 
+        border-radius: 8px;
+      }
+      
+      .calendar-month { 
+        font-size: 14px;
+      }
+      
+      .calendar-nav button { 
+        padding: 6px 10px;
+        font-size: 11px;
+      }
+      
+      .calendar-grid { 
+        gap: 4px; 
+        grid-template-columns: repeat(7, minmax(40px, 1fr));
+      }
+      
+      .calendar-day-header { 
+        font-size: 11px; 
+        padding: 4px 0;
+      }
+      
+      .calendar-day { 
+        padding: 4px;
+        min-height: 45px;
+      }
+      
+      .calendar-day-number { 
+        font-size: 11px;
+        margin-bottom: 1px;
+      }
+      
+      .calendar-note-item { 
+        font-size: 8px; 
+        padding: 1px 2px;
+        margin-bottom: 1px;
+      }
 
-.calendar-grid { 
-  display: grid; 
-  grid-template-columns: repeat(7, 1fr); 
-  gap: 10px; 
-}
+      .title { font-size: 18px; }
+      .notes-section-title { font-size: 16px; }
+      .notes-column { min-width: 240px; width: 240px; padding: 12px; }
 
-.calendar-day-header { 
-  font-size: 14px; 
-  padding: 12px 0; 
-}
+      .calendar-scroll-buttons button {
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+    }
 
-.calendar-day { 
-  min-height: 90px; 
-  padding: 10px; 
-}
-
-.calendar-day-number { 
-  font-size: 14px; 
-  margin-bottom: 6px; 
-}
-
-.calendar-note-item { 
-  font-size: 11px; 
-  padding: 4px 8px; 
-  margin-bottom: 4px; 
-}
-
-/* ===== TABLET (768px and below) ===== */
-@media screen and (max-width: 768px) {
-  .calendar-container { 
-    padding: 12px !important; 
-  }
-  
-  .calendar-header { 
-    flex-wrap: wrap; 
-    margin-bottom: 12px !important; 
-    gap: 8px; 
-  }
-  
-  .calendar-month { 
-    font-size: 16px !important; 
-    flex-basis: 100%;
-  }
-  
-  .calendar-nav { 
-    gap: 6px !important; 
-    flex-basis: 100%;
-    display: flex;
-    justify-content: center;
-  }
-  
-  .calendar-nav button { 
-    padding: 6px 12px !important; 
-    font-size: 12px !important; 
-    flex: 1;
-    max-width: 120px;
-  }
-  
-  .calendar-grid { 
-    gap: 4px !important; 
-  }
-  
-  .calendar-day-header { 
-    font-size: 11px !important; 
-    padding: 6px 0 !important; 
-    font-weight: 600;
-  }
-  
-  .calendar-day { 
-    min-height: 65px !important; 
-    padding: 5px !important; 
-    overflow: hidden;
-  }
-  
-  .calendar-day-number { 
-    font-size: 13px !important; 
-    margin-bottom: 3px !important;
-    font-weight: 600;
-  }
-  
-  .calendar-note-item { 
-    font-size: 10px !important; 
-    padding: 3px 6px !important; 
-    margin-bottom: 2px !important;
-    line-height: 1.2;
-  }
-}
-
-/* ===== MOBILE LANDSCAPE (600px - 768px) ===== */
-@media screen and (max-width: 768px) and (orientation: landscape) {
-  .calendar-container { 
-    padding: 10px !important; 
-  }
-  
-  .calendar-day { 
-    min-height: 55px !important; 
-    padding: 4px !important; 
-  }
-  
-  .calendar-day-header { 
-    font-size: 10px !important; 
-    padding: 4px 0 !important; 
-  }
-  
-  .calendar-note-item { 
-    font-size: 9px !important; 
-    padding: 2px 4px !important; 
-    margin-bottom: 1px !important;
-  }
-}
-
-/* ===== MOBILE PORTRAIT (480px and below) ===== */
-@media screen and (max-width: 480px) {
-  .calendar-container { 
-    padding: 8px !important; 
-  }
-  
-  .calendar-header {
-    gap: 6px !important;
-  }
-
-  .calendar-month { 
-    font-size: 14px !important; 
-  }
-  
-  .calendar-nav { 
-    gap: 4px !important; 
-  }
-  
-  .calendar-nav button { 
-    padding: 5px 8px !important; 
-    font-size: 11px !important; 
-  }
-  
-  .calendar-grid { 
-    gap: 2px !important; 
-  }
-  
-  .calendar-day-header { 
-    font-size: 10px !important; 
-    padding: 4px 0 !important; 
-    border-radius: 0;
-  }
-  
-  .calendar-day { 
-    min-height: 60px !important; 
-    padding: 4px !important; 
-    border-radius: 3px;
-    border-width: 0.5px !important;
-  }
-  
-  .calendar-day-number { 
-    font-size: 12px !important; 
-    margin-bottom: 2px !important;
-  }
-  
-  .calendar-note-item { 
-    font-size: 9px !important; 
-    padding: 2px 4px !important; 
-    margin-bottom: 1px !important;
-    max-width: 100%;
-    line-height: 1.1;
-  }
-}
-
-/* ===== EXTRA SMALL MOBILE (320px) ===== */
-@media screen and (max-width: 360px) {
-  .calendar-container { 
-    padding: 6px !important; 
-  }
-  
-  .calendar-month { 
-    font-size: 13px !important; 
-  }
-  
-  .calendar-nav button { 
-    padding: 4px 6px !important; 
-    font-size: 10px !important; 
-  }
-  
-  .calendar-grid { 
-    gap: 1px !important; 
-  }
-  
-  .calendar-day-header { 
-    font-size: 9px !important; 
-    padding: 2px 0 !important; 
-  }
-  
-  .calendar-day { 
-    min-height: 50px !important; 
-    padding: 3px !important; 
-  }
-  
-  .calendar-day-number { 
-    font-size: 11px !important; 
-    margin-bottom: 1px !important;
-  }
-  
-  .calendar-note-item { 
-    font-size: 8px !important; 
-    padding: 1px 3px !important; 
-    margin-bottom: 0px !important;
-  }
-}
+    @media screen and (max-width: 360px) {
+      .calendar-container { 
+        padding: 8px; 
+      }
+      
+      .calendar-month { 
+        font-size: 13px;
+        flex: 1;
+      }
+      
+      .calendar-nav { 
+        flex: 1;
+        width: 100%;
+      }
+      
+      .calendar-nav button { 
+        padding: 5px 8px;
+        font-size: 10px;
+        flex: 1;
+      }
+      
+      .calendar-grid { 
+        gap: 3px; 
+        grid-template-columns: repeat(7, minmax(35px, 1fr));
+      }
+      
+      .calendar-day-header { 
+        font-size: 10px; 
+        padding: 3px 0;
+      }
+      
+      .calendar-day { 
+        padding: 3px;
+        min-height: 40px;
+      }
+      
+      .calendar-day-number { 
+        font-size: 10px;
+      }
+      
+      .calendar-note-item { 
+        font-size: 7px; 
+        padding: 1px 2px;
+      }
+    }
   </style>
 </head>
 
@@ -478,9 +624,18 @@
             </div>
           </div>
 
-          <div class="calendar-grid" id="calendarGrid">
-            <div class="loading">Loading calendar...</div>
-          </div>
+          <!-- ใส่เปลี่ยน calendar-grid-wrapper ใน calendar-container -->
+<div class="calendar-grid-wrapper" id="gridWrapper">
+  <div class="calendar-grid" id="calendarGrid">
+    <div class="loading">Loading calendar...</div>
+  </div>
+</div>
+
+<!-- เพิ่มปุ่มเลื่อนสำหรับจอเล็ก (ใต้ calendar-grid-wrapper) -->
+<div class="calendar-scroll-buttons">
+  <button onclick="scrollCalendarLeft()">← Scroll Left</button>
+  <button onclick="scrollCalendarRight()">Scroll Right →</button>
+</div>
         </div>
       </div>
 
@@ -1091,6 +1246,19 @@ window.onclick = function (event) {
   if (event.target === modal) closeModal();
 }
 
+
+
+// ✅ เพิ่มฟังก์ชันเลื่อน Calendar
+function scrollCalendarLeft() {
+  const wrapper = document.getElementById('gridWrapper');
+  wrapper.scrollBy({ left: -200, behavior: 'smooth' });
+}
+
+function scrollCalendarRight() {
+  const wrapper = document.getElementById('gridWrapper');
+  wrapper.scrollBy({ left: 200, behavior: 'smooth' });
+}
+
 // ทำให้เรียกจาก onclick ได้ (กรณี browser strict)
 Object.assign(window, {
   toggleAddForm,
@@ -1107,7 +1275,9 @@ Object.assign(window, {
   saveNote,
   deleteNoteConfirm,
   previousMonth,
-  nextMonth
+  nextMonth,
+  scrollCalendarLeft,      // ✅ เพิ่มบรรทัดนี้
+  scrollCalendarRight      // ✅ เพิ่มบรรทัดนี้
 });
 
 // Initialize

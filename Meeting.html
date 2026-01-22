@@ -1847,25 +1847,79 @@ tbody td:first-child {
     const projectColors = {};
     let memberCache = {}; // cache สำหรับเก็บ member data
 
-    async function getMemberIdByName(displayName) {
-  if (memberCache[displayName]) {
-    return memberCache[displayName];
-  }
+    // ✅ Helper: API request wrapper (ใช้ใน getMemberIdByName)
+    async function apiRequest(path, options = {}) {
+      const isAbs = /^https?:\/\//i.test(path);
+      const url = isAbs ? path : `${API_CONFIG.baseURL}${path.startsWith('/') ? '' : '/'}${path}`;
+      const res = await fetch(url, {
+        method: options.method || 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          ...(options.headers || {})
+        },
+        body: options.body
+      });
+      if (!res.ok) {
+        const txt = await res.text().catch(() => '');
+        throw new Error(`HTTP ${res.status}: ${txt || res.statusText}`);
+      }
+      return await res.json().catch(() => ({}));
+    }
 
+    // ✅ Normalize name (กันเว้นวรรค/ตัวแปลก)
+    function normalizeName(s) {
+      return String(s || '')
+        .replace(/[\u200B-\u200D\uFEFF]/g, '') // zero-width
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    async function getMemberIdByName(displayName) {
+  const raw = normalizeName(displayName);
+  if (!raw) return null;
+
+  const key = raw.toLowerCase();
+  if (memberCache[key]) return memberCache[key];
+
+  // 1) try search endpoint (if supported)
   try {
-    const response = await apiRequest(`${API_CONFIG.endpoints.members}?search=${encodeURIComponent(displayName)}&limit=1`);
-    
-    if (response.data && response.data.length > 0) {
-      const memberId = response.data[0]._id;
-      memberCache[displayName] = memberId;
-      return memberId;
+    const response = await apiRequest(`${API_CONFIG.endpoints.members}?search=${encodeURIComponent(raw)}&limit=10`);
+    const list = Array.isArray(response?.data) ? response.data : (Array.isArray(response) ? response : []);
+    if (list.length) {
+      // exact match by displayName/name
+      const exact = list.find(m => normalizeName(m.displayName || m.name) === raw) || list[0];
+      const memberId = exact?._id || exact?.id;
+      if (memberId) {
+        memberCache[key] = memberId;
+        return memberId;
+      }
     }
   } catch (err) {
-    console.error('Cannot find member:', displayName);
+    // ignore and fallback
   }
-  
+
+  // 2) fallback: fetch all members and match locally
+  try {
+    const response = await apiRequest(`${API_CONFIG.endpoints.members}`);
+    const list = Array.isArray(response?.data) ? response.data : (Array.isArray(response) ? response : []);
+    if (list.length) {
+      const exact = list.find(m => normalizeName(m.displayName || m.name) === raw);
+      const loose = exact || list.find(m => normalizeName(m.displayName || m.name).includes(raw)) || list.find(m => raw.includes(normalizeName(m.displayName || m.name)));
+      const memberId = (loose?._id || loose?.id) || null;
+      if (memberId) {
+        memberCache[key] = memberId;
+        return memberId;
+      }
+    }
+  } catch (err) {
+    // still ignore
+  }
+
+  console.warn('Cannot find member:', raw);
   return null;
 }
+
 
 /* ==========================================
    🔧 BACKEND CONFIGURATION
@@ -1873,7 +1927,7 @@ tbody td:first-child {
 
 // ✅ ตั้งค่า API Base URL
 const API_CONFIG = {
-  baseURL: 'https://pmapi.ideatrade1.com', 
+  baseURL: 'http://localhost:3000', 
   endpoints: {
     members: '/members',
     projects: '/projects',
@@ -2724,7 +2778,6 @@ if (isEditingMeeting) {
       if (!buttonContainer || !tbody) return;
 
       buttonContainer.innerHTML = "";
-a
       requestAnimationFrame(() => {
         const rows = tbody.querySelectorAll("tr");
         const tableWrapper = tbody.closest('.meeting-table-wrapper');

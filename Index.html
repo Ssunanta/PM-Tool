@@ -34,6 +34,7 @@ html {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  overflow-y: scroll; /* ✅ ป้องกัน scrollbar ปรากฏ/หายไป */
 }
 
 body {
@@ -86,6 +87,12 @@ nav button {
   cursor: pointer;
   font-size: 14px;
   transition: 0.2s;
+  -webkit-tap-highlight-color: transparent; /* ✅ ลบ tap highlight */
+  outline: none; /* ✅ ลบ outline เมื่อ focus */
+}
+
+nav button:focus {
+  outline: none; /* ✅ ป้องกันการขยับ focus outline */
 }
 
 nav button.active {
@@ -352,6 +359,8 @@ nav button.active {
   font-weight: 800;
   cursor: pointer;
   touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent; /* ✅ ลบ tap highlight */
+  outline: none;
 }
 
 #projectsTab {
@@ -573,11 +582,6 @@ nav button.active {
   .container:last-child { margin-bottom: 0 !important; }
 }
 
-/* ===== FIX: reserve scrollbar space กันเด้งทั้งแอพ ===== */
-/* html{ overflow-y: scroll; }
-   body{ overflow-y: scroll; } */
-
-/* ===== FIX: ให้ Dashboard tab มี scroll ของตัวเองเสมอ ===== */
 #dashboardTab{
   height: calc(100vh - 170px);
   max-height: calc(100vh - 170px);
@@ -725,26 +729,36 @@ function setTabHTML(tabElement, html, tabName) {
   const rawCss = styleTags.map(s => s.textContent || "").join("\n").trim();
 
   const oldStyle = document.getElementById(styleId);
-  if (oldStyle) oldStyle.remove();
+  if (oldStyle) {
+    console.log(`[${tabName}] Removing style: ${styleId}`);
+    oldStyle.remove();
+  }
 
   const oldExtra = document.getElementById(`${styleId}-extra`);
-  if (oldExtra) oldExtra.remove();
+  if (oldExtra) {
+    console.log(`[${tabName}] Removing extra: ${styleId}-extra`);
+    oldExtra.remove();
+  }
 
-  if (rawCss) {
-    // ✅ FIX: เปลี่ยนเงื่อนไข - เฉพาะ intern, todos ที่ไม่ scope
-    // notes (note) ให้ scope CSS ปกติ เพื่อให้เหมือน standalone
-    const noScopeTabs = ["intern", "todos"];
-    const finalCss = noScopeTabs.includes(tabName)
-      ? rawCss 
-      : scopeCssForTab(rawCss, scopeSel);
+ if (rawCss) {
+    // ✅ แก้ไขตรงนี้ - เลือกว่า tab ไหนควร scope
+    const noScopeTabs = ["todos"]; // ✅ เฉพาะ todos ไม่ scope
+    
+    let finalCss;
+    if (noScopeTabs.includes(tabName)) {
+      finalCss = rawCss; // ไม่ scope
+    } else {
+      finalCss = scopeCssForTab(rawCss, scopeSel); // scope สำหรับ tabs อื่น เช่น intern
+    }
     
     const styleEl = document.createElement("style");
     styleEl.id = styleId;
     styleEl.textContent = finalCss;
     document.head.appendChild(styleEl);
+    console.log(`[${tabName}] Added style: ${styleId}`);
   }
 
-  // ✅ Notes ยังคงใช้ extra style สำหรับ title
+  // Notes tab special style
   if (tabName === "note") {
     const extraStyle = document.createElement("style");
     extraStyle.id = `${styleId}-extra`;
@@ -754,77 +768,74 @@ function setTabHTML(tabElement, html, tabName) {
 
   tabElement.innerHTML = bodyHtml;
 
-    // ===== รัน script ของแท็บแบบ "inject <script>" เพื่อ global ชัวร์กว่า Function() ใน GAS sandbox =====
-    if (!tabElement.dataset.scriptsExecuted) {
-      const scripts = Array.from(tabElement.querySelectorAll("script"));
+  // ===== Script execution =====
+  if (!tabElement.dataset.scriptsExecuted) {
+    const scripts = Array.from(tabElement.querySelectorAll("script"));
 
-      const collected = scripts.map(s => ({
-        src: (s.getAttribute("src") || "").trim(),
-        type: (s.getAttribute("type") || "").trim(),
-        code: s.src ? "" : (s.textContent || "")
-      }));
+    const collected = scripts.map(s => ({
+      src: (s.getAttribute("src") || "").trim(),
+      type: (s.getAttribute("type") || "").trim(),
+      code: s.src ? "" : (s.textContent || "")
+    }));
 
-      scripts.forEach(s => s.remove());
+    scripts.forEach(s => s.remove());
 
-      const sanitizeCode = (code) => {
-        return String(code || "")
-          .replace(/\u00A0/g, " ")
-          .replace(/\uFEFF/g, "")
-          .replace(/[\u200B-\u200D\u2060]/g, "")
-          .replace(/\u2028|\u2029/g, "\n")
-          .replace(/\r\n/g, "\n");
-      };
+    const sanitizeCode = (code) => {
+      return String(code || "")
+        .replace(/\u00A0/g, " ")
+        .replace(/\uFEFF/g, "")
+        .replace(/[\u200B-\u200D\u2060]/g, "")
+        .replace(/\u2028|\u2029/g, "\n")
+        .replace(/\r\n/g, "\n");
+    };
 
-      const loadExternal = (src, type = "") => new Promise((resolve, reject) => {
-        const sc = document.createElement("script");
-        if (type) sc.type = type;
-        sc.src = src;
-        sc.onload = () => resolve();
-        sc.onerror = () => reject(new Error("Failed to load " + src));
-        document.head.appendChild(sc);
-      });
+    const loadExternal = (src, type = "") => new Promise((resolve, reject) => {
+      const sc = document.createElement("script");
+      if (type) sc.type = type;
+      sc.src = src;
+      sc.onload = () => resolve();
+      sc.onerror = () => reject(new Error("Failed to load " + src));
+      document.head.appendChild(sc);
+    });
 
-      const injectInlineAsScriptTag = (code, type = "text/javascript", label = "") => {
-        const sc = document.createElement("script");
-        sc.type = type || "text/javascript";
-        sc.textContent = code;
-        if (label) sc.setAttribute("data-from", label);
-        document.head.appendChild(sc);
-      };
+    const injectInlineAsScriptTag = (code, type = "text/javascript", label = "") => {
+      const sc = document.createElement("script");
+      sc.type = type || "text/javascript";
+      sc.textContent = code;
+      if (label) sc.setAttribute("data-from", label);
+      document.head.appendChild(sc);
+    };
 
-      (async () => {
-        // 1) external ก่อน
-        for (let i = 0; i < collected.length; i++) {
-          const s = collected[i];
-          if (!s.src) continue;
-          try { await loadExternal(s.src, s.type); }
-          catch (e) { console.error(`[${tabName}] external script #${i} failed`, e); }
+    (async () => {
+      for (let i = 0; i < collected.length; i++) {
+        const s = collected[i];
+        if (!s.src) continue;
+        try { await loadExternal(s.src, s.type); }
+        catch (e) { console.error(`[${tabName}] external script #${i} failed`, e); }
+      }
+
+      for (let i = 0; i < collected.length; i++) {
+        const s = collected[i];
+        if (s.src) continue;
+
+        const safe = sanitizeCode(s.code);
+        const isModule =
+          (s.type && s.type.toLowerCase() === "module") ||
+          /\b(import|export)\b/.test(safe);
+
+        try {
+          injectInlineAsScriptTag(safe, isModule ? "module" : "text/javascript", `${tabName}#${i}`);
+        } catch (e) {
+          console.error(`[${tabName}] inline inject failed`, e);
         }
+      }
+    })();
 
-        // 2) inline ตามลำดับ
-        for (let i = 0; i < collected.length; i++) {
-          const s = collected[i];
-          if (s.src) continue;
-
-          const safe = sanitizeCode(s.code);
-
-          const isModule =
-            (s.type && s.type.toLowerCase() === "module") ||
-            /\b(import|export)\b/.test(safe);
-
-          try {
-            injectInlineAsScriptTag(safe, isModule ? "module" : "text/javascript", `${tabName}#${i}`);
-          } catch (e) {
-            console.error(`[${tabName}] inline inject failed`, e);
-          }
-        }
-      })();
-
-      tabElement.dataset.scriptsExecuted = "1";
-    } else {
-      tabElement.querySelectorAll("script").forEach(s => s.remove());
-    }
+    tabElement.dataset.scriptsExecuted = "1";
+  } else {
+    tabElement.querySelectorAll("script").forEach(s => s.remove());
   }
+}
 
   function scopeCssForTab(cssText, scopeSel) {
   let css = String(cssText || "")

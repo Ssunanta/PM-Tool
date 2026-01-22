@@ -162,7 +162,7 @@
     }
 
     .ctrl-items {
-      position: absolute;
+      position: fixed;
       top: 100%;
       left: 0;
       width: 100%;
@@ -173,7 +173,7 @@
       max-height: 360px;
       overflow-y: auto;
       display: none;
-      z-index: 100;
+      z-index: 9999;
       padding: 10px;
       box-shadow: var(--shadow);
     }
@@ -955,7 +955,7 @@
       max-height: 90vh;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      overflow: visible;
       /* ✅ ให้ overflow ที่ content wrapper แทน */
     }
 
@@ -1679,9 +1679,14 @@
           <input id="add_start" type="date" class="input">
         </div>
 
-        <div class="field">
+<div class="field">
           <div class="label">วันที่วางแผนสิ้นสุดโครงการ</div>
           <input id="add_end" type="date" class="input">
+        </div>
+
+        <div class="field">
+          <div class="label">Mentor</div>
+          <input id="add_mentor" class="input" placeholder="เช่น พี่กิ๊ฟ, พี่แบงค์">
         </div>
 
         <div class="field">
@@ -1696,14 +1701,19 @@
 
         <div class="field">
           <div class="label">สถานะ</div>
-          <select id="add_status" class="select">
-          <option value="ยังไม่เริ่มงาน">ยังไม่เริ่มงาน</option>
-          <option value="อยู่ในกำหนด">อยู่ในกำหนด</option>
-          <option value="ช้ากว่ากำหนด">ช้ากว่ากำหนด</option>
-          <option value="เสร็จแล้ว">เสร็จแล้ว</option>
-        </select>
+          <div class="ctrl" id="editStatusCtrl">
+  <div class="ctrl-selected" onclick="toggleModalCtrlDropdown('editStatusCtrl')">
+    <span id="editStatusText">อยู่ในกำหนด</span>
+    <span>▾</span>
+  </div>
+  <div class="ctrl-items" id="editStatusItems">
+    <div class="ctrl-item" onclick="selectEditStatus('ยังไม่เริ่มงาน')">ยังไม่เริ่มงาน</div>
+    <div class="ctrl-item" onclick="selectEditStatus('อยู่ในกำหนด')">อยู่ในกำหนด</div>
+    <div class="ctrl-item" onclick="selectEditStatus('ช้ากว่ากำหนด')">ช้ากว่ากำหนด</div>
+    <div class="ctrl-item" onclick="selectEditStatus('เสร็จแล้ว')">เสร็จแล้ว</div>
+  </div>
+</div>
         </div>
-      </div>
 
       <div class="modal-actions">
         <button class="btn primary" id="btnAddSave" onclick="submitAdd()">
@@ -1733,14 +1743,19 @@
           <input id="edit_start" type="date" class="input">
         </div>
 
-        <div class="field">
+ <div class="field">
           <div class="label">วันที่วางแผนสิ้นสุดโครงการ</div>
-          <input id="edit_end" type="date" class="input">
+          <input id="add_end" type="date" class="input">
+        </div>
+
+        <div class="field">
+          <div class="label">Mentor</div>
+          <input id="add_mentor" class="input" placeholder="เช่น พี่กิ๊ฟ, พี่แบงค์">
         </div>
 
         <div class="field">
           <div class="label">หมายเหตุ</div>
-          <input id="edit_note" class="input" placeholder="">
+          <input id="add_note" class="input" placeholder="">
         </div>
 
         <div class="field">
@@ -1750,14 +1765,19 @@
 
         <div class="field">
           <div class="label">สถานะ</div>
-          <select id="edit_status" class="select">
-          <option value="ยังไม่เริ่มงาน">ยังไม่เริ่มงาน</option>
-          <option value="อยู่ในกำหนด">อยู่ในกำหนด</option>
-          <option value="ช้ากว่ากำหนด">ช้ากว่ากำหนด</option>
-          <option value="เสร็จแล้ว">เสร็จแล้ว</option>
-        </select>
+          <div class="ctrl" id="editStatusCtrl">
+  <div class="ctrl-selected" onclick="toggleModalCtrlDropdown('editStatusCtrl')">
+    <span id="editStatusText">อยู่ในกำหนด</span>
+    <span>▾</span>
+  </div>
+  <div class="ctrl-items" id="editStatusItems">
+    <div class="ctrl-item" onclick="selectEditStatus('ยังไม่เริ่มงาน')">ยังไม่เริ่มงาน</div>
+    <div class="ctrl-item" onclick="selectEditStatus('อยู่ในกำหนด')">อยู่ในกำหนด</div>
+    <div class="ctrl-item" onclick="selectEditStatus('ช้ากว่ากำหนด')">ช้ากว่ากำหนด</div>
+    <div class="ctrl-item" onclick="selectEditStatus('เสร็จแล้ว')">เสร็จแล้ว</div>
+  </div>
+</div>
         </div>
-      </div>
 
       <div class="modal-actions">
         <button class="btn primary" id="btnEditSave" onclick="submitEdit()">
@@ -1804,7 +1824,6 @@
       </div>
     </div>
   </div>
-
     <script>
     function byId(id){ return document.getElementById(id); }
 

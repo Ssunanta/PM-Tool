@@ -2391,22 +2391,29 @@ const BACKEND = {
       if (!e.currentTarget.contains(e.relatedTarget)) e.currentTarget.classList.remove('drag-over');
     }
 
-    function onDrop(e, targetRowIndex, targetDay) {
-      e.preventDefault();
-      e.currentTarget.classList.remove('drag-over');
-      if (!draggedMeetingItem) return;
+function onDrop(e, targetRowIndex, targetDay) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  
+  if (!draggedMeetingItem) return;
 
-      const { rowIndex: srcRow, day: srcDay } = draggedMeetingItem;
-
-      if (srcDay === targetDay && srcRow !== targetRowIndex) {
-        reorderMeetingInDaySmooth(srcRow, targetRowIndex, srcDay);
-      } else if (srcDay !== targetDay) {
-        moveMeetingAcrossDays(srcRow, srcDay, 0, targetRowIndex, targetDay);
-      }
-
-      draggedMeetingItem = null;
-      renderMeeting(meetingData);
+  const { rowIndex: srcRow, day: srcDay, itemIndex: srcIdx } = draggedMeetingItem;
+  
+  const targetItems = meetingData[targetRowIndex]?.[targetDay] || [];
+  
+  if (targetItems.length === 0) {
+    moveMeetingAcrossDays(srcRow, srcDay, srcIdx, targetRowIndex, targetDay);
+  } else {
+    if (srcDay === targetDay && srcRow !== targetRowIndex) {
+      reorderMeetingInDaySmooth(srcRow, targetRowIndex, srcDay);
+    } else if (srcDay !== targetDay) {
+      moveMeetingAcrossDays(srcRow, srcDay, srcIdx, targetRowIndex, targetDay);
     }
+  }
+
+  draggedMeetingItem = null;
+  renderMeeting(meetingData);
+}
 
     function reorderMeetingInDaySmooth(fromRow, toRow, day) {
       const dayItems = [];
@@ -2491,20 +2498,19 @@ const orderCell = document.createElement("td");
     orderCell.style.verticalAlign = "middle";
     tr.appendChild(orderCell);
 
-    // ============= วนแต่ละวัน (Mon-Fri) =============
     const days = ["mon", "tue", "wed", "thu", "fri"];
     days.forEach(day => {
       const cell = document.createElement("td");
 
-      if (isEditingMeeting) {
-        cell.ondragover = (e) => onDragOver(e);
-        cell.ondragleave = (e) => onDragLeave(e);
-        cell.ondrop = (e) => onDrop(e, i, day);
-      }
+if (isEditingMeeting) {
+  cell.ondragover = (e) => onDragOver(e);
+  cell.ondragleave = (e) => onDragLeave(e);
+  cell.ondrop = (e) => onDrop(e, i, day);
+}
 
       const items = row[day] || [];
 
-      if (items.length > 0) {
+      if (items.length > 0) { 
         const boxDiv = document.createElement("div");
         boxDiv.className = "meeting-box" + (isEditingMeeting ? " draggable" : "");
 

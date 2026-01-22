@@ -2309,26 +2309,26 @@
     }
 
     /* ========== Modal Functions ========== */
-function openMeetingModal(rowIndex, day) {
-  tempMeetingRow = rowIndex;
-  tempMeetingDay = day;
+    function openMeetingModal(rowIndex, day) {
+      tempMeetingRow = rowIndex;
+      tempMeetingDay = day;
 
-  document.getElementById("meetingModal").style.display = "flex";
-  document.getElementById("meetingPersonName").value = "";
-  document.getElementById("meetingPosition").value = "";
-  document.getElementById("meetingProject").value = "";
+      document.getElementById("meetingModal").style.display = "flex";
+      document.getElementById("meetingPersonName").value = "";
+      document.getElementById("meetingPosition").value = "";
+      document.getElementById("meetingProject").value = "";
 
-  // Reset dropdown text
-  document.getElementById("positionDropdownText").textContent = "เลือกตำแหน่ง";
-  document.getElementById("projectDropdownText").textContent = "ไม่มีโปรเจค";
+      // Reset dropdown text
+      document.getElementById("positionDropdownText").textContent = "เลือกตำแหน่ง";
+      document.getElementById("projectDropdownText").textContent = "ไม่มีโปรเจค";
 
-  // ✅ เรียกฟังก์ชัน load ใหม่แบบรวมกัน
-  loadDataForModal();
+      // ✅ เรียกฟังก์ชัน load ใหม่แบบรวมกัน
+      loadDataForModal();
 
-  setTimeout(() => {
-    document.getElementById("meetingPersonName").focus();
-  }, 100);
-}
+      setTimeout(() => {
+        document.getElementById("meetingPersonName").focus();
+      }, 100);
+    }
 
     function closeMeetingModal() {
       document.getElementById("meetingModal").style.display = "none";
@@ -2336,42 +2336,42 @@ function openMeetingModal(rowIndex, day) {
       tempMeetingDay = null;
     }
 
-function saveMeetingFromModal() {
-  const name = document.getElementById("meetingPersonName").value.trim();
-  const position = document.getElementById("meetingPosition").value.trim();
-  const project = document.getElementById("meetingProject").value.trim();
+    function saveMeetingFromModal() {
+      const name = document.getElementById("meetingPersonName").value.trim();
+      const position = document.getElementById("meetingPosition").value.trim();
+      const project = document.getElementById("meetingProject").value.trim();
 
-  if (!name) {
-    alert('⚠️ กรุณากรอกชื่อ');
-    return;
-  }
+      if (!name) {
+        alert('⚠️ กรุณากรอกชื่อ');
+        return;
+      }
 
-  // ✅ FIX: ตรวจสอบว่า row/day มีอยู่หรือไม่
-  if (!meetingData[tempMeetingRow]) {
-    meetingData[tempMeetingRow] = { 
-      order: tempMeetingRow + 1, 
-      mon: [], tue: [], wed: [], thu: [], fri: [] 
-    };
-  }
+      // ✅ FIX: ตรวจสอบว่า row/day มีอยู่หรือไม่
+      if (!meetingData[tempMeetingRow]) {
+        meetingData[tempMeetingRow] = {
+          order: tempMeetingRow + 1,
+          mon: [], tue: [], wed: [], thu: [], fri: []
+        };
+      }
 
-  if (!meetingData[tempMeetingRow][tempMeetingDay]) {
-    meetingData[tempMeetingRow][tempMeetingDay] = [];
-  }
+      if (!meetingData[tempMeetingRow][tempMeetingDay]) {
+        meetingData[tempMeetingRow][tempMeetingDay] = [];
+      }
 
-  const personText = position ? `${name} ${position}` : name;
-  meetingData[tempMeetingRow][tempMeetingDay].push({ text: personText, isProject: false });
+      const personText = position ? `${name} ${position}` : name;
+      meetingData[tempMeetingRow][tempMeetingDay].push({ text: personText, isProject: false });
 
-  // ✅ FIX #3: เพิ่มโปรเจคกลับมา
-  if (project && project !== 'ไม่มีโปรเจค') {
-    meetingData[tempMeetingRow][tempMeetingDay].push({
-      text: project,
-      isProject: true
-    });
-  }
+      // ✅ FIX #3: เพิ่มโปรเจคกลับมา
+      if (project && project !== 'ไม่มีโปรเจค') {
+        meetingData[tempMeetingRow][tempMeetingDay].push({
+          text: project,
+          isProject: true
+        });
+      }
 
-  closeMeetingModal();
-  renderMeeting(meetingData);
-}
+      closeMeetingModal();
+      renderMeeting(meetingData);
+    }
 
     /* ========== Drag and Drop ========== */
     function onDragStart(e, rowIndex, day, itemIndex) {
@@ -3465,59 +3465,59 @@ function saveMeetingFromModal() {
     });
 
     /* ========== MODAL DROPDOWN FUNCTIONS ========== */
-function setupModalDropdown(toggleId, itemsId, inputId) {
-  const toggle = document.getElementById(toggleId);
-  const items = document.getElementById(itemsId);
-  const input = document.getElementById(inputId);
-  if (!toggle || !items) return;
+    function setupModalDropdown(toggleId, itemsId, inputId) {
+      const toggle = document.getElementById(toggleId);
+      const items = document.getElementById(itemsId);
+      const input = document.getElementById(inputId);
+      if (!toggle || !items) return;
 
-  toggle.addEventListener('click', (e) => {
-    e.stopPropagation();
-    items.classList.toggle('open');
-  });
+      toggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        items.classList.toggle('open');
+      });
 
-  // ✅ FIX: ใช้ event delegation เมื่อ click item
-  items.addEventListener('click', (e) => {
-    const item = e.target.closest('.modal-dropdown-item');
-    if (item) {
-      const value = item.textContent;
-      input.value = value;
-      items.classList.remove('open');
-      
-      // Update display text
-      if (inputId === 'meetingPosition') {
-        document.getElementById('positionDropdownText').textContent = value;
-      } else if (inputId === 'meetingProject') {
-        document.getElementById('projectDropdownText').textContent = value;
-      }
-      
-      // Update selected state
-      items.querySelectorAll('.modal-dropdown-item').forEach(el => {
-        el.classList.toggle('selected', el.textContent === value);
+      // ✅ FIX: ใช้ event delegation เมื่อ click item
+      items.addEventListener('click', (e) => {
+        const item = e.target.closest('.modal-dropdown-item');
+        if (item) {
+          const value = item.textContent;
+          input.value = value;
+          items.classList.remove('open');
+
+          // Update display text
+          if (inputId === 'meetingPosition') {
+            document.getElementById('positionDropdownText').textContent = value;
+          } else if (inputId === 'meetingProject') {
+            document.getElementById('projectDropdownText').textContent = value;
+          }
+
+          // Update selected state
+          items.querySelectorAll('.modal-dropdown-item').forEach(el => {
+            el.classList.toggle('selected', el.textContent === value);
+          });
+        }
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!toggle.contains(e.target) && !items.contains(e.target)) {
+          items.classList.remove('open');
+        }
       });
     }
-  });
 
-  document.addEventListener('click', (e) => {
-    if (!toggle.contains(e.target) && !items.contains(e.target)) {
-      items.classList.remove('open');
+    function setModalDropdownItems(inputId, items) {
+      const containerId = inputId === 'meetingPosition' ? 'positionDropdownItems' : 'projectDropdownItems';
+      const itemsContainer = document.getElementById(containerId);
+      if (!itemsContainer) return;
+
+      itemsContainer.innerHTML = '';
+      items.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'modal-dropdown-item';
+        div.textContent = item;
+        itemsContainer.appendChild(div);
+      });
     }
-  });
-}
-
-function setModalDropdownItems(inputId, items) {
-  const containerId = inputId === 'meetingPosition' ? 'positionDropdownItems' : 'projectDropdownItems';
-  const itemsContainer = document.getElementById(containerId);
-  if (!itemsContainer) return;
-
-  itemsContainer.innerHTML = '';
-  items.forEach(item => {
-    const div = document.createElement('div');
-    div.className = 'modal-dropdown-item';
-    div.textContent = item;
-    itemsContainer.appendChild(div);
-  });
-}
 
     /* ===== Name dropdown ===== */
     function setupNameDropdown() {
@@ -3573,34 +3573,34 @@ function setModalDropdownItems(inputId, items) {
     /* =========================
        ✅ Data loaders (NOW: BACKEND.api)
        ========================= */
-async function loadDataForModal() {
-  // ✅ FIX: Setup dropdown ก่อน
-  setupModalDropdown('positionDropdownToggle', 'positionDropdownItems', 'meetingPosition');
-  setupModalDropdown('projectDropdownToggle', 'projectDropdownItems', 'meetingProject');
+    async function loadDataForModal() {
+      // ✅ FIX: Setup dropdown ก่อน
+      setupModalDropdown('positionDropdownToggle', 'positionDropdownItems', 'meetingPosition');
+      setupModalDropdown('projectDropdownToggle', 'projectDropdownItems', 'meetingProject');
 
-  try {
-    // โหลด members
-    const internList = await BACKEND.api.getInternData();
-    const names = new Set();
-    internList.forEach(i => { if (i.name) names.add(i.name); });
-    window.internNames = Array.from(names).sort();
-    setupNameDropdown();
+      try {
+        // โหลด members
+        const internList = await BACKEND.api.getInternData();
+        const names = new Set();
+        internList.forEach(i => { if (i.name) names.add(i.name); });
+        window.internNames = Array.from(names).sort();
+        setupNameDropdown();
 
-    // โหลด positions
-    const positions = new Set();
-    internList.forEach(i => { if (i.position) positions.add(String(i.position).trim()); });
-    const positionArray = Array.from(positions).filter(Boolean);
-    setModalDropdownItems('meetingPosition', positionArray);
+        // โหลด positions
+        const positions = new Set();
+        internList.forEach(i => { if (i.position) positions.add(String(i.position).trim()); });
+        const positionArray = Array.from(positions).filter(Boolean);
+        setModalDropdownItems('meetingPosition', positionArray);
 
-    // โหลด projects
-    const res = await BACKEND.api.getProjectList();
-    const projects = (res && res.projects) ? res.projects : [];
-    const projectNames = projects.map(p => String(p.name || "").trim()).filter(Boolean);
-    setModalDropdownItems('meetingProject', ['ไม่มีโปรเจค', ...projectNames]);
-  } catch (err) {
-    console.error('Error loading modal data:', err);
-  }
-}
+        // โหลด projects
+        const res = await BACKEND.api.getProjectList();
+        const projects = (res && res.projects) ? res.projects : [];
+        const projectNames = projects.map(p => String(p.name || "").trim()).filter(Boolean);
+        setModalDropdownItems('meetingProject', ['ไม่มีโปรเจค', ...projectNames]);
+      } catch (err) {
+        console.error('Error loading modal data:', err);
+      }
+    }
   </script>
 
 </body>

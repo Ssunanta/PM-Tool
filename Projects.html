@@ -1829,10 +1829,7 @@
       internSearch: "",
     };
 
-    /* =========================
-       ✅ Local "DB" (No backend)
-       ========================= */
-const API_BASE_URL = "https://pmapi.ideatrade1.com";
+const API_BASE_URL = "http://localhost:3000";
     function uid(prefix="p"){
       return prefix + "_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
     }
@@ -1843,11 +1840,19 @@ const API_BASE_URL = "https://pmapi.ideatrade1.com";
       const dd = String(d.getDate()).padStart(2,"0");
       return `${yyyy}-${mm}-${dd}`;
     }
-    function formatDMY(iso){
+    function ymdFromISO(iso){
       const s = String(iso||"").trim();
-      if (!s) return "-";
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
-      const [y,m,d] = s.split("-");
+      if (!s) return "";
+      // รับทั้ง YYYY-MM-DD และ ISO DateTime เช่น 2026-01-01T00:00:00.000Z
+      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+      if (s.length >= 10 && /^\d{4}-\d{2}-\d{2}$/.test(s.slice(0,10))) return s.slice(0,10);
+      return "";
+    }
+
+    function formatDMY(iso){
+      const ymd = ymdFromISO(iso);
+      if (!ymd) return (String(iso||"").trim() || "-");
+      const [y,m,d] = ymd.split("-");
       return `${Number(d)}/${Number(m)}/${y}`;
     }
     function daysBetween(startISO, endISO){
@@ -1892,23 +1897,44 @@ function daysBetween(startISO, endISO){
    ✅ Status Mapping (Thai ↔ API)
    ========================= */
 function mapStatusToAPI(thaiStatus) {
+  // ✅ enum จริงของ backend: not_started | on_track | delayed | completed
   const map = {
-    'ยังไม่เริ่มงาน': 'NOT_STARTED',
-    'อยู่ในกำหนด': 'ONGOING',
-    'เสร็จแล้ว': 'COMPLETED',
-    'ช้ากว่ากำหนด': 'ON_HOLD'
+    'ยังไม่เริ่มงาน': 'not_started',
+    'อยู่ในกำหนด': 'on_track',
+    'เสร็จแล้ว': 'completed',
+    'ช้ากว่ากำหนด': 'delayed',
+
+    // เผื่อกรณี UI มีอังกฤษ
+    'Not Started': 'not_started',
+    'In progress': 'on_track',
+    'Finished': 'completed',
+    'Delayed': 'delayed'
   };
-  return map[thaiStatus] || 'ONGOING';
+  return map[thaiStatus] || 'on_track';
 }
 
 function mapStatusFromAPI(apiStatus) {
+  const s = String(apiStatus || "").toLowerCase().trim();
+
   const map = {
-    'NOT_STARTED': 'ยังไม่เริ่มงาน',
-    'ONGOING': 'อยู่ในกำหนด',
-    'COMPLETED': 'เสร็จแล้ว',
-    'ON_HOLD': 'ช้ากว่ากำหนด'
+    'not_started': 'ยังไม่เริ่มงาน',
+    'on_track': 'อยู่ในกำหนด',
+    'delayed': 'ช้ากว่ากำหนด',
+    'completed': 'เสร็จแล้ว',
+
+    // เผื่อค่าเก่า
+    'not_started_old': 'ยังไม่เริ่มงาน'
   };
-  return map[apiStatus] || 'อยู่ในกำหนด';
+
+  if (map[s]) return map[s];
+
+  // เผื่อ backend เก่า (UPPERCASE)
+  if (s === 'not_started' || s === 'not started') return 'ยังไม่เริ่มงาน';
+  if (s === 'ongoing' || s === 'in_progress' || s === 'on_track') return 'อยู่ในกำหนด';
+  if (s === 'on_hold' || s === 'delayed') return 'ช้ากว่ากำหนด';
+  if (s === 'completed' || s === 'finished' || s === 'done') return 'เสร็จแล้ว';
+
+  return 'อยู่ในกำหนด';
 }
 
 /* =========================
@@ -1943,25 +1969,25 @@ async function createProjectAPI(projectData) {
   try {
     const response = await fetch(`${API_BASE_URL}/projects`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({
         name: projectData.name,
         description: projectData.note || '',
         startDate: projectData.startISO || undefined,
         plannedEndDate: projectData.endISO || undefined,
-        note: projectData.note || '',
         figmaURL: projectData.figma || '',
         status: mapStatusToAPI(projectData.status),
         completionPercent: 0,
         members: []
       })
     });
-    
+
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to create project');
+      const err = await response.json().catch(() => ({}));
+      const msg = Array.isArray(err.message) ? err.message.join(", ") : (err.message || err.error || `HTTP ${response.status}`);
+      throw new Error(msg || 'Failed to create project');
     }
-    
+
     return await response.json();
   } catch (e) {
     console.error('Failed to create project:', e);
@@ -1975,17 +2001,21 @@ async function updateProjectAPI(projectId, updates) {
     if (updates.name !== undefined) payload.name = updates.name;
     if (updates.startISO !== undefined) payload.startDate = updates.startISO || null;
     if (updates.endISO !== undefined) payload.plannedEndDate = updates.endISO || null;
-    if (updates.note !== undefined) payload.note = updates.note;
+    if (updates.note !== undefined) payload.description = updates.note; // ✅ UI note -> backend description
     if (updates.figma !== undefined) payload.figmaURL = updates.figma;
     if (updates.status !== undefined) payload.status = mapStatusToAPI(updates.status);
-    
-    const response = await fetch(`${API_BASE_URL}/projects/${projectId}`, {
+
+    const response = await fetch(`${API_BASE_URL}/projects/${encodeURIComponent(projectId)}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify(payload)
     });
-    
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      const msg = Array.isArray(err.message) ? err.message.join(", ") : (err.message || err.error || `HTTP ${response.status}`);
+      throw new Error(msg);
+    }
     return await response.json();
   } catch (e) {
     console.error('Failed to update project:', e);
@@ -2012,21 +2042,83 @@ async function deleteProjectAPI(projectId) {
 
 async function fetchProjectMembersAPI(projectId) {
   try {
-    const project = await getProjectByIdAPI(projectId);
-    if (!project || !project.members || !project.members.length) {
-      return [];
+    const pid = String(projectId || "").trim();
+    if (!pid) return [];
+
+    // 1) พยายามอ่านจาก project.members ก่อน (ถ้า backend เก็บ relation ไว้ใน project)
+    const project = await getProjectByIdAPI(pid);
+    const arr = Array.isArray(project?.members) ? project.members : [];
+
+    let memberObjs = [];
+
+    if (arr.length) {
+      const memberPromises = arr.map(async (x) => {
+        if (!x) return null;
+
+        // populate case
+        if (typeof x === "object" && (x._id || x.id)) return x;
+
+        // id case
+        const memberId = String(x);
+        const r = await fetch(`${API_BASE_URL}/members/${encodeURIComponent(memberId)}`, { headers: { "Accept": "application/json" } });
+        if (!r.ok) {
+          const t = await r.text().catch(() => "");
+          throw new Error(`GET /members/${memberId} failed: ${r.status} ${t}`);
+        }
+        return await r.json();
+      });
+
+      memberObjs = (await Promise.all(memberPromises)).filter(Boolean);
+    } else {
+      // 2) Fallback: ถ้า project.members ว่าง แต่จริงๆ backend ผูก relation ไว้ฝั่ง member
+      const limit = 200;
+      let page = 1;
+      const all = [];
+
+      while (true) {
+        const url = `${API_BASE_URL}/members?page=${page}&limit=${limit}`;
+        const r = await fetch(url, { headers: { "Accept": "application/json" } });
+        if (!r.ok) {
+          const t = await r.text().catch(() => "");
+          throw new Error(`GET /members failed: ${r.status} ${t}`);
+        }
+        const data = await r.json();
+        const rows = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
+        all.push(...rows);
+
+        const totalPages = Number(data?.pagination?.totalPages || 1);
+        if (page >= totalPages) break;
+        page += 1;
+      }
+
+      const hasPid = (v) => {
+        if (!v) return false;
+        if (typeof v === "string") return v === pid;
+        if (typeof v === "object") return (v._id || v.id) === pid;
+        return false;
+      };
+
+      memberObjs = all.filter(mem => {
+        const candidates = [
+          mem.projects,
+          mem.projectIds,
+          mem.assignedProjects,
+          mem.project,
+          mem.projectId
+        ];
+
+        for (const c of candidates) {
+          if (!c) continue;
+          if (Array.isArray(c) && c.some(hasPid)) return true;
+          if (hasPid(c)) return true;
+        }
+        return false;
+      });
     }
-    
-    // Fetch all members in parallel
-    const memberPromises = project.members.map(memberId =>
-      fetch(`${API_BASE_URL}/members/${memberId}`).then(r => r.json())
-    );
-    
-    const members = await Promise.all(memberPromises);
-    
-    return members.map(m => ({
-      tag: m._id,
-      name: m.displayName || m.nickname || '-',
+
+    return memberObjs.map(m => ({
+      tag: m._id || m.id,
+      name: m.displayName || m.nickname || m.name || '-',
       position: m.position || '-'
     }));
   } catch (e) {
@@ -2036,37 +2128,62 @@ async function fetchProjectMembersAPI(projectId) {
 }
 
 async function createMemberAPI(memberData) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/members`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        displayName: memberData.name,
-        position: memberData.position,
-        role: 'INTERN' // default
-      })
-    });
-    
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return await response.json();
-  } catch (e) {
-    console.error('Failed to create member:', e);
-    throw e;
+  // ✅ Backend อาจบังคับ/ไม่บังคับ role และ enum อาจต่างกัน
+  const basePayload = {
+    displayName: memberData.name,
+    position: memberData.position
+  };
+
+  const attempts = [
+    basePayload,
+    { ...basePayload, role: memberData.role }, // ถ้า UI มี role
+    { ...basePayload, role: "intern" },
+    { ...basePayload, role: "INTERN" }
+  ].filter(p => (p === basePayload) || (p.role !== undefined && p.role !== ""));
+
+  let lastErr = null;
+
+  for (const payload of attempts) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/members`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const txt = await response.text().catch(() => '');
+        lastErr = new Error(`HTTP ${response.status}: ${txt || 'Failed to create member'}`);
+        continue;
+      }
+      return await response.json();
+    } catch (e) {
+      lastErr = e;
+    }
   }
+
+  console.error('Failed to create member:', lastErr);
+  throw lastErr || new Error('Failed to create member');
 }
 
 async function updateMemberAPI(memberId, updates) {
   try {
-    const response = await fetch(`${API_BASE_URL}/members/${memberId}`, {
+    const payload = {
+      displayName: updates.name,
+      position: updates.position
+    };
+    if (updates.role !== undefined && updates.role !== "") payload.role = updates.role;
+
+    const response = await fetch(`${API_BASE_URL}/members/${encodeURIComponent(memberId)}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        displayName: updates.name,
-        position: updates.position
-      })
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
     });
-    
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    if (!response.ok) {
+      const txt = await response.text().catch(() => '');
+      throw new Error(`HTTP ${response.status}: ${txt || 'Failed to update member'}`);
+    }
     return await response.json();
   } catch (e) {
     console.error('Failed to update member:', e);
@@ -2076,11 +2193,15 @@ async function updateMemberAPI(memberId, updates) {
 
 async function assignMemberToProjectAPI(projectId, memberId) {
   try {
-    const response = await fetch(`${API_BASE_URL}/members/${memberId}/project/${projectId}`, {
-      method: 'PATCH'
+    const response = await fetch(`${API_BASE_URL}/members/${encodeURIComponent(memberId)}/project/${encodeURIComponent(projectId)}`, {
+      method: 'PATCH',
+      headers: { 'Accept': 'application/json' }
     });
-    
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    if (!response.ok) {
+      const txt = await response.text().catch(() => '');
+      throw new Error(`HTTP ${response.status}: ${txt || 'Failed to assign member to project'}`);
+    }
     return true;
   } catch (e) {
     console.error('Failed to assign member:', e);
@@ -2090,11 +2211,15 @@ async function assignMemberToProjectAPI(projectId, memberId) {
 
 async function removeMemberFromProjectAPI(projectId, memberId) {
   try {
-    const response = await fetch(`${API_BASE_URL}/members/${memberId}/project/${projectId}`, {
-      method: 'DELETE'
+    const response = await fetch(`${API_BASE_URL}/members/${encodeURIComponent(memberId)}/project/${encodeURIComponent(projectId)}`, {
+      method: 'DELETE',
+      headers: { 'Accept': 'application/json' }
     });
-    
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    if (!response.ok) {
+      const txt = await response.text().catch(() => '');
+      throw new Error(`HTTP ${response.status}: ${txt || 'Failed to remove member from project'}`);
+    }
     return true;
   } catch (e) {
     console.error('Failed to remove member:', e);
@@ -2120,13 +2245,16 @@ async function deleteMemberAPI(memberId) {
    ✅ Helper: Convert API Project to Local Format
    ========================= */
 function convertAPIProjectToLocal(apiProject) {
+  const startYMD = ymdFromISO(apiProject.startDate || '');
+  const endYMD = ymdFromISO(apiProject.plannedEndDate || '');
+
   return {
     id: apiProject._id,
     name: apiProject.name,
-    startISO: apiProject.startDate || '',
-    endISO: apiProject.plannedEndDate || '',
-    start: formatDMY(apiProject.startDate || ''),
-    end: formatDMY(apiProject.plannedEndDate || ''),
+    startISO: startYMD || '',
+    endISO: endYMD || '',
+    start: formatDMY(startYMD || apiProject.startDate || ''),
+    end: formatDMY(endYMD || apiProject.plannedEndDate || ''),
     days: daysBetween(apiProject.startDate || '', apiProject.plannedEndDate || ''),
     note: apiProject.note || apiProject.description || '',
     figma: apiProject.figmaURL || '',
@@ -2610,6 +2738,7 @@ function renderTableWithCachedMentors(rows, mentorMap) {
       var note = wrapTextSmart(noteRaw, 60);
 
       window.__outlineProjectName = name;
+      window.__outlineProjectId = String((row && row.id) ? row.id : (row && row.rowIndex) ? row.rowIndex : "");
       window.__outlineCache = "";
 
       var html = ''
@@ -2649,12 +2778,17 @@ function renderTableWithCachedMentors(rows, mentorMap) {
     }
 
     function loadPreviewForCurrentProject(){
-      var name = String(window.__outlineProjectName || "").trim();
+      var pid = String(window.__outlineProjectId || "").trim();
       var box = document.getElementById("outlineBox");
       if (!box) return;
 
-      const p = getProjectByName(name);
-      const contentRaw = (p && typeof p.preview === "string") ? p.preview : "";
+      // ✅ เก็บ/อ่าน preview แบบ per-project ใน localStorage (ไม่พึ่ง backend)
+      var key = pid ? ("pm_project_preview:" + pid) : "";
+      var contentRaw = "";
+      try {
+        if (key) contentRaw = localStorage.getItem(key) || "";
+      } catch (e) {}
+
       const content = wrapTextSmart(contentRaw || "", 85);
 
       window.__outlineCache = content;
@@ -2699,27 +2833,29 @@ function renderTableWithCachedMentors(rows, mentorMap) {
     }
 
     function saveOutlineEdit(){
-      var name = String(window.__outlineProjectName || "").trim();
+      var pid = String(window.__outlineProjectId || "").trim();
       var ta = document.getElementById("outlineEditor");
       var box = document.getElementById("outlineBox");
       var btnSave = document.getElementById("btnOutlineSave");
-      if (!name || !ta || !box) return;
+      if (!ta || !box) return;
 
       var newText = String(ta.value || "");
       if (btnSave) btnSave.disabled = true;
 
-      const db = loadDB();
-      const p = db.projects.find(x => String(x.name||"").trim() === name);
-      if (p){
-        p.preview = newText;
-        saveDB(db);
-      }
+      // ✅ save per-project localStorage
+      try {
+        if (pid) localStorage.setItem("pm_project_preview:" + pid, newText);
+      } catch (e) {}
 
       if (btnSave) btnSave.disabled = false;
 
-      newText = wrapTextSmart(newText, 85);
-      window.__outlineCache = newText;
-      box.innerHTML = '<div class="outline-html">' + formatOutlineTextToHtml(newText) + '</div>';
+      const wrapped = wrapTextSmart(newText, 85);
+      window.__outlineCache = wrapped;
+
+      box.innerHTML = (wrapped && wrapped.trim())
+        ? ('<div class="outline-html">' + formatOutlineTextToHtml(wrapped) + '</div>')
+        : '<pre class="outline-pre">(ว่าง)</pre>';
+
       cancelOutlineEdit();
     }
 
@@ -2765,9 +2901,21 @@ function renderTableWithCachedMentors(rows, mentorMap) {
       const name = String(projectName || "").trim();
       if (!name) return;
 
+      // ✅ หา projectId จากชื่อ (เพราะ UI ส่งมาเป็นชื่อ)
+      const rows = Array.isArray(window.__proj?.tableRows) ? window.__proj.tableRows : [];
+      const key = normalizeKey(name);
+      const found = rows.find(r => normalizeKey(r.name) === key);
+      const pid = found?.id || "";
+
+      if (!pid) {
+        alert("หา Project ID ไม่เจอ (โปรเจคนี้อาจยังไม่ถูกโหลด)");
+        return;
+      }
+
       document.body.classList.add("in-members");
 
       window.__proj.selectedProjectName = name;
+      window.__proj.selectedProjectIdForMembers = pid; // ✅ ใช้ตอน add member / load members
 
       byId("pageTitle").innerHTML = `<span class="dot"></span>${escapeHtml(name)}`;
       byId("btnBackAll").style.display = "inline-flex";
@@ -2778,7 +2926,7 @@ function renderTableWithCachedMentors(rows, mentorMap) {
 
       byId("memberProjectTag").textContent = name;
 
-      fetchPeopleTable(name);
+      fetchPeopleTable(); // ใช้ id จาก selectedProjectIdForMembers
     }
 
     function goBackAll() {
@@ -2795,11 +2943,16 @@ function renderTableWithCachedMentors(rows, mentorMap) {
       fetchAllProjectsTable();
     }
 
-async function fetchPeopleTable(projectId) {
+async function fetchPeopleTable() {
   const tbody = byId("memberTableBody");
   if (tbody) tbody.innerHTML = `<tr><td colspan="3" class="loading">กำลังโหลดสมาชิก...</td></tr>`;
 
   try {
+    const projectId = String(window.__proj?.selectedProjectIdForMembers || "").trim();
+    if (!projectId) {
+      if (tbody) tbody.innerHTML = `<tr><td colspan="3" class="loading" style="color:#dc3545;">ไม่พบ Project ID</td></tr>`;
+      return;
+    }
     const members = await fetchProjectMembersAPI(projectId);
     renderPeopleTable({ projectName: window.__proj.selectedProjectName, rows: members });
   } catch (e) {
@@ -2883,8 +3036,9 @@ async function fetchPeopleTable(projectId) {
     function closeMemberModal(){ byId("memberModal").classList.remove("show"); }
 
 async function submitMemberModal() {
-  const projectId = window.__proj.selectedId;
-  if (!projectId) return;
+  // ✅ ตอนอยู่หน้า Members ให้ใช้ projectId ของโปรเจคที่เลือกจริง (ไม่ใช่ selectedId = 'all')
+  const projectId = String(window.__proj?.selectedProjectIdForMembers || "").trim();
+  if (!projectId) { alert("ไม่พบ Project ID"); return; }
 
   const name = byId("m_name").value.trim();
   const pos = byId("m_pos").value.trim();
@@ -2903,7 +3057,7 @@ async function submitMemberModal() {
     }
 
     closeMemberModal();
-    await fetchPeopleTable(projectId);
+    await fetchPeopleTable();
   } catch (e) {
     alert(`บันทึกไม่สำเร็จ: ${e.message}`);
   } finally {
@@ -2911,25 +3065,26 @@ async function submitMemberModal() {
   }
 }
 
-    function deleteMemberTag(row){
+    async function deleteMemberTag(row){
       const projectName = window.__proj.selectedProjectName;
-      if (!projectName) return;
+      const projectId = String(window.__proj?.selectedProjectIdForMembers || "").trim();
+      if (!projectName || !projectId) return;
 
-      const tag = String(row.tag || "");
-      if (!tag) return;
+      const memberId = String(row.tag || "").trim();
+      if (!memberId) return;
 
-      if (!confirm(`ลบ "${row.name}" ใช่ไหม?`)) return;
+      if (!confirm(`ลบ "${row.name}" ออกจากโปรเจคนี้ ใช่ไหม?`)) return;
 
-      const db = loadDB();
-      const p = db.projects.find(x => String(x.name||"").trim() === String(projectName||"").trim());
-      if (!p || !Array.isArray(p.members)) return;
+      try {
+        await removeMemberFromProjectAPI(projectId, memberId);
 
-      p.members = p.members.filter(m => String(m.tag) !== String(tag));
-      saveDB(db);
-
-      fetchPeopleTable(projectName);
-      fetchAllProjectsTable();
-      openMembers(projectName);
+        // ✅ รีเฟรชตารางสมาชิก + ตารางโปรเจครวม
+        await fetchPeopleTable();          // ใช้ selectedProjectIdForMembers
+        await fetchAllProjectsTable();
+      } catch (e) {
+        console.error("Remove member failed:", e);
+        alert("ลบสมาชิกไม่สำเร็จ (ดู console)");
+      }
     }
 
     function openAdd() {
@@ -2982,9 +3137,8 @@ async function submitAdd() {
       byId("editModal").classList.add("show");
 
       byId("edit_name").value = row.name || "";
-      byId("edit_start").value = (row.startISO && /^\d{4}-\d{2}-\d{2}$/.test(row.startISO)) ? row.startISO : (row.startISO||"");
-      byId("edit_end").value = (row.endISO && /^\d{4}-\d{2}-\d{2}$/.test(row.endISO)) ? row.endISO : (row.endISO||"");
-
+      byId("edit_start").value = ymdFromISO(row.startISO || row.start || "") || "";
+      byId("edit_end").value = ymdFromISO(row.endISO || row.end || "") || "";
       byId("edit_note").value = row.note || "";
         byId("edit_figma").value = row.figma || "";  // ✅ เพิ่มบรรทัดนี้
 

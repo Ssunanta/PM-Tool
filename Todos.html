@@ -1435,7 +1435,6 @@
 /* =========================================================
    ✅ PATCH: iPhone-only todos-filters full width
    ✅ PATCH: status select typography/size match status-pill
-   (No logic changed)
    ========================================================= */
 
 /* Match typography + size between <select> and <span class="status-pill ..."> */
@@ -1476,6 +1475,78 @@
   }
 }
 
+
+
+/* =========================================================
+   ✅ STATUS COLOR (Manage Mode <select>)
+   - uses classes: st-notscheduled / st-inprogress / st-finished
+   - overdue is derived (in_progress + deadline passed + no finishedAt)
+   ========================================================= */
+.status-select{
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 800;
+  border: 1px solid rgba(0,0,0,.12);
+  background: #fff;
+  outline: none;
+}
+.status-select.st-notscheduled{
+  background: rgba(255, 193, 7, .16) !important;
+  border-color: rgba(255, 193, 7, .45) !important !important;
+  color: #7a5a00 !important;
+}
+.status-select.st-inprogress{
+  background: rgba(59, 130, 246, .14) !important;
+  border-color: rgba(59, 130, 246, .45) !important !important;
+  color: #0b3b8a !important;
+}
+.status-select.st-finished{
+  background: rgba(34, 197, 94, .16) !important;
+  border-color: rgba(34, 197, 94, .45) !important !important;
+  color: #14532d !important;
+}
+.status-select.st-overdue{
+  background: rgba(239, 68, 68, .16) !important;
+  border-color: rgba(239, 68, 68, .45) !important !important;
+  color: #7f1d1d !important;
+}
+
+/* ✅ STATUS PILL overdue color (if not already defined) */
+.status-pill.overdue{
+  background: rgba(239, 68, 68, .16);
+  border: 1px solid rgba(239, 68, 68, .45);
+  color: #7f1d1d;
+}
+
+
+/* =========================================================
+   ✅ ManageMode select color by data-status (bulletproof)
+   NOTE: set via render: data-status="not_started|in_progress|done|overdue"
+   ========================================================= */
+#todosPage td .status-select[data-status="not_started"],
+#todosTab  td .status-select[data-status="not_started"]{
+  background-color: rgba(255, 193, 7, .16) !important;
+  border-color: rgba(255, 193, 7, .45) !important;
+  color: #7a5a00 !important;
+}
+#todosPage td .status-select[data-status="in_progress"],
+#todosTab  td .status-select[data-status="in_progress"]{
+  background-color: rgba(59, 130, 246, .14) !important;
+  border-color: rgba(59, 130, 246, .45) !important;
+  color: #0b3b8a !important;
+}
+#todosPage td .status-select[data-status="done"],
+#todosTab  td .status-select[data-status="done"]{
+  background-color: rgba(34, 197, 94, .16) !important;
+  border-color: rgba(34, 197, 94, .45) !important;
+  color: #14532d !important;
+}
+#todosPage td .status-select[data-status="overdue"],
+#todosTab  td .status-select[data-status="overdue"]{
+  background-color: rgba(239, 68, 68, .16) !important;
+  border-color: rgba(239, 68, 68, .45) !important;
+  color: #7f1d1d !important;
+}
 </style>
 
 
@@ -1553,6 +1624,37 @@
   display: inline-block !important;
 }
 
+
+
+/* ✅ ManageMode status colors (select) */
+#todosPage td .status-select.st-notscheduled,
+#todosTab  td .status-select.st-notscheduled {
+  background-color: rgba(255, 193, 7, .16) !important;
+  border-color: rgba(255, 193, 7, .45) !important;
+  color: #7a5a00 !important;
+}
+
+#todosPage td .status-select.st-inprogress,
+#todosTab  td .status-select.st-inprogress {
+  background-color: rgba(59, 130, 246, .14) !important;
+  border-color: rgba(59, 130, 246, .45) !important;
+  color: #0b3b8a !important;
+}
+
+#todosPage td .status-select.st-finished,
+#todosTab  td .status-select.st-finished {
+  background-color: rgba(34, 197, 94, .16) !important;
+  border-color: rgba(34, 197, 94, .45) !important;
+  color: #14532d !important;
+}
+
+/* (ถ้า overdue derived แดงใน manageMode) */
+#todosPage td .status-select.st-overdue,
+#todosTab  td .status-select.st-overdue {
+  background-color: rgba(239, 68, 68, .16) !important;
+  border-color: rgba(239, 68, 68, .45) !important;
+  color: #7f1d1d !important;
+}
 /* wrapper like <div style="width:100%;max-width:100%;"> */
 #todosPage td > div[style*="max-width"],
 #todosTab td > div[style*="max-width"]{
@@ -1726,29 +1828,64 @@
     </div>
 
     <script>
-  // ==================== API CONFIG ====================
-const API_BASE = "https://pmapi.ideatrade1.com";
+  
+const API_BASE = "http://localhost:3000";
 const API_TASKS = `${API_BASE}/tasks`;
 const API_PROJECTS = `${API_BASE}/projects`;
 const API_MEMBERS = `${API_BASE}/members`;
 
 // ==================== FETCH HELPERS ====================
 async function fetchAPI(url, options = {}) {
-  try {
-    const response = await fetch(url, {
-      headers: { "Content-Type": "application/json", ...options.headers },
-      ...options,
-    });
-    if (!response.ok) {
-      console.error(`API Error: ${response.status}`);
-      return null;
-    }
-    return await response.json();
-  } catch (e) {
-    console.error("Fetch error:", e);
-    return null;
+  const opts = { ...options };
+  opts.headers = { ...(options.headers || {}) };
+
+  if (!opts.headers["Accept"]) opts.headers["Accept"] = "application/json";
+
+  const hasBody = opts.body !== undefined && opts.body !== null;
+  const isFormData = (typeof FormData !== "undefined") && (opts.body instanceof FormData);
+  if (hasBody && !isFormData && !opts.headers["Content-Type"]) {
+    opts.headers["Content-Type"] = "application/json";
   }
+
+  const res = await fetch(url, opts);
+
+  if (!res.ok) {
+    const errText = await res.text().catch(() => "");
+    console.error(`API Error: ${res.status}`, errText);
+    throw new Error(`HTTP ${res.status}: ${errText || res.statusText}`);
+  }
+
+  const ct = res.headers.get("content-type") || "";
+  if (ct.includes("application/json")) return await res.json();
+  return await res.text();
 }
+
+// ✅ Safe date -> ISO (กัน RangeError: Invalid time value)
+function toISOOrUndef(v) {
+  const s = String(v || "").trim();
+  if (!s) return undefined;
+  const d = new Date(s);
+  if (isNaN(d.getTime())) return undefined;
+  return d.toISOString();
+}
+
+// ✅ Derive overdue (UI-only): in_progress + deadline passed + not finished
+function isOverdueTask(task) {
+  const status = String(task?.status || "").trim().toLowerCase();
+  if (status !== "in_progress") return false;
+
+  const finishedAt = task?.finishedAt;
+  if (finishedAt) return false;
+
+  const dl = task?.deadline;
+  if (!dl) return false;
+
+  const d = new Date(dl);
+  if (isNaN(d.getTime())) return false;
+
+  return d.getTime() < Date.now();
+}
+
 
 // ==================== STATE ====================
 const $ = (id) => document.getElementById(id);
@@ -1772,7 +1909,20 @@ function colSpanCount() {
 
 async function initTodos() {
   await refreshProjectAndOwnerLists();
-  renderTodoOwnerDropdown();
+  
+  // ✅ bind project input -> owner(mentor) dropdown (one time)
+  if (!window.__todoProjectBind) {
+    window.__todoProjectBind = true;
+    const pi = $("todoProjectInput");
+    if (pi) {
+      pi.addEventListener("change", () => loadMentorOwnersForProjectName(pi.value));
+      pi.addEventListener("input", () => {
+        // when using datalist, input fires; keep it responsive but cheap
+        loadMentorOwnersForProjectName(pi.value);
+      });
+    }
+  }
+renderTodoOwnerDropdown();
   renderTodoStatusDropdown();
   applyManageBtnVisual();
   const ah0 = $("actionsHeader");
@@ -1826,26 +1976,34 @@ async function initTodos() {
 
 // ==================== DATA LOADING ====================
 async function refreshProjectAndOwnerLists() {
-  const result = await fetchAPI(`${API_TASKS}?limit=1000`);
-  const tasks = result?.data || [];
+  // ✅ ดึงชื่อโปรเจกต์จาก /projects (ไม่เดาจาก tasks)
+  const res = await fetchAPI(`${API_PROJECTS}?page=1&limit=1000`);
+  const projects = (res?.data || res?.items || res || []);
 
-  // Extract projects
-  const mapP = new Map();
-  tasks.forEach((t) => {
-    if (t.project?.name) mapP.set(t.project.name, true);
-  });
-  todosProjectList = Array.from(mapP.keys()).sort();
+  todosProjectList = projects
+    .map(p => String(p?.name || "").trim())
+    .filter(Boolean)
+    .sort((a,b)=>a.localeCompare(b, "th"));
 
-  // Extract owners/assignees
-  const mapO = new Map();
-  tasks.forEach((t) => {
-    if (t.assignee?.displayName) mapO.set(t.assignee.displayName, true);
+  // cache projects by name/id for later use (owner dropdown)
+  window.__todosProjectCache = window.__todosProjectCache || { byName: new Map(), byId: new Map(), list: [] };
+  window.__todosProjectCache.byName.clear();
+  window.__todosProjectCache.byId.clear();
+  window.__todosProjectCache.list = projects;
+
+  projects.forEach(p => {
+    const id = String(p?._id || p?.id || "");
+    const name = String(p?.name || "").trim();
+    if (id) window.__todosProjectCache.byId.set(id, p);
+    if (name) window.__todosProjectCache.byName.set(name.toLowerCase(), p);
   });
-  todoOwnerList = Array.from(mapO.keys()).sort();
+
+  // owner list จะขึ้นตาม project ที่เลือกใน modal
+  todoOwnerList = [];
 
   renderTodosDropdown();
-  renderTodoProjectSelect();
-  renderTodoOwnerSelect();
+  renderTodoProjectSelect();  // ✅ เติม datalist ใน modal
+  renderTodoOwnerDropdown();  // reset owners
 }
 
 async function loadTodos(projectName) {
@@ -1853,6 +2011,10 @@ async function loadTodos(projectName) {
   
   const result = await fetchAPI(url);
   const allTasks = result?.data || [];
+
+  // cache: keep full list + lookup by id (for edit diff)
+  window.__todosAllTasks = allTasks;
+  window.__todosTaskById = new Map((allTasks || []).map(t => [String(t?._id || t?.id || ""), t]));
 
   if (projectName) {
     todosCache = allTasks.filter((t) => t.project?.name === projectName);
@@ -2093,23 +2255,23 @@ function renderTodos(todos) {
   }
 
   todos.forEach((todo) => {
-    const rawStatus = String(todo.status || "NOT_STARTED").trim();
+    const rawStatus = String(todo.status || "not_started").trim();
     const norm = normalizeStatus(rawStatus);
-    const stClass = statusClassFromRaw(rawStatus, norm);
+    const isOverdue = isOverdueTask(todo);
+    const stClassBase = statusClassFromRaw(rawStatus, norm);
+    const stClass = isOverdue ? "st-overdue" : stClassBase;
 
     const statusCellHtml = manageMode
       ? `
         <div style="width:100%;max-width:100%;">
-          <select class="status-select ${stClass}"
-            onchange="changeTodoStatus('${escAttr(todo._id)}', this.value)">
-            <option value="NOT_STARTED" ${norm === "NOT_STARTED" ? "selected" : ""}>Not scheduled</option>
-            <option value="ONGOING" ${norm === "ONGOING" ? "selected" : ""}>In Progress</option>
-            <option value="COMPLETED" ${norm === "COMPLETED" ? "selected" : ""}>Finished</option>
-            <option value="BLOCKED" ${norm === "BLOCKED" ? "selected" : ""}>Blocked</option>
+          <select class="status-select ${stClass}" data-status="${isOverdue ? 'overdue' : norm}" onchange="changeTodoStatus('${escAttr(todo._id)}', this.value, this)">
+            <option value="not_started" ${norm === "not_started" ? "selected" : ""}>Not scheduled</option>
+            <option value="in_progress" ${norm === "in_progress" ? "selected" : ""}>${isOverdue ? "Overdue" : "In Progress"}</option>
+            <option value="done" ${norm === "done" ? "selected" : ""}>Finished</option>
           </select>
         </div>
       `
-      : statusPillHtml(rawStatus, norm);
+      : statusPillHtml(rawStatus, norm, todo.deadline, todo.finishedAt);
 
     const actionsTd = manageMode
       ? `
@@ -2130,7 +2292,7 @@ function renderTodos(todos) {
 
     const startDate = todo.startDate ? formatDate(todo.startDate) : "-";
     const deadline = todo.deadline ? formatDate(todo.deadline) : "-";
-    const finished = todo.finishedAt ? formatDate(todo.finishedAt) : "-";
+    const finished = (normalizeStatus(todo.status) === "done" && todo.finishedAt) ? formatDate(todo.finishedAt) : "-";
     const project = todo.project?.name || "-";
     const assignee = todo.assignee?.displayName || "-";
 
@@ -2172,21 +2334,37 @@ function appendAddRow(tbody) {
 }
 
 // ==================== STATUS HANDLING ====================
-async function changeTodoStatus(todoId, newStatus) {
-  // Update colors immediately
-  const allSelects = document.querySelectorAll(".status-select");
-  allSelects.forEach((sel) => updateSelectColor(sel, sel.value));
+async function changeTodoStatus(todoId, newValue, sel) {
 
-  // Send to backend
-  const result = await fetchAPI(`${API_TASKS}/${todoId}`, {
+  try{
+    if (sel && sel.classList){
+      const n = normalizeStatus(newValue);
+      sel.dataset.status = n;
+      // update class too
+      sel.classList.remove("st-notscheduled","st-inprogress","st-finished","st-overdue");
+      sel.classList.add(n==="not_started"?"st-notscheduled":(n==="in_progress"?"st-inprogress":"st-finished"));
+    }
+  }catch(_e){}
+
+  const statusToSend = normalizeStatus(newValue);
+  const payload = {
+    status: statusToSend,
+    isOngoing: statusToSend === "in_progress",
+    finishedAt: statusToSend === "done" ? new Date().toISOString() : null
+  };
+
+  // ลบ undefined
+  Object.keys(payload).forEach(k => payload[k] === undefined && delete payload[k]);
+
+  fetchAPI(`${API_TASKS}/${encodeURIComponent(todoId)}`, {
     method: "PATCH",
-    body: JSON.stringify({ status: newStatus }),
-  });
-
-  if (result) {
-    await refreshProjectAndOwnerLists();
-    await loadTodos(todosSelectedProject);
-  }
+    body: JSON.stringify(payload)
+  })
+    .then(() => loadTodos(null))
+    .catch((e) => {
+      console.error("changeTodoStatus failed:", e);
+      alert("เปลี่ยนสถานะไม่สำเร็จ (ดู console)");
+    });
 }
 
 function updateSelectColor(selectEl, status) {
@@ -2231,13 +2409,16 @@ function toggleTodoOwnerDropdown() {
   menu.classList.toggle("open");
 }
 
-function selectTodoOwner(name) {
+function selectTodoOwner(memberId, displayName) {
   const label = $("selectedOwnerText");
   const hidden = $("todoOwnerHidden");
-  
-  if (label) label.textContent = name;
-  if (hidden) hidden.value = name;
-  
+
+  const name = String(displayName || "").trim();
+  const id = String(memberId || "").trim();
+
+  if (label) label.textContent = name || "เลือกผู้รับผิดชอบ";
+  if (hidden) hidden.value = id;
+
   const menu = $("todoOwnerDropdownItems");
   if (menu) menu.classList.remove("open");
 }
@@ -2247,20 +2428,161 @@ function renderTodoOwnerDropdown() {
   if (!container) return;
   container.innerHTML = "";
 
+  // ไม่เลือก
   const emptyItem = document.createElement("div");
   emptyItem.className = "dropdown-item";
   emptyItem.textContent = "ไม่เลือก";
-  emptyItem.onclick = () => selectTodoOwner("");
+  emptyItem.onclick = () => selectTodoOwner("", "");
   container.appendChild(emptyItem);
 
-  todoOwnerList.forEach((name) => {
+  // ถ้าไม่มี mentor
+  if (!Array.isArray(todoOwnerList) || todoOwnerList.length === 0) {
+    const none = document.createElement("div");
+    none.className = "dropdown-item";
+    none.textContent = "ไม่มี";
+    none.style.opacity = "0.7";
+    none.style.cursor = "default";
+    container.appendChild(none);
+    return;
+  }
+
+  // todoOwnerList: [{id,name}]
+  todoOwnerList.forEach((m) => {
+    const id = String(m?.id || m?._id || "");
+    const name = String(m?.name || m?.displayName || "").trim();
+    if (!name) return;
+
     const item = document.createElement("div");
     item.className = "dropdown-item";
     item.textContent = name;
-    item.onclick = () => selectTodoOwner(name);
+    item.onclick = () => selectTodoOwner(id, name);
     container.appendChild(item);
   });
 }
+
+
+// ==================== PROJECT -> OWNER (MENTOR) DROPDOWN ====================
+
+function normalizeName(s) {
+  return String(s || "")
+    .replace(/[\u200B-\u200D\uFEFF]/g, "") // remove zero-width
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function isMentorRole(obj) {
+  const role = String(obj?.role || obj?.memberRole || obj?.projectRole || obj?.position || "").toLowerCase();
+  return role.includes("mentor");
+}
+
+async function fetchProjectByIdForTodos(projectId) {
+  try {
+    return await fetchAPI(`${API_PROJECTS}/${encodeURIComponent(projectId)}`);
+  } catch (e) {
+    console.warn("fetchProjectByIdForTodos failed:", e);
+    return null;
+  }
+}
+
+async function fetchAllMembersForTodos() {
+  window.__todosMembersCache = window.__todosMembersCache || { map: new Map(), loaded: false };
+  if (window.__todosMembersCache.loaded) return window.__todosMembersCache.map;
+
+  try {
+    const res = await fetchAPI(`${API_BASE_URL}/members?page=1&limit=2000`);
+    const items = (res?.data || res?.items || res || []);
+    window.__todosMembersCache.map.clear();
+    items.forEach(m => {
+      const id = String(m?._id || m?.id || "");
+      if (id) window.__todosMembersCache.map.set(id, m);
+    });
+    window.__todosMembersCache.loaded = true;
+    return window.__todosMembersCache.map;
+  } catch (e) {
+    console.warn("fetchAllMembersForTodos failed:", e);
+    return window.__todosMembersCache.map;
+  }
+}
+
+async function loadMentorOwnersForProjectName(projectName) {
+  const input = $("todoProjectInput");
+  const label = $("selectedOwnerText");
+  const hidden = $("todoOwnerHidden");
+
+  const nameKey = normalizeName(projectName || (input ? input.value : ""));
+  const cache = window.__todosProjectCache;
+
+  // reset owner selection every time project changes
+  if (label) label.textContent = "เลือกผู้รับผิดชอบ";
+  if (hidden) hidden.value = "";
+
+  todoOwnerList = [];
+
+  if (!cache || !nameKey) {
+    renderTodoOwnerDropdown();
+    return;
+  }
+
+  const proj = cache.byName.get(nameKey);
+  const projectId = String(proj?._id || proj?.id || "");
+  if (!projectId) {
+    renderTodoOwnerDropdown();
+    return;
+  }
+
+  // Try project detail for members
+  let projectDetail = await fetchProjectByIdForTodos(projectId);
+  const p = projectDetail?.data || projectDetail || proj;
+
+  const owners = [];
+  const members = Array.isArray(p?.members) ? p.members : (Array.isArray(p?.team) ? p.team : []);
+
+  if (members.length > 0) {
+    for (const item of members) {
+      // 1) join object: { memberId, role }
+      if (item && typeof item === "object" && item.memberId) {
+        const joinRoleMentor = isMentorRole(item);
+        const memberObj = item.memberId;
+        const memberId = String(memberObj?._id || memberObj?.id || item.memberId || "");
+        const memberName = String(memberObj?.displayName || memberObj?.name || "").trim();
+        if (joinRoleMentor && memberId && memberName) owners.push({ id: memberId, name: memberName });
+        continue;
+      }
+
+      // 2) populated member object: { _id, displayName, role/position }
+      if (item && typeof item === "object" && (item._id || item.id)) {
+        const memberId = String(item._id || item.id || "");
+        const memberName = String(item.displayName || item.name || "").trim();
+        const mentor = isMentorRole(item);
+        if (mentor && memberId && memberName) owners.push({ id: memberId, name: memberName });
+        continue;
+      }
+
+      // 3) string id
+      if (typeof item === "string") {
+        // fallback: lookup from /members cache
+        const map = await fetchAllMembersForTodos();
+        const mm = map.get(item);
+        if (mm && isMentorRole(mm)) {
+          owners.push({ id: String(mm._id || mm.id), name: String(mm.displayName || mm.name || "").trim() });
+        }
+      }
+    }
+  }
+
+  // de-dupe
+  const seen = new Set();
+  todoOwnerList = owners.filter(o => {
+    const k = String(o.id);
+    if (!k || seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  }).sort((a,b)=>String(a.name).localeCompare(String(b.name), "th"));
+
+  renderTodoOwnerDropdown();
+}
+
 
 // ==================== STATUS DROPDOWN IN MODAL ====================
 
@@ -2270,35 +2592,41 @@ function toggleTodoStatusDropdown() {
   menu.classList.toggle("open");
 }
 
-function selectTodoStatus(value, name) {
-  const label = $("selectedStatusText");
+function selectTodoStatus(value, label) {
   const hidden = $("todoStatusHidden");
-  
-  if (label) label.textContent = name;
-  if (hidden) hidden.value = value;
-  
+  const textEl = $("selectedStatusText");
+
+  const v = String(value || "").trim().toLowerCase();
+  if (hidden) hidden.value = v || "not_started";
+
+  const shown = label || uiTodoStatusText(v, false);
+  if (textEl) textEl.textContent = shown;
+
+  // no overdue flag from dropdown anymore
+  window.__todoStatusIsOverdue = false;
+
   const menu = $("todoStatusDropdownItems");
   if (menu) menu.classList.remove("open");
 }
 
 function renderTodoStatusDropdown() {
-  const container = $("todoStatusDropdownItems");
-  if (!container) return;
-  container.innerHTML = "";
+  const items = $("todoStatusDropdownItems");
+  if (!items) return;
+  items.innerHTML = "";
 
-  const statuses = [
-    { value: "NOT_STARTED", text: "Not scheduled" },
-    { value: "ONGOING", text: "In Progress" },
-    { value: "COMPLETED", text: "Finished" },
-    { value: "BLOCKED", text: "Overdue" }
+  // ✅ มีแค่ 3 สถานะตาม backend: not_started | in_progress | done
+  const options = [
+    { value: "not_started", label: "Not scheduled" },
+    { value: "in_progress", label: "In Progress" },
+    { value: "done", label: "Finished" }
   ];
 
-  statuses.forEach((status) => {
-    const item = document.createElement("div");
-    item.className = "dropdown-item";
-    item.textContent = status.text;
-    item.onclick = () => selectTodoStatus(status.value, status.text);
-    container.appendChild(item);
+  options.forEach((opt) => {
+    const div = document.createElement("div");
+    div.className = "dropdown-item";
+    div.textContent = opt.label;
+    div.onclick = () => selectTodoStatus(opt.value, opt.label);
+    items.appendChild(div);
   });
 }
 
@@ -2311,12 +2639,13 @@ function openTodoModal() {
 function closeTodoModal() {
   const m = $("todoModal");
   if (m) m.classList.remove("show");
+  window.__todoEditingId = "";
+  if ($("todoIdHidden")) $("todoIdHidden").value = "";
 }
 
-// ค้นหา: function openAddTodo(defaultProject) { (ประมาณบรรทัด 1290)
-// แก้ไขให้เป็น:
 
 function openAddTodo(defaultProject) {
+  window.__todoEditingId = "";
   $("todoModalTitle").textContent = "เพิ่มงาน";
   $("todoIdHidden").value = "";
   $("todoName").value = "";
@@ -2345,8 +2674,6 @@ function openAddTodo(defaultProject) {
   openTodoModal();
 }
 
-// ค้นหา: async function openEditTodo(todoId) { (ประมาณบรรทัด 1315)
-// แก้ไขให้เป็น:
 
 async function openEditTodo(todoId) {
   const result = await fetchAPI(`${API_TASKS}/${todoId}`);
@@ -2356,26 +2683,24 @@ async function openEditTodo(todoId) {
 
   $("todoModalTitle").textContent = "แก้ไขงาน";
   $("todoIdHidden").value = item._id || "";
+  window.__todoEditingId = String(item._id || todoId || "").trim();
   $("todoName").value = item.title || "";
 
-  // Set owner dropdown
-  if (item.assignee?.displayName) {
-    selectTodoOwner(item.assignee.displayName);
-  } else {
-    selectTodoOwner("");
-  }
-  renderTodoOwnerDropdown();
+  // Set owner dropdown + load mentors for this project
+  const projectName = item.project?.name || "";
 
-  // Set status dropdown (เพิ่มเพิ่มเติม)
-  const statusMap = {
-    "NOT_STARTED": "Not scheduled",
-    "ONGOING": "In Progress",
-    "COMPLETED": "Finished",
-    "BLOCKED": "Overdue"
-  };
-  const statusValue = item.status || "ONGOING";
-  const statusText = statusMap[statusValue] || "In Progress";
-  selectTodoStatus(statusValue, statusText);
+  const assignee = item.assignee;
+  const assigneeId = String(assignee?._id || assignee?.id || assignee || "");
+  const assigneeName = String(assignee?.displayName || assignee?.name || "").trim();
+  if (assigneeId && assigneeName) {
+    selectTodoOwner(assigneeId, assigneeName);
+  } else {
+    selectTodoOwner("", "");
+  }
+
+  // Set status dropdown
+  const statusValue = apiTaskStatusFromUi(item.status || "not_started");
+  selectTodoStatus(statusValue, uiTodoStatusText(statusValue, false));
   renderTodoStatusDropdown();
 
   $("todoStartDate").value = item.startDate ? item.startDate.substring(0, 10) : "";
@@ -2400,65 +2725,201 @@ async function deleteTodoUI(todoId) {
   }
 }
 
-// ค้นหา: async function submitTodo() { (ประมาณบรรทัด 1360)
-// แก้ไขให้เป็น:
+
+// ==================== API VALUE MAPPING & VALIDATION ====================
+function isMongoId(v) {
+  return /^[a-fA-F0-9]{24}$/.test(String(v || "").trim());
+}
+
+// UI label / legacy value -> Backend enum
+function apiTaskStatusFromUi(input) {
+  // ✅ Backend accepts only: not_started | in_progress | done
+  const raw = String(input || "").trim();
+  if (!raw) return "not_started";
+
+  const low = raw.toLowerCase();
+
+  // already backend enum
+  if (["not_started","in_progress","done"].includes(low)) return low;
+
+  // legacy / UI labels
+  if (low.includes("not") || low.includes("schedule") || low.includes("pending") || low.includes("ยัง")) return "not_started";
+  if (low.includes("progress") || low.includes("ongoing") || low.includes("doing") || low.includes("กำลัง")) return "in_progress";
+  if (low.includes("done") || low.includes("finish") || low.includes("complete") || low.includes("เสร็จ")) return "done";
+
+  // Overdue/Blocked are NOT supported in this backend -> map to in_progress (use deadline to indicate overdue)
+  if (low.includes("overdue") || low.includes("blocked") || low.includes("late") || low.includes("ช้า")) return "in_progress";
+
+  return "not_started";
+}
+
+function uiTodoStatusText(v, isOverdue=false) {
+  if (isOverdue) return "Overdue";
+  const s = String(v || "").trim().toLowerCase();
+  if (s === "not_started") return "Not scheduled";
+  if (s === "in_progress") return "In Progress";
+  if (s === "done") return "Finished";
+  return "Not scheduled";
+}
+
+async function resolveProjectIdFromInput(projectInput) {
+  const raw = String(projectInput || "").trim();
+  if (!raw) return null;
+
+  // user pasted ObjectId directly
+  if (isMongoId(raw)) return raw;
+
+  // try find by project name
+  const projectsResult = await fetchAPI(`${API_PROJECTS}?page=1&limit=1000`);
+  const projectsArr = (projectsResult?.data || projectsResult?.items || projectsResult || []);
+  const hit = projectsArr.find(p => String(p?.name || "").trim().toLowerCase() === raw.toLowerCase());
+  return hit?._id || null;
+}
 
 async function submitTodo() {
-  const id = ($("todoIdHidden").value || "").trim();
-  const projectName = ($("todoProjectInput").value || "").trim();
-  const title = ($("todoName").value || "").trim();
-  const assigneeName = ($("todoOwnerHidden").value || "").trim();
-  const startDate = ($("todoStartDate").value || "").trim();
-  const dueDate = ($("todoDeadline").value || "").trim();
-  const finishedDate = ($("todoSubmittedDate").value || "").trim();
-  const status = ($("todoStatusHidden").value || "ONGOING").trim(); // ← เปลี่ยนมาใช้ hidden input
+  try {
+    const titleRaw = ($("todoName") && $("todoName").value) || "";
+    const projectName = ($("todoProjectInput") && $("todoProjectInput").value) || "";
+    const ownerId = ($("todoOwnerHidden") && $("todoOwnerHidden").value) || "";
+    const startDate = ($("todoStartDate") && $("todoStartDate").value) || "";
+    const deadline = ($("todoDeadline") && $("todoDeadline").value) || "";
+    const finishedAt = ($("todoSubmittedDate") && $("todoSubmittedDate").value) || "";
+    const uiStatus = ($("todoStatusHidden") && $("todoStatusHidden").value) || "";
+    const taskId = String(window.__todoEditingId || ($("todoIdHidden") ? $("todoIdHidden").value : "") || "").trim();
 
-  if (!title) {
-    alert("กรุณากรอกชื่องาน");
-    return;
-  }
+    const title = String(titleRaw || "").trim();
+    if (!title) {
+      alert("กรุณากรอกชื่องาน (title)");
+      $("todoName")?.focus?.();
+      return;
+    }
 
-  // Find project ID
-  const allTasks = await fetchAPI(`${API_TASKS}?limit=1000`);
-  const projectObj = allTasks?.data?.find(t => t.project?.name === projectName)?.project;
-  
-  // Find assignee ID
-  const membersResult = await fetchAPI(`${API_MEMBERS}?search=${encodeURIComponent(assigneeName)}&limit=100`);
-  const assigneeObj = membersResult?.data?.find(m => m.displayName === assigneeName);
+    const projName = String(projectName || "").trim();
+    if (!projName) {
+      alert("กรุณาเลือก/กรอกชื่อโปรเจกต์");
+      $("todoProjectInput")?.focus?.();
+      return;
+    }
 
-  const payload = {
-    title,
-    description: "",
-    project: projectObj?._id || "",
-    assignee: assigneeObj?._id || null,
-    startDate: startDate || undefined,
-    deadline: dueDate || undefined,
-    finishedAt: finishedDate || undefined,
-    status: status || "ONGOING",
-    isOngoing: status === "ONGOING",
-  };
+    // ✅ Resolve projectId from cache (/projects)
+    const cache = window.__todosProjectCache;
+    const proj = cache?.byName?.get(projName.trim().toLowerCase());
+    const projectId = String(proj?._id || proj?.id || "");
+    if (!projectId) {
+      alert("ไม่พบโปรเจกต์นี้ในระบบ (ชื่อโปรเจกต์ต้องตรงกับที่มีอยู่)");
+      $("todoProjectInput")?.focus?.();
+      return;
+    }
 
-  let result;
-  if (id) {
-    result = await fetchAPI(`${API_TASKS}/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify(payload),
+    // todoStatusHidden เป็น enum แล้ว (NOT_STARTED/ONGOING/COMPLETED/BLOCKED)
+    const statusApi = apiTaskStatusFromUi(uiStatus);
+
+let statusToSend = statusApi;
+if (!['not_started','in_progress','done'].includes(statusToSend)) statusToSend = 'not_started';
+
+
+
+
+    // ============ payloads ============
+    const createPayload = {
+      title,
+      description: "",
+      project: projectId, // ✅ required for POST /tasks
+      startDate: startDate ? toISOOrUndef(startDate) : undefined,
+      deadline: deadline ? toISOOrUndef(deadline) : undefined,
+      finishedAt: (statusToSend === "done") ? (toISOOrUndef(finishedAt) || new Date().toISOString()) : undefined,
+      status: statusToSend || undefined,
+      isOngoing: (statusToSend === "in_progress") ? true : false
+    };
+
+    const updatePayload = {
+      // ✅ IMPORTANT: backend บางเวอร์ชันไม่ให้ส่ง project/assignee ใน PATCH /tasks/:id
+      title,
+      description: "",
+      startDate: startDate ? toISOOrUndef(startDate) : null,
+      deadline: deadline ? toISOOrUndef(deadline) : null,
+      finishedAt: (statusToSend === "done") ? (toISOOrUndef(finishedAt) || new Date().toISOString()) : null,
+      status: statusToSend || undefined,
+      isOngoing: (statusToSend === "in_progress") ? true : false
+    };
+
+    // ลบ key ที่เป็น undefined
+    [createPayload, updatePayload].forEach(p => {
+      Object.keys(p).forEach(k => p[k] === undefined && delete p[k]);
     });
-  } else {
-    result = await fetchAPI(API_TASKS, {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
-  }
 
-  if (result) {
+    console.log("[submitTodo] mode ->", taskId ? "EDIT" : "CREATE", "projectId ->", projectId, "ownerId ->", ownerId || null);
+
+    // ===== CREATE vs EDIT =====
+    let savedTaskId = taskId;
+
+    if (!taskId) {
+      // CREATE
+      console.log("[submitTodo] payload ->", createPayload);
+      const created = await fetchAPI(API_TASKS, { method: "POST", body: JSON.stringify(createPayload) });
+      savedTaskId = created?._id || created?.data?._id || created?.task?._id || created?.data?.id || created?.id || "";
+    } else {
+      // EDIT (no-dup)
+      const taskMap = window.__todosTaskById;
+      const existing = (taskMap && taskMap.get(String(taskId))) || (Array.isArray(window.__todosAllTasks) ? window.__todosAllTasks.find(t => String(t?._id || t?.id) === String(taskId)) : null) || null;
+
+      const oldProjectId = String(existing?.project?._id || existing?.project || "");
+      const oldOwnerId = String(existing?.assignee?._id || existing?.assignee || "");
+
+      console.log("[submitTodo] oldProjectId ->", oldProjectId || null, "oldOwnerId ->", oldOwnerId || null);
+      console.log("[submitTodo] updatePayload ->", updatePayload);
+
+      // 1) move project (if changed) — use dedicated endpoint
+      if (projectId && oldProjectId && projectId !== oldProjectId) {
+        await fetchAPI(`${API_TASKS}/${encodeURIComponent(taskId)}/project/${encodeURIComponent(projectId)}`, {
+          method: "PATCH"
+        });
+      }
+
+      // 2) update task fields (NO project/assignee in body)
+      await fetchAPI(`${API_TASKS}/${encodeURIComponent(taskId)}`, {
+        method: "PATCH",
+        body: JSON.stringify(updatePayload)
+      });
+
+      savedTaskId = taskId;
+
+      // 3) assign / unassign owner (if changed) — use dedicated endpoint
+      if (String(ownerId || "") !== String(oldOwnerId || "")) {
+        if (ownerId) {
+          await fetchAPI(`${API_TASKS}/${encodeURIComponent(taskId)}/assignee/${encodeURIComponent(ownerId)}`, {
+            method: "PATCH"
+          });
+        } else {
+          await fetchAPI(`${API_TASKS}/${encodeURIComponent(taskId)}/assignee`, {
+            method: "DELETE"
+          });
+        }
+      }
+    }
+
+    // ===== Assign owner after CREATE (optional) =====
+    if (!taskId && ownerId && savedTaskId) {
+      try {
+        await fetchAPI(`${API_TASKS}/${encodeURIComponent(savedTaskId)}/assignee/${encodeURIComponent(ownerId)}`, {
+          method: "PATCH"
+        });
+      } catch (e) {
+        console.warn("Assign assignee failed:", e);
+        alert("บันทึกงานสำเร็จ แต่ assign ผู้รับผิดชอบไม่สำเร็จ");
+      }
+    }
+
     closeTodoModal();
     await refreshProjectAndOwnerLists();
     await loadTodos(todosSelectedProject);
-  } else {
-    alert("เกิดข้อผิดพลาด กรุณาลองใหม่");
+  } catch (e) {
+    console.error("submitTodo failed:", e);
+    alert("บันทึกงานไม่สำเร็จ (ดู console)");
   }
 }
+
+
 
 // ==================== UTILS ====================
 function formatDate(dateStr) {
@@ -2471,39 +2932,60 @@ function formatDate(dateStr) {
 }
 
 function normalizeStatus(raw) {
-  const s = String(raw || "").toUpperCase().trim();
+  // ✅ normalize to backend enum: not_started | in_progress | done
+  const s = String(raw || "").trim().toLowerCase();
 
-  if (s.includes("NOT_STARTED") || s.includes("NOT SCHEDULED")) return "NOT_STARTED";
-  if (s.includes("ONGOING") || s.includes("PROGRESS")) return "ONGOING";
-  if (s.includes("COMPLETED") || s.includes("FINISHED")) return "COMPLETED";
-  if (s.includes("BLOCKED") || s.includes("OVERDUE")) return "BLOCKED";
+  if (!s) return "not_started";
 
-  return "ONGOING";
+  // already backend
+  if (["not_started", "in_progress", "done"].includes(s)) return s;
+
+  // legacy variants
+  if (s.includes("not_started") || s.includes("not started") || s.includes("not sched") || s.includes("pending")) return "not_started";
+  if (s.includes("ongoing") || s.includes("in_progress") || s.includes("in progress") || s.includes("progress")) return "in_progress";
+  if (s.includes("completed") || s.includes("complete") || s.includes("finished") || s.includes("done")) return "done";
+
+  return "in_progress";
 }
 
 function statusClassFromRaw(raw, norm) {
-  const n = String(norm || "").trim();
-  if (n === "NOT_STARTED") return "st-notscheduled";
-  if (n === "ONGOING") return "st-inprogress";
-  if (n === "COMPLETED") return "st-finished";
-  if (n === "BLOCKED") return "st-overdue";
+  const n = normalizeStatus(norm || raw);
+  if (n === "not_started") return "st-notscheduled";
+  if (n === "in_progress") return "st-inprogress";
+  if (n === "done") return "st-finished";
   return "";
 }
 
-function statusPillHtml(rawStatus, norm) {
-  const n = String(norm || "").trim();
-  const cls =
-    n === "NOT_STARTED"
-      ? "notscheduled"
-      : n === "ONGOING"
-      ? "inprogress"
-      : n === "COMPLETED"
-      ? "finished"
-      : n === "BLOCKED"
-      ? "overdue"
-      : "inprogress";
+function statusPillHtml(rawStatus, norm, deadlineISO, finishedAtISO) {
+  // Backend enum: not_started | in_progress | done
+  // UI overdue is derived: in_progress + deadline passed + no finishedAt
+  const n = String(norm || rawStatus || "").trim().toLowerCase();
 
-  const text = rawStatus ? String(rawStatus) : n;
+  const isOverdue = (() => {
+    if (n !== "in_progress") return false;
+    if (finishedAtISO) return false;
+    if (!deadlineISO) return false;
+    const d = new Date(deadlineISO);
+    if (isNaN(d.getTime())) return false;
+    return d.getTime() < Date.now();
+  })();
+
+  const cls =
+    isOverdue ? "overdue" :
+    n === "not_started" ? "notscheduled" :
+    n === "in_progress" ? "inprogress" :
+    n === "done" ? "finished" :
+    "inprogress";
+
+  const text = (() => {
+    // Always show consistent labels (ไม่โชว์ raw enum เพี้ยน ๆ)
+    if (isOverdue) return "Overdue";
+    if (n === "not_started") return "Not scheduled";
+    if (n === "in_progress") return "In Progress";
+    if (n === "done") return "Finished";
+    return "In Progress";
+  })();
+
   return `<span class="status-pill ${cls}">${escHtml(text)}</span>`;
 }
 

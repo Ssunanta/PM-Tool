@@ -2446,207 +2446,223 @@
       meetingData[targetRow][targetDay].push(movedItem);
     }
 
-    /* ========== Render Meeting (รองรับ data array/object) ========== */
-    function renderMeeting(data) {
-      const tbody = document.getElementById("meetingBody");
-      if (!tbody) return;
+/* ==========================================
+   FIX: renderMeeting() - Project Display Bug
+========================================== */
 
-      // convert to array if needed
-      if (!Array.isArray(data)) {
-        if (data && typeof data === 'object') data = Object.values(data);
-        else data = [];
-      }
+function renderMeeting(data) {
+  const tbody = document.getElementById("meetingBody");
+  if (!tbody) return;
 
-      tbody.innerHTML = "";
+  // convert to array if needed
+  if (!Array.isArray(data)) {
+    if (data && typeof data === 'object') data = Object.values(data);
+    else data = [];
+  }
 
-      if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px; color:#999;">ไม่มีข้อมูลการประชุม</td></tr>';
-        return;
-      }
+  tbody.innerHTML = "";
 
-      data.forEach((row, i) => {
-        if (!row) return;
+  if (!data || data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px; color:#999;">ไม่มีข้อมูลการประชุม</td></tr>';
+    return;
+  }
 
-        const tr = document.createElement("tr");
+  data.forEach((row, i) => {
+    if (!row) return;
 
-        // ✅ Column 0: Add Row Button (ซ้ายสุด) - แสดงเฉพาะตอน edit
-        const addCell = document.createElement("td");
-        addCell.style.width = "50px";
-        addCell.style.minWidth = "50px";
-        addCell.style.maxWidth = "50px";
-        addCell.style.padding = "8px";
-        addCell.style.textAlign = "center";
-        addCell.style.verticalAlign = "middle";
-        addCell.style.display = isEditingMeeting ? "table-cell" : "none";
+    const tr = document.createElement("tr");
 
-        if (isEditingMeeting) {
-          addCell.innerHTML = `
+    // ✅ Column 0: Add Row Button (ซ้ายสุด)
+    const addCell = document.createElement("td");
+    addCell.style.width = "50px";
+    addCell.style.minWidth = "50px";
+    addCell.style.maxWidth = "50px";
+    addCell.style.padding = "8px";
+    addCell.style.textAlign = "center";
+    addCell.style.verticalAlign = "middle";
+    addCell.style.display = isEditingMeeting ? "table-cell" : "none";
+
+    if (isEditingMeeting) {
+      addCell.innerHTML = `
         <button onclick="insertRowBelow(${i})" 
                 style="width:28px; height:28px; border-radius:50%; background:#000; color:#fff; border:none; cursor:pointer; font-size:16px; font-weight:bold; display:flex; align-items:center; justify-content:center; transition:0.2s; margin:0 auto;"
                 onmouseover="this.style.background='#333'; this.style.transform='scale(1.1)'"
                 onmouseout="this.style.background='#000'; this.style.transform='scale(1)'">+</button>
       `;
-        }
-        tr.appendChild(addCell);
+    }
+    tr.appendChild(addCell);
 
-        // Column 1: order
-        const orderCell = document.createElement("td");
-        orderCell.textContent = row.order || (i + 1).toString();
-        orderCell.style.width = "175px";
-        orderCell.style.minWidth = "175px";
-        orderCell.style.textAlign = "center";
-        orderCell.style.verticalAlign = "middle";
-        tr.appendChild(orderCell);
+    // Column 1: order
+    const orderCell = document.createElement("td");
+    orderCell.textContent = row.order || (i + 1).toString();
+    orderCell.style.width = "175px";
+    orderCell.style.minWidth = "175px";
+    orderCell.style.textAlign = "center";
+    orderCell.style.verticalAlign = "middle";
+    tr.appendChild(orderCell);
 
-        const days = ["mon", "tue", "wed", "thu", "fri"];
-        days.forEach(day => {
-          const cell = document.createElement("td");
+    const days = ["mon", "tue", "wed", "thu", "fri"];
+    days.forEach(day => {
+      const cell = document.createElement("td");
 
-          if (isEditingMeeting) {
-            cell.ondragover = (e) => onDragOver(e);
-            cell.ondragleave = (e) => onDragLeave(e);
-            cell.ondrop = (e) => onDrop(e, i, day);
-          }
+      if (isEditingMeeting) {
+        cell.ondragover = (e) => onDragOver(e);
+        cell.ondragleave = (e) => onDragLeave(e);
+        cell.ondrop = (e) => onDrop(e, i, day);
+      }
 
-          const items = row[day] || [];
+      const items = row[day] || [];
 
-          if (items.length > 0) {
-            const boxDiv = document.createElement("div");
-            boxDiv.className = "meeting-box" + (isEditingMeeting ? " draggable" : "");
-
-            if (isEditingMeeting) {
-              boxDiv.draggable = true;
-              boxDiv.ondragstart = (e) => onDragStart(e, i, day, 0);
-              boxDiv.ondragend = (e) => onDragEnd(e);
-
-              const deleteBtn = document.createElement("button");
-              deleteBtn.className = "delete-box-btn";
-              deleteBtn.innerHTML = '<img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000" style="width:16px;height:16px;" alt="delete">';
-              deleteBtn.onclick = (e) => {
-                e.stopPropagation();
-                if (confirm("ต้องการลบการประชุมนี้ใช่หรือไม่?")) deleteMeetingBox(i, day);
-              };
-              boxDiv.appendChild(deleteBtn);
-            }
-
-            items.forEach(item => {
-              let itemObj;
-              if (typeof item === 'string') itemObj = { text: item, isProject: false };
-              else if (typeof item === 'object' && item !== null) itemObj = item;
-              else return;
-
-              if (itemObj.isProject) {
-                const projectColor = getProjectColor(itemObj.text);
-                const projectSpan = document.createElement("div");
-                projectSpan.className = "meeting-project";
-                projectSpan.textContent = itemObj.text;
-                projectSpan.style.background = projectColor.bg;
-                projectSpan.style.color = projectColor.text;
-                projectSpan.style.borderColor = projectColor.border;
-                boxDiv.appendChild(projectSpan);
-              } else {
-                const text = itemObj.text;
-                const match = text.match(/^(.+?)\s*\((.+?)\)$/);
-
-                const makePersonRow = (nickname, position) => {
-                  const personDiv = document.createElement("div");
-                  personDiv.className = "meeting-person";
-
-                  const nameSpan = document.createElement("span");
-                  nameSpan.className = "meeting-person-name";
-                  nameSpan.textContent = nickname;
-                  personDiv.appendChild(nameSpan);
-
-                  if (position) {
-                    const positionSpan = document.createElement("span");
-                    positionSpan.className = "meeting-person-position";
-                    positionSpan.textContent = position;
-                    personDiv.appendChild(positionSpan);
-                  }
-
-                  return personDiv;
-                };
-
-                if (match) {
-                  const namePart = match[1].trim();
-                  const projectPart = match[2].trim();
-                  const parts = namePart.split(/\s+/);
-                  const nickname = parts[0];
-                  const position = parts.slice(1).join(' ');
-
-                  boxDiv.appendChild(makePersonRow(nickname, position));
-
-                  const projectColor = getProjectColor(projectPart);
-                  const projectSpan = document.createElement("div");
-                  projectSpan.className = "meeting-project";
-                  projectSpan.textContent = projectPart;
-                  projectSpan.style.background = projectColor.bg;
-                  projectSpan.style.color = projectColor.text;
-                  projectSpan.style.borderColor = projectColor.border;
-                  boxDiv.appendChild(projectSpan);
-                } else {
-                  const parts = text.split(/\s+/);
-                  const nickname = parts[0];
-                  const position = parts.slice(1).join(' ');
-                  boxDiv.appendChild(makePersonRow(nickname, position));
-                }
-              }
-            });
-
-            cell.appendChild(boxDiv);
-          } else {
-            if (isEditingMeeting) {
-              const addBtn = document.createElement("button");
-              addBtn.className = "add-meeting-btn";
-              addBtn.innerHTML = '<img src="https://img.icons8.com/?size=100&id=bDKqvw7V0ANQ&format=png&color=000000" style="width:14px;height:14px;margin-right:4px;vertical-align:middle;" alt="add"> เพิ่มการประชุม';
-              addBtn.onclick = () => openMeetingModal(i, day);
-              cell.appendChild(addBtn);
-            } else {
-              const emptySpan = document.createElement("span");
-              emptySpan.textContent = "-";
-              emptySpan.style.color = "#ccc";
-              cell.appendChild(emptySpan);
-            }
-          }
-
-          tr.appendChild(cell);
-        });
-
-        // ✅ Column Last: Delete Row Button (ขวาสุด) - แสดงเฉพาะตอน edit
-        const deleteCell = document.createElement("td");
-        deleteCell.style.width = "50px";
-        deleteCell.style.minWidth = "50px";
-        deleteCell.style.maxWidth = "50px";
-        deleteCell.style.padding = "8px";
-        deleteCell.style.textAlign = "center";
-        deleteCell.style.verticalAlign = "middle";
-        deleteCell.style.display = isEditingMeeting ? "table-cell" : "none";
+      if (items.length > 0) {
+        const boxDiv = document.createElement("div");
+        boxDiv.className = "meeting-box" + (isEditingMeeting ? " draggable" : "");
 
         if (isEditingMeeting) {
-          deleteCell.innerHTML = `
+          boxDiv.draggable = true;
+          boxDiv.ondragstart = (e) => onDragStart(e, i, day, 0);
+          boxDiv.ondragend = (e) => onDragEnd(e);
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.className = "delete-box-btn";
+          deleteBtn.innerHTML = '<img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000" style="width:16px;height:16px;" alt="delete">';
+          deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            if (confirm("ต้องการลบการประชุมนี้ใช่หรือไม่?")) deleteMeetingBox(i, day);
+          };
+          boxDiv.appendChild(deleteBtn);
+        }
+
+        // ✅ FIX: Process items in correct order and preserve projects
+        let personText = "";
+        let personPosition = "";
+        let personProject = "";
+
+        items.forEach((item, idx) => {
+          let itemObj;
+          if (typeof item === 'string') {
+            itemObj = { text: item, isProject: false };
+          } else if (typeof item === 'object' && item !== null) {
+            itemObj = item;
+          } else {
+            return;
+          }
+
+          // ✅ Separate person and project
+          if (itemObj.isProject) {
+            personProject = itemObj.text;
+          } else {
+            // This is person info
+            const text = itemObj.text;
+            const match = text.match(/^(.+?)\s*\((.+?)\)$/);
+
+            if (match) {
+              const namePart = match[1].trim();
+              const projectFromText = match[2].trim();
+              const parts = namePart.split(/\s+/);
+              const nickname = parts[0];
+              const position = parts.slice(1).join(' ');
+
+              personText = nickname;
+              personPosition = position;
+              // ✅ Use project from text if available
+              if (projectFromText) personProject = projectFromText;
+            } else {
+              const parts = text.split(/\s+/);
+              const nickname = parts[0];
+              const position = parts.slice(1).join(' ');
+
+              personText = nickname;
+              personPosition = position;
+            }
+          }
+        });
+
+        // ✅ Render person (always display)
+        if (personText) {
+          const personDiv = document.createElement("div");
+          personDiv.className = "meeting-person";
+
+          const nameSpan = document.createElement("span");
+          nameSpan.className = "meeting-person-name";
+          nameSpan.textContent = personText;
+          personDiv.appendChild(nameSpan);
+
+          if (personPosition) {
+            const positionSpan = document.createElement("span");
+            positionSpan.className = "meeting-person-position";
+            positionSpan.textContent = personPosition;
+            personDiv.appendChild(positionSpan);
+          }
+
+          boxDiv.appendChild(personDiv);
+        }
+
+        // ✅ Render project (always display if exists)
+        if (personProject) {
+          const projectColor = getProjectColor(personProject);
+          const projectSpan = document.createElement("div");
+          projectSpan.className = "meeting-project";
+          projectSpan.textContent = personProject;
+          projectSpan.style.background = projectColor.bg;
+          projectSpan.style.color = projectColor.text;
+          projectSpan.style.borderColor = projectColor.border;
+          boxDiv.appendChild(projectSpan);
+        }
+
+        cell.appendChild(boxDiv);
+      } else {
+        if (isEditingMeeting) {
+          const addBtn = document.createElement("button");
+          addBtn.className = "add-meeting-btn";
+          addBtn.innerHTML = '<img src="https://img.icons8.com/?size=100&id=bDKqvw7V0ANQ&format=png&color=000000" style="width:14px;height:14px;margin-right:4px;vertical-align:middle;" alt="add"> เพิ่มการประชุม';
+          addBtn.onclick = () => openMeetingModal(i, day);
+          cell.appendChild(addBtn);
+        } else {
+          const emptySpan = document.createElement("span");
+          emptySpan.textContent = "-";
+          emptySpan.style.color = "#ccc";
+          cell.appendChild(emptySpan);
+        }
+      }
+
+      tr.appendChild(cell);
+    });
+
+    // ✅ Column Last: Delete Row Button (ขวาสุด)
+    const deleteCell = document.createElement("td");
+    deleteCell.style.width = "50px";
+    deleteCell.style.minWidth = "50px";
+    deleteCell.style.maxWidth = "50px";
+    deleteCell.style.padding = "8px";
+    deleteCell.style.textAlign = "center";
+    deleteCell.style.verticalAlign = "middle";
+    deleteCell.style.display = isEditingMeeting ? "table-cell" : "none";
+
+    if (isEditingMeeting) {
+      deleteCell.innerHTML = `
         <button onclick="deleteRowAtIndex(${i})" 
                 style="width:28px; height:28px; border-radius:50%; background:#dc2626; color:#fff; border:none; cursor:pointer; font-size:16px; font-weight:bold; display:flex; align-items:center; justify-content:center; transition:0.2s; margin:0 auto;"
                 onmouseover="this.style.background='#b91c1c'; this.style.transform='scale(1.1)'"
                 onmouseout="this.style.background='#dc2626'; this.style.transform='scale(1)'">−</button>
       `;
-        }
-        tr.appendChild(deleteCell);
-
-        tbody.appendChild(tr);
-      });
-
-      if (isEditingMeeting) {
-        setTimeout(() => {
-          addMeetingRowButtons();
-          addMeetingDeleteButtons();
-          updateMeetingRowButtons();
-          updateMeetingDeleteButtons();
-        }, 50);
-      } else {
-        removeMeetingRowButtons();
-        removeMeetingDeleteButtons();
-      }
     }
+    tr.appendChild(deleteCell);
+
+    tbody.appendChild(tr);
+  });
+
+  if (isEditingMeeting) {
+    setTimeout(() => {
+      addMeetingRowButtons();
+      addMeetingDeleteButtons();
+      updateMeetingRowButtons();
+      updateMeetingDeleteButtons();
+    }, 50);
+  } else {
+    removeMeetingRowButtons();
+    removeMeetingDeleteButtons();
+  }
+}
 
     /* ========== Row Management ========== */
     function insertRowBelow(rowIndex) {

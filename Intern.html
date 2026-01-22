@@ -1057,19 +1057,45 @@ a:hover {
   <script>
 /* API Adapter - PM Project API */
 (function initBackendAdapter() {
-  const API_BASE = "https://pmapi.ideatrade1.com";
+  const API_BASE = "http://localhost:3000";
 
   window.BACKEND = {
     async getInternData(page = 1, limit = 100, search = "", role = "") {
       try {
-        let url = `${API_BASE}/members?page=${page}&limit=${limit}`;
-        if (search) url += `&search=${encodeURIComponent(search)}`;
-        if (role) url += `&role=${role}`;
-        
-        const res = await fetch(url, { method: "GET", headers: { "Content-Type": "application/json" } });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        return { items: data.data || [], pagination: data.pagination || {} };
+        // ✅ ดึงทุกหน้า (pagination) จนหมด
+        const all = [];
+        let p = Number(page || 1);
+        const lim = Number(limit || 100);
+
+        while (true) {
+          const params = new URLSearchParams();
+          params.set("page", String(p));
+          params.set("limit", String(lim));
+          if (search && String(search).trim()) params.set("search", String(search).trim());
+          if (role && String(role).trim()) params.set("role", String(role).trim());
+
+          const url = `${API_BASE}/members?${params.toString()}`;
+
+          const res = await fetch(url, { method: "GET", headers: { "Accept": "application/json" } });
+
+          if (!res.ok) {
+            const txt = await res.text().catch(() => "");
+            console.error("GET /members failed:", res.status, txt);
+            // ❌ อย่าวนลูปต่อเมื่อ backend ตอบ 400/500
+            break;
+          }
+
+          const data = await res.json().catch(() => ({}));
+
+          const items = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
+          all.push(...items);
+
+          const totalPages = Number(data?.pagination?.totalPages || 1);
+          if (p >= totalPages) break;
+          p += 1;
+        }
+
+        return { items: all, pagination: { loadedAll: true } };
       } catch (err) {
         console.error("โหลด interns ไม่สำเร็จ:", err);
         return { items: [], pagination: {} };
@@ -1148,25 +1174,46 @@ a:hover {
 
     async addNewIntern(name, position, note, fileLink) {
       try {
-        const memberData = {
+        // ✅ Backend หลายตัว "ต้องการ role" และอาจไม่รู้จัก field fileLink
+        // เราเลยส่งเฉพาะ field มาตรฐาน + role intern
+        const basePayload = {
           displayName: name,
           position: position,
           note: note,
-          role: "INTERN"
+          role: "intern"
         };
 
-        const res = await fetch(`${API_BASE}/members`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(memberData)
-        });
+        const attempts = [
+          basePayload,
+          { ...basePayload, role: "INTERN" },
+          { ...basePayload, role: "Intern" }
+        ];
 
-        if (!res.ok) {
-          const err = await res.json();
-          return { success: false, message: err.message || "เพิ่มไม่สำเร็จ" };
+        let lastTxt = "";
+
+        for (const payload of attempts) {
+          const res = await fetch(`${API_BASE}/members`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          if (res.ok) {
+            const created = await res.json().catch(() => ({}));
+
+            // ✅ เก็บ fileLink ไว้ local ต่อ memberId (ไม่พัง DTO ฝั่ง backend)
+            const id = String(created?._id || created?.id || "");
+            if (id && fileLink && String(fileLink).trim()) {
+              writeMeta(id, { fileLink: String(fileLink).trim() });
+            }
+            return { success: true, created };
+          }
+
+          lastTxt = await res.text().catch(() => "");
+          console.error("POST /members failed:", res.status, lastTxt);
         }
 
-        return { success: true };
+        return { success: false, message: lastTxt || "เพิ่มไม่สำเร็จ" };
       } catch (err) {
         return { success: false, message: err.message };
       }
@@ -1182,13 +1229,21 @@ a:hover {
 
         const res = await fetch(`${API_BASE}/members/${memberId}`, {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
           body: JSON.stringify(memberData)
         });
 
         if (!res.ok) {
-          const err = await res.json();
-          return { success: false, message: err.message || "อัปเดตไม่สำเร็จ" };
+          const txt = await res.text().catch(() => "");
+          console.error("PATCH /members/:id failed:", res.status, txt);
+          return { success: false, message: txt || "อัปเดตไม่สำเร็จ" };
+        }
+
+        // ✅ fileLink เก็บ local
+        if (fileLink && String(fileLink).trim()) {
+          writeMeta(String(memberId), { fileLink: String(fileLink).trim() });
+        } else {
+          writeMeta(String(memberId), { fileLink: "" });
         }
 
         return { success: true };
@@ -1216,10 +1271,19 @@ a:hover {
     },
 
     async updateInternCheckbox(memberId, col, checked) {
+      // ✅ เก็บสถานะเช้า/บ่ายไว้ใน localStorage (ไม่พึ่ง backend)
+      const id = String(memberId || "");
+      if (id) {
+        if (col === "D") writeMeta(id, { morning: !!checked });
+        if (col === "E") writeMeta(id, { noon: !!checked });
+      }
       return { success: true };
     },
 
     async updateInternStatus(memberId, status) {
+      // ✅ เก็บสถานะงานไว้ใน localStorage (ไม่พึ่ง backend)
+      const id = String(memberId || "");
+      if (id) writeMeta(id, { status: String(status || "") });
       return { success: true };
     }
   };
@@ -1241,6 +1305,22 @@ a:hover {
     internManageMode: false,
     selectedPosition: ""
   };
+
+  // ✅ Local meta (เช้า/บ่าย/สถานะ) เก็บใน localStorage ต่อ memberId
+  function metaKey(memberId){ return `pm_intern_meta:${memberId}`; }
+
+  function readMeta(memberId){
+    try { return JSON.parse(localStorage.getItem(metaKey(memberId)) || "{}") || {}; }
+    catch { return {}; }
+  }
+
+  function writeMeta(memberId, patch){
+    const cur = readMeta(memberId);
+    const next = { ...cur, ...patch };
+    try { localStorage.setItem(metaKey(memberId), JSON.stringify(next)); } catch {}
+    return next;
+  }
+
 
   function escapeHtml(str) {
     return String(str ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
@@ -1447,25 +1527,65 @@ a:hover {
   function rowInternHtml(i) {
     const rawName = String(i.displayName || "");
     const rawPos = String(i.position || "");
-    const rawStatus = String(i.status || "ทำงาน");
-    const rawNote = String(i.note || "");
-    const rawFileLink = String(i.fileLink || "");
     const memberId = String(i._id || "");
+    const meta = i._meta || {};
+
+    const rawStatus = String(meta.status || i.status || "ทำงาน");
+    const rawNote = String(i.note || "");
+    const rawFileLink = String(meta.fileLink || i.fileLink || "");
+
     const name = escapeHtml(rawName);
     const position = escapeHtml(rawPos);
     const note = escapeHtml(rawNote);
-    
-    const morning = '<input type="checkbox" onchange="onInternCheckChange(\'' + escapeAttr(memberId) + '\', \'D\', this.checked)">';
-    const noon = '<input type="checkbox" onchange="onInternCheckChange(\'' + escapeAttr(memberId) + '\', \'E\', this.checked)">';
-    const status = '<div class="status-dd" data-id="' + escapeAttr(memberId) + '" data-value="' + escapeAttr(rawStatus) + '"><div class="status-selected" onclick="toggleStatusDD(this)"><span class="status-text">' + escapeHtml(rawStatus) + '</span><span>▾</span></div><div class="status-items"><div class="status-item" onclick="selectStatusDD(this, \'ทำงาน\')">ทำงาน</div><div class="status-item" onclick="selectStatusDD(this, \'ลา\')">ลา</div><div class="status-item" onclick="selectStatusDD(this, \'ไม่มาทำงาน\')">ไม่มาทำงาน</div><div class="status-item" onclick="selectStatusDD(this, \'จบแล้ว\')">จบแล้ว</div></div></div>';
-    
+
+    const morningChecked = meta.morning ? "checked" : "";
+    const noonChecked = meta.noon ? "checked" : "";
+
+    const morning = '<input type="checkbox" ' + morningChecked +
+      ' onchange="onInternCheckChange(\'' + escapeAttr(memberId) + '\', \'D\', this.checked)">';
+    const noon = '<input type="checkbox" ' + noonChecked +
+      ' onchange="onInternCheckChange(\'' + escapeAttr(memberId) + '\', \'E\', this.checked)">';
+
+    const status =
+      '<div class="status-dd" data-id="' + escapeAttr(memberId) + '" data-value="' + escapeAttr(rawStatus) + '">' +
+        '<div class="status-selected" onclick="toggleStatusDD(this)">' +
+          '<span class="status-text">' + escapeHtml(rawStatus) + '</span><span>▾</span>' +
+        '</div>' +
+        '<div class="status-items">' +
+          '<div class="status-item" onclick="selectStatusDD(this, \'ทำงาน\')">ทำงาน</div>' +
+          '<div class="status-item" onclick="selectStatusDD(this, \'ลา\')">ลา</div>' +
+          '<div class="status-item" onclick="selectStatusDD(this, \'ไม่มาทำงาน\')">ไม่มาทำงาน</div>' +
+          '<div class="status-item" onclick="selectStatusDD(this, \'จบแล้ว\')">จบแล้ว</div>' +
+        '</div>' +
+      '</div>';
+
     let fileCell = '<span style="color:#999;">-</span>';
-    if (rawFileLink.trim()) { const url = escapeAttr(rawFileLink.trim()); fileCell = '<a href="' + url + '" target="_blank" rel="noopener">📄 อัปเดตงาน</a>'; }
-    
+    if (rawFileLink.trim()) {
+      const url = escapeAttr(rawFileLink.trim());
+      fileCell = '<a href="' + url + '" target="_blank" rel="noopener">📄 อัปเดตงาน</a>';
+    }
+
     let actionCell = "";
-    if (S.internManageMode) { actionCell = '<td style="text-align: center;"><button onclick="deleteIntern(\'' + escapeAttr(memberId) + '\', \'' + escapeAttr(rawName) + '\')" style="background: none; border: none; cursor: pointer; color: #ef4444;"><img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000" alt="Delete" style="width: 20px; height: 20px;"></button></td>'; }
-    
-    return '<tr><td><b>' + name + '</b></td><td>' + position + '</td><td>' + morning + '</td><td>' + noon + '</td><td>' + status + '</td><td>' + note + '</td><td>' + fileCell + '</td>' + actionCell + '</tr>';
+    if (S.internManageMode) {
+      actionCell =
+        '<td style="text-align: center;">' +
+          '<button onclick="deleteIntern(\'' + escapeAttr(memberId) + '\', \'' + escapeAttr(rawName) + '\')" ' +
+            'style="background: none; border: none; cursor: pointer; color: #ef4444;">' +
+            '<img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000" alt="Delete" style="width: 20px; height: 20px;">' +
+          '</button>' +
+        '</td>';
+    }
+
+    return '<tr>' +
+      '<td><b>' + name + '</b></td>' +
+      '<td>' + position + '</td>' +
+      '<td>' + morning + '</td>' +
+      '<td>' + noon + '</td>' +
+      '<td>' + status + '</td>' +
+      '<td>' + note + '</td>' +
+      '<td>' + fileCell + '</td>' +
+      actionCell +
+    '</tr>';
   }
 
   function renderInternStartingTable() {
@@ -1505,11 +1625,21 @@ a:hover {
   async function fetchInternMain() {
     try {
       const result = await window.BACKEND.getInternData(1, 100);
-      S.internData = Array.isArray(result.items) ? result.items : [];
+      const items = Array.isArray(result.items) ? result.items : [];
+
+      // ✅ ผสาน meta (เช้า/บ่าย/สถานะ) จาก localStorage
+      items.forEach(function (it) {
+        const id = String(it?._id || "");
+        it._meta = id ? readMeta(id) : {};
+      });
+
+      S.internData = items;
       S.internFiltered = S.internData.slice();
+
       const posSet = new Set();
       S.internData.forEach(function (i) { if (i.position) posSet.add(i.position); });
       S.positions = Array.from(posSet).sort(function (a, b) { return String(a).localeCompare(String(b), "th"); });
+
       window.updatePositionDropdown();
       updateAddInternPositionDatalist();
       renderInternTable();

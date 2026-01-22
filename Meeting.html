@@ -1847,6 +1847,11 @@
     let meetingData = [];
     let originalMeetingData = [];
     let isEditingMeeting = false;
+        // ✅ FIX: ซ่อนหัวคอลัมน์ add/delete หลังบันทึก (กันคอลัมน์เพี้ยน)
+        const addHeader = document.getElementById("addRowHeader");
+        const deleteHeader = document.getElementById("deleteRowHeader");
+        if (addHeader) addHeader.style.display = "none";
+        if (deleteHeader) deleteHeader.style.display = "none";
     let draggedMeetingItem = null;
     let tempMeetingRow = null;
     let tempMeetingDay = null;
@@ -2454,6 +2459,12 @@ function renderMeeting(data) {
   const tbody = document.getElementById("meetingBody");
   if (!tbody) return;
 
+  // ✅ FIX: Sync header visibility with edit mode every render (กันคอลัมน์เพี้ยน)
+  const addHeader = document.getElementById("addRowHeader");
+  const deleteHeader = document.getElementById("deleteRowHeader");
+  if (addHeader) addHeader.style.display = isEditingMeeting ? "table-cell" : "none";
+  if (deleteHeader) deleteHeader.style.display = isEditingMeeting ? "table-cell" : "none";
+
   // convert to array if needed
   if (!Array.isArray(data)) {
     if (data && typeof data === 'object') data = Object.values(data);
@@ -2463,7 +2474,8 @@ function renderMeeting(data) {
   tbody.innerHTML = "";
 
   if (!data || data.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px; color:#999;">ไม่มีข้อมูลการประชุม</td></tr>';
+    const colspan = isEditingMeeting ? 8 : 6;
+    tbody.innerHTML = `<tr><td colspan="${colspan}" style="text-align:center; padding:40px; color:#999;">ไม่มีข้อมูลการประชุม</td></tr>`;
     return;
   }
 
@@ -2897,6 +2909,12 @@ function renderMeeting(data) {
         meetingData = JSON.parse(JSON.stringify(originalMeetingData));
         isEditingMeeting = false;
 
+        // ✅ FIX: ซ่อนหัวคอลัมน์ add/delete หลังยกเลิก (กันคอลัมน์เพี้ยน)
+        const addHeader = document.getElementById("addRowHeader");
+        const deleteHeader = document.getElementById("deleteRowHeader");
+        if (addHeader) addHeader.style.display = "none";
+        if (deleteHeader) deleteHeader.style.display = "none";
+
         document.getElementById("checkinAllBtn").style.display = "block";
         document.getElementById("exportMeetingBtn").style.display = "block";
         document.getElementById("editMeetingBtn").style.display = "block";
@@ -2936,6 +2954,12 @@ function renderMeeting(data) {
         document.getElementById("editMeetingBtn").style.display = "block";
         document.getElementById("saveMeetingBtn").style.display = "none";
         document.getElementById("cancelMeetingBtn").style.display = "none";
+
+        // ✅ FIX: ซ่อนหัวคอลัมน์ add/delete หลังบันทึก (กันคอลัมน์เพี้ยน)
+        const addHeader = document.getElementById("addRowHeader");
+        const deleteHeader = document.getElementById("deleteRowHeader");
+        if (addHeader) addHeader.style.display = "none";
+        if (deleteHeader) deleteHeader.style.display = "none";
 
         renderMeeting(meetingData);
       } catch (err) {
@@ -3532,12 +3556,19 @@ function renderMeeting(data) {
     }
 
     function initializeModalDropdowns() {
+      // ✅ FIX: กันการ bind event ซ้ำเวลาคลิกเปิด modal หลายครั้ง (ทำให้ dropdown ค้าง/กดไม่ได้)
+      if (window.__meetingModalDropdownInited) return;
+      window.__meetingModalDropdownInited = true;
+
       setupModalDropdown('positionDropdownToggle', 'positionDropdownItems', 'meetingPosition');
       setupModalDropdown('projectDropdownToggle', 'projectDropdownItems', 'meetingProject');
     }
 
     /* ===== Name dropdown ===== */
     function setupNameDropdown() {
+      // ✅ FIX: กันการ bind event ซ้ำ (ทำให้เปิด/เลือก dropdown ไม่ได้บางครั้ง)
+      if (window.__meetingNameDropdownInited) return;
+      window.__meetingNameDropdownInited = true;
       const input = document.getElementById("meetingPersonName");
       const itemsContainer = document.getElementById("nameDropdownItems");
       if (!input || !itemsContainer) return;
@@ -3619,7 +3650,12 @@ function renderMeeting(data) {
         }
 
         const positionArray = Array.from(positions).filter(Boolean);
-        setModalDropdownItems('meetingPosition', positionArray);
+
+        // ✅ เพิ่มตัวเลือกพื้นฐานเองได้ (fallback) — และ merge กับของ backend
+        const defaults = ["PM", "Dev", "Designer", "QA", "BA", "Data", "AI"];
+        const merged = Array.from(new Set([...defaults, ...positionArray]));
+
+        setModalDropdownItems('meetingPosition', merged);
       } catch (e) {
         setModalDropdownItems('meetingPosition', []);
       }

@@ -2000,7 +2000,7 @@
           const days = ['MON', 'TUE', 'WED', 'THU', 'FRI'];
           const maxRows = Math.max(
             ...days.map(day => (weekPattern[day] || []).length),
-            1 // อย่างน้อย 1 แถว
+            5 // อย่างน้อย 1 แถว
           );
 
           // สร้าง array ตาม max rows
@@ -2133,8 +2133,6 @@
                           project: currentProject
                         }); // ✅ debug
                       }
-
-                      currentProject = null; // ✅ รีเซ็ตหลังบันทึก
                     }
                   }
                 }

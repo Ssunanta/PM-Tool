@@ -2000,7 +2000,7 @@
           const days = ['MON', 'TUE', 'WED', 'THU', 'FRI'];
           const maxRows = Math.max(
             ...days.map(day => (weekPattern[day] || []).length),
-            5 // อย่างน้อย 1 แถว
+            1 // อย่างน้อย 1 แถว
           );
 
           // สร้าง array ตาม max rows
@@ -2322,8 +2322,13 @@
       document.getElementById("positionDropdownText").textContent = "เลือกตำแหน่ง";
       document.getElementById("projectDropdownText").textContent = "ไม่มีโปรเจค";
 
-      // ✅ เรียกฟังก์ชัน load ใหม่แบบรวมกัน
-      loadDataForModal();
+      // Reset name dropdown
+      document.getElementById("nameDropdownItems").innerHTML = '';
+
+      initializeModalDropdowns();
+      loadInternNamesForMeeting();       // ✅ now uses BACKEND.api
+      loadInternPositionsForMeeting();   // ✅ now uses BACKEND.api
+      loadProjectDropdownForMeeting();   // ✅ now uses BACKEND.api
 
       setTimeout(() => {
         document.getElementById("meetingPersonName").focus();
@@ -2341,31 +2346,20 @@
       const position = document.getElementById("meetingPosition").value.trim();
       const project = document.getElementById("meetingProject").value.trim();
 
-      if (!name) {
-        alert('⚠️ กรุณากรอกชื่อ');
-        return;
-      }
+      // ...
 
-      // ✅ FIX: ตรวจสอบว่า row/day มีอยู่หรือไม่
-      if (!meetingData[tempMeetingRow]) {
-        meetingData[tempMeetingRow] = {
-          order: tempMeetingRow + 1,
-          mon: [], tue: [], wed: [], thu: [], fri: []
-        };
-      }
-
-      if (!meetingData[tempMeetingRow][tempMeetingDay]) {
+      if (!meetingData[tempMeetingRow][tempMeetingDay])
         meetingData[tempMeetingRow][tempMeetingDay] = [];
-      }
 
-      const personText = position ? `${name} ${position}` : name;
+      const personText = `${name} ${position}`;
       meetingData[tempMeetingRow][tempMeetingDay].push({ text: personText, isProject: false });
 
-      // ✅ FIX #3: เพิ่มโปรเจคกลับมา
-      if (project && project !== 'ไม่มีโปรเจค') {
+      // ✅ เพิ่มเงื่อนไขตรวจสอบ "ไม่มีโปรเจค"
+      if (project && project !== "ไม่มีโปรเจค") {
         meetingData[tempMeetingRow][tempMeetingDay].push({
           text: project,
           isProject: true
+          // ✅ ลบ bgColor ออก
         });
       }
 
@@ -3465,7 +3459,7 @@
     });
 
     /* ========== MODAL DROPDOWN FUNCTIONS ========== */
-    function setupModalDropdown(toggleId, itemsId, inputId) {
+    function setupModalDropdown(toggleId, itemsId, inputId, onSelect) {
       const toggle = document.getElementById(toggleId);
       const items = document.getElementById(itemsId);
       const input = document.getElementById(inputId);
@@ -3476,38 +3470,18 @@
         items.classList.toggle('open');
       });
 
-      // ✅ FIX: ใช้ event delegation เมื่อ click item
-      items.addEventListener('click', (e) => {
-        const item = e.target.closest('.modal-dropdown-item');
-        if (item) {
-          const value = item.textContent;
-          input.value = value;
-          items.classList.remove('open');
-
-          // Update display text
-          if (inputId === 'meetingPosition') {
-            document.getElementById('positionDropdownText').textContent = value;
-          } else if (inputId === 'meetingProject') {
-            document.getElementById('projectDropdownText').textContent = value;
-          }
-
-          // Update selected state
-          items.querySelectorAll('.modal-dropdown-item').forEach(el => {
-            el.classList.toggle('selected', el.textContent === value);
-          });
-        }
-      });
-
       document.addEventListener('click', (e) => {
         if (!toggle.contains(e.target) && !items.contains(e.target)) {
           items.classList.remove('open');
         }
       });
+
+      if (!window.modalDropdowns) window.modalDropdowns = {};
+      window.modalDropdowns[inputId] = { toggle, items, input, onSelect };
     }
 
     function setModalDropdownItems(inputId, items) {
-      const containerId = inputId === 'meetingPosition' ? 'positionDropdownItems' : 'projectDropdownItems';
-      const itemsContainer = document.getElementById(containerId);
+      const itemsContainer = window.modalDropdowns?.[inputId]?.items;
       if (!itemsContainer) return;
 
       itemsContainer.innerHTML = '';
@@ -3515,8 +3489,35 @@
         const div = document.createElement('div');
         div.className = 'modal-dropdown-item';
         div.textContent = item;
+        div.addEventListener('click', () => selectModalDropdownItem(inputId, item));
         itemsContainer.appendChild(div);
       });
+    }
+
+    function selectModalDropdownItem(inputId, value) {
+      const dropdown = window.modalDropdowns?.[inputId];
+      if (!dropdown) return;
+
+      dropdown.input.value = value;
+
+      if (inputId === 'meetingPosition') {
+        document.getElementById('positionDropdownText').textContent = value || 'เลือกตำแหน่ง';
+      } else if (inputId === 'meetingProject') {
+        document.getElementById('projectDropdownText').textContent = value || 'ไม่มีโปรเจค';
+      }
+
+      dropdown.items.classList.remove('open');
+
+      document.querySelectorAll(`#${dropdown.items.id} .modal-dropdown-item`).forEach(item => {
+        item.classList.toggle('selected', item.textContent === value);
+      });
+
+      if (dropdown.onSelect) dropdown.onSelect(value);
+    }
+
+    function initializeModalDropdowns() {
+      setupModalDropdown('positionDropdownToggle', 'positionDropdownItems', 'meetingPosition');
+      setupModalDropdown('projectDropdownToggle', 'projectDropdownItems', 'meetingProject');
     }
 
     /* ===== Name dropdown ===== */
@@ -3573,32 +3574,50 @@
     /* =========================
        ✅ Data loaders (NOW: BACKEND.api)
        ========================= */
-    async function loadDataForModal() {
-      // ✅ FIX: Setup dropdown ก่อน
-      setupModalDropdown('positionDropdownToggle', 'positionDropdownItems', 'meetingPosition');
-      setupModalDropdown('projectDropdownToggle', 'projectDropdownItems', 'meetingProject');
-
+    async function loadInternNamesForMeeting() {
       try {
-        // โหลด members
         const internList = await BACKEND.api.getInternData();
+
         const names = new Set();
-        internList.forEach(i => { if (i.name) names.add(i.name); });
+        if (Array.isArray(internList)) {
+          internList.forEach(intern => { if (intern.name) names.add(intern.name); });
+        }
+
         window.internNames = Array.from(names).sort();
         setupNameDropdown();
+        filterAndShowNames('');
+      } catch (e) {
+        window.internNames = [];
+      }
+    }
 
-        // โหลด positions
+    async function loadInternPositionsForMeeting() {
+      try {
+        const internList = await BACKEND.api.getInternData();
         const positions = new Set();
-        internList.forEach(i => { if (i.position) positions.add(String(i.position).trim()); });
+
+        if (Array.isArray(internList)) {
+          internList.forEach(intern => {
+            if (intern.position) positions.add(String(intern.position).trim());
+          });
+        }
+
         const positionArray = Array.from(positions).filter(Boolean);
         setModalDropdownItems('meetingPosition', positionArray);
+      } catch (e) {
+        setModalDropdownItems('meetingPosition', []);
+      }
+    }
 
-        // โหลด projects
+    async function loadProjectDropdownForMeeting() {
+      try {
         const res = await BACKEND.api.getProjectList();
         const projects = (res && res.projects) ? res.projects : [];
         const projectNames = projects.map(p => String(p.name || "").trim()).filter(Boolean);
-        setModalDropdownItems('meetingProject', ['ไม่มีโปรเจค', ...projectNames]);
-      } catch (err) {
-        console.error('Error loading modal data:', err);
+        const itemsWithBlank = ["ไม่มีโปรเจค", ...projectNames];
+        setModalDropdownItems('meetingProject', itemsWithBlank);
+      } catch (e) {
+        setModalDropdownItems('meetingProject', ["ไม่มีโปรเจค"]);
       }
     }
   </script>

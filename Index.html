@@ -705,48 +705,52 @@ const API_BASE_URL = "http://localhost:3000";
     return (window.google && google.script && google.script.run);
   }
 
-  function setTabHTML(tabElement, html, tabName) {
-    if (!tabElement) return;
+function setTabHTML(tabElement, html, tabName) {
+  if (!tabElement) return;
 
-    const scopeSel = `#${tabName}Tab`;
-    const styleId = `tab-style-${tabName}`;
+  const scopeSel = `#${tabName}Tab`;
+  const styleId = `tab-style-${tabName}`;
 
-    let doc;
-    try {
-      doc = new DOMParser().parseFromString(html, "text/html");
-    } catch (e) {
-      console.error("Parse error:", e);
-      tabElement.innerHTML = html;
-      return;
-    }
+  let doc;
+  try {
+    doc = new DOMParser().parseFromString(html, "text/html");
+  } catch (e) {
+    console.error("Parse error:", e);
+    tabElement.innerHTML = html;
+    return;
+  }
 
-    const bodyHtml = (doc.body && doc.body.innerHTML) ? doc.body.innerHTML : html;
+  const bodyHtml = (doc.body && doc.body.innerHTML) ? doc.body.innerHTML : html;
+  const styleTags = Array.from(doc.querySelectorAll("style"));
+  const rawCss = styleTags.map(s => s.textContent || "").join("\n").trim();
 
-    const styleTags = Array.from(doc.querySelectorAll("style"));
-    const rawCss = styleTags.map(s => s.textContent || "").join("\n").trim();
+  const oldStyle = document.getElementById(styleId);
+  if (oldStyle) oldStyle.remove();
 
-    const oldStyle = document.getElementById(styleId);
-    if (oldStyle) oldStyle.remove();
+  const oldExtra = document.getElementById(`${styleId}-extra`);
+  if (oldExtra) oldExtra.remove();
 
-    const oldExtra = document.getElementById(`${styleId}-extra`);
-    if (oldExtra) oldExtra.remove();
+  if (rawCss) {
+    // ⚠️ ✅ เพิ่มเงื่อนไข: ถ้าเป็น intern หรือ todos ไม่ต้อง scope CSS
+    const noScopeTabs = ["intern", "todos"];
+    const finalCss = noScopeTabs.includes(tabName)
+      ? rawCss 
+      : scopeCssForTab(rawCss, scopeSel);
+    
+    const styleEl = document.createElement("style");
+    styleEl.id = styleId;
+    styleEl.textContent = finalCss;
+    document.head.appendChild(styleEl);
+  }
 
-    if (rawCss) {
-      const scoped = scopeCssForTab(rawCss, scopeSel);
-      const styleEl = document.createElement("style");
-      styleEl.id = styleId;
-      styleEl.textContent = scoped;
-      document.head.appendChild(styleEl);
-    }
+  if (tabName === "notes") {
+    const extraStyle = document.createElement("style");
+    extraStyle.id = `${styleId}-extra`;
+    extraStyle.textContent = `#notesTab .notes-main-title { margin-top: 0 !important; }`;
+    document.head.appendChild(extraStyle);
+  }
 
-    if (tabName === "notes") {
-      const extraStyle = document.createElement("style");
-      extraStyle.id = `${styleId}-extra`;
-      extraStyle.textContent = `#notesTab .notes-main-title { margin-top: 0 !important; }`;
-      document.head.appendChild(extraStyle);
-    }
-
-    tabElement.innerHTML = bodyHtml;
+  tabElement.innerHTML = bodyHtml;
 
     // ===== รัน script ของแท็บแบบ "inject <script>" เพื่อ global ชัวร์กว่า Function() ใน GAS sandbox =====
     if (!tabElement.dataset.scriptsExecuted) {
@@ -821,41 +825,45 @@ const API_BASE_URL = "http://localhost:3000";
   }
 
   function scopeCssForTab(cssText, scopeSel) {
-    let css = String(cssText || "")
-      .replace(/(^|[,{]\s*):root(\s*[,{])/g, `$1${scopeSel}$2`)
-      .replace(/(^|[,{]\s*)body(\s*[,{])/g, `$1${scopeSel}$2`)
-      .replace(/(^|[,{]\s*)html(\s*[,{])/g, `$1${scopeSel}$2`)
-      .replace(/(^|[,{]\s*)\*(\s*[,{])/g, `$1${scopeSel} *$2`);
+  let css = String(cssText || "")
+    .replace(/(^|[,{]\s*):root(\s*[,{])/g, `$1${scopeSel}$2`)
+    .replace(/(^|[,{]\s*)body(\s*[,{])/g, `$1${scopeSel}$2`)
+    .replace(/(^|[,{]\s*)html(\s*[,{])/g, `$1${scopeSel}$2`);
 
-    const out = [];
-    const blocks = css.split("}");
-    for (let b of blocks) {
-      b = b.trim();
-      if (!b) continue;
-      const parts = b.split("{");
-      if (parts.length < 2) continue;
+  const out = [];
+  const blocks = css.split("}");
+  
+  for (let b of blocks) {
+    b = b.trim();
+    if (!b) continue;
+    const parts = b.split("{");
+    if (parts.length < 2) continue;
 
-      const sel = parts[0].trim();
-      const body = parts.slice(1).join("{");
+    const sel = parts[0].trim();
+    const body = parts.slice(1).join("{");
 
-      if (sel.startsWith("@")) {
-        out.push(sel + "{" + body + "}");
-        continue;
-      }
-
-      const scopedSel = sel.split(",")
-        .map(s => s.trim())
-        .map(s => {
-          if (!s) return s;
-          if (s.startsWith(scopeSel)) return s;
-          return `${scopeSel} ${s}`;
-        })
-        .join(", ");
-
-      out.push(scopedSel + "{" + body + "}");
+    if (sel.startsWith("@")) {
+      out.push(sel + "{" + body + "}");
+      continue;
     }
-    return out.join("\n");
+
+    const scopedSel = sel.split(",")
+      .map(s => s.trim())
+      .map(s => {
+        if (!s) return s;
+        if (s.startsWith(scopeSel)) return s;
+        if (/^(table|button|input|select|textarea|form|div|span|p|h\d|ul|ol|li|a)(\s|$|:|\[)/.test(s)) {
+          return `${scopeSel} ${s}`;
+        }
+        return `${scopeSel} ${s}`;
+      })
+      .join(", ");
+
+    out.push(scopedSel + "{" + body + "}");
   }
+  
+  return out.join("\n");
+}
 
   function escapeHtml(str) {
     return String(str ?? "")
@@ -932,15 +940,26 @@ const API_BASE_URL = "http://localhost:3000";
 
     tabElement.innerHTML = `<div class="loading">⏳ กำลังโหลด...</div>`;
 
-    const fileMap = {
-      dashboard: "Dashboard",
-      projects: "Projects",
-      todos: "Todos",
-      intern: "Intern",
-      notes: "Note",
-      meeting: "Meeting",
-      aboutPM: "AboutPM",
-    };
+// แมปชื่อไฟล์
+const fileMap = {
+  dashboard: "Dashboard",
+  projects: "Projects",
+  todos: "Todos",
+  intern: "Intern",
+  notes: "Note",
+  meeting: "Meeting",
+  aboutPM: "AboutPM",
+};
+
+function loadTabContent(tabName) {
+  const fileBase = fileMap[tabName];
+  // โหลดไฟล์ HTML ของแต่ละแท็บ
+  fetch(fileBase + ".html")
+    .then(r => r.text())
+    .then(html => {
+      setTabHTML(tabElement, html, tabName);
+    });
+}
 
     const fileBase = fileMap[tabName];
     if (!fileBase) {

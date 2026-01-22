@@ -1518,7 +1518,6 @@
   <div class="container">
     <div class="title-row">
       <div class="title" id="pageTitle">
-        <span class="dot"></span>
         All Project
       </div>
 
@@ -2936,7 +2935,6 @@ function renderTableWithCachedMentors(rows, mentorMap) {
       window.__proj.selectedProjectName = name;
       window.__proj.selectedProjectIdForMembers = pid; // ✅ ใช้ตอน add member / load members
 
-      byId("pageTitle").innerHTML = `<span class="dot"></span>${escapeHtml(name)}`;
       byId("btnBackAll").style.display = "inline-flex";
 
       byId("projectSection").style.display = "none";
@@ -2952,7 +2950,6 @@ function renderTableWithCachedMentors(rows, mentorMap) {
       document.body.classList.remove("in-members");
 
       window.__proj.selectedProjectName = "";
-      byId("pageTitle").innerHTML = `<span class="dot"></span> All Project`;
       byId("btnBackAll").style.display = "none";
 
       byId("memberSection").style.display = "none";

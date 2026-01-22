@@ -2309,31 +2309,26 @@
     }
 
     /* ========== Modal Functions ========== */
-    function openMeetingModal(rowIndex, day) {
-      tempMeetingRow = rowIndex;
-      tempMeetingDay = day;
+function openMeetingModal(rowIndex, day) {
+  tempMeetingRow = rowIndex;
+  tempMeetingDay = day;
 
-      document.getElementById("meetingModal").style.display = "flex";
-      document.getElementById("meetingPersonName").value = "";
-      document.getElementById("meetingPosition").value = "";
-      document.getElementById("meetingProject").value = "";
+  document.getElementById("meetingModal").style.display = "flex";
+  document.getElementById("meetingPersonName").value = "";
+  document.getElementById("meetingPosition").value = "";
+  document.getElementById("meetingProject").value = "";
 
-      // Reset dropdown text
-      document.getElementById("positionDropdownText").textContent = "เลือกตำแหน่ง";
-      document.getElementById("projectDropdownText").textContent = "ไม่มีโปรเจค";
+  // Reset dropdown text
+  document.getElementById("positionDropdownText").textContent = "เลือกตำแหน่ง";
+  document.getElementById("projectDropdownText").textContent = "ไม่มีโปรเจค";
 
-      // Reset name dropdown
-      document.getElementById("nameDropdownItems").innerHTML = '';
+  // ✅ เรียกฟังก์ชัน load ใหม่แบบรวมกัน
+  loadDataForModal();
 
-      initializeModalDropdowns();
-      loadInternNamesForMeeting();       // ✅ now uses BACKEND.api
-      loadInternPositionsForMeeting();   // ✅ now uses BACKEND.api
-      loadProjectDropdownForMeeting();   // ✅ now uses BACKEND.api
-
-      setTimeout(() => {
-        document.getElementById("meetingPersonName").focus();
-      }, 100);
-    }
+  setTimeout(() => {
+    document.getElementById("meetingPersonName").focus();
+  }, 100);
+}
 
     function closeMeetingModal() {
       document.getElementById("meetingModal").style.display = "none";
@@ -2341,31 +2336,42 @@
       tempMeetingDay = null;
     }
 
-    function saveMeetingFromModal() {
-      const name = document.getElementById("meetingPersonName").value.trim();
-      const position = document.getElementById("meetingPosition").value.trim();
-      const project = document.getElementById("meetingProject").value.trim();
+function saveMeetingFromModal() {
+  const name = document.getElementById("meetingPersonName").value.trim();
+  const position = document.getElementById("meetingPosition").value.trim();
+  const project = document.getElementById("meetingProject").value.trim();
 
-      // ...
+  if (!name) {
+    alert('⚠️ กรุณากรอกชื่อ');
+    return;
+  }
 
-      if (!meetingData[tempMeetingRow][tempMeetingDay])
-        meetingData[tempMeetingRow][tempMeetingDay] = [];
+  // ✅ FIX: ตรวจสอบว่า row/day มีอยู่หรือไม่
+  if (!meetingData[tempMeetingRow]) {
+    meetingData[tempMeetingRow] = { 
+      order: tempMeetingRow + 1, 
+      mon: [], tue: [], wed: [], thu: [], fri: [] 
+    };
+  }
 
-      const personText = `${name} ${position}`;
-      meetingData[tempMeetingRow][tempMeetingDay].push({ text: personText, isProject: false });
+  if (!meetingData[tempMeetingRow][tempMeetingDay]) {
+    meetingData[tempMeetingRow][tempMeetingDay] = [];
+  }
 
-      // ✅ เพิ่มเงื่อนไขตรวจสอบ "ไม่มีโปรเจค"
-      if (project && project !== "ไม่มีโปรเจค") {
-        meetingData[tempMeetingRow][tempMeetingDay].push({
-          text: project,
-          isProject: true
-          // ✅ ลบ bgColor ออก
-        });
-      }
+  const personText = position ? `${name} ${position}` : name;
+  meetingData[tempMeetingRow][tempMeetingDay].push({ text: personText, isProject: false });
 
-      closeMeetingModal();
-      renderMeeting(meetingData);
-    }
+  // ✅ FIX #3: เพิ่มโปรเจคกลับมา
+  if (project && project !== 'ไม่มีโปรเจค') {
+    meetingData[tempMeetingRow][tempMeetingDay].push({
+      text: project,
+      isProject: true
+    });
+  }
+
+  closeMeetingModal();
+  renderMeeting(meetingData);
+}
 
     /* ========== Drag and Drop ========== */
     function onDragStart(e, rowIndex, day, itemIndex) {
@@ -3459,66 +3465,59 @@
     });
 
     /* ========== MODAL DROPDOWN FUNCTIONS ========== */
-    function setupModalDropdown(toggleId, itemsId, inputId, onSelect) {
-      const toggle = document.getElementById(toggleId);
-      const items = document.getElementById(itemsId);
-      const input = document.getElementById(inputId);
-      if (!toggle || !items) return;
+function setupModalDropdown(toggleId, itemsId, inputId) {
+  const toggle = document.getElementById(toggleId);
+  const items = document.getElementById(itemsId);
+  const input = document.getElementById(inputId);
+  if (!toggle || !items) return;
 
-      toggle.addEventListener('click', (e) => {
-        e.stopPropagation();
-        items.classList.toggle('open');
-      });
+  toggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    items.classList.toggle('open');
+  });
 
-      document.addEventListener('click', (e) => {
-        if (!toggle.contains(e.target) && !items.contains(e.target)) {
-          items.classList.remove('open');
-        }
-      });
-
-      if (!window.modalDropdowns) window.modalDropdowns = {};
-      window.modalDropdowns[inputId] = { toggle, items, input, onSelect };
-    }
-
-    function setModalDropdownItems(inputId, items) {
-      const itemsContainer = window.modalDropdowns?.[inputId]?.items;
-      if (!itemsContainer) return;
-
-      itemsContainer.innerHTML = '';
-      items.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'modal-dropdown-item';
-        div.textContent = item;
-        div.addEventListener('click', () => selectModalDropdownItem(inputId, item));
-        itemsContainer.appendChild(div);
-      });
-    }
-
-    function selectModalDropdownItem(inputId, value) {
-      const dropdown = window.modalDropdowns?.[inputId];
-      if (!dropdown) return;
-
-      dropdown.input.value = value;
-
+  // ✅ FIX: ใช้ event delegation เมื่อ click item
+  items.addEventListener('click', (e) => {
+    const item = e.target.closest('.modal-dropdown-item');
+    if (item) {
+      const value = item.textContent;
+      input.value = value;
+      items.classList.remove('open');
+      
+      // Update display text
       if (inputId === 'meetingPosition') {
-        document.getElementById('positionDropdownText').textContent = value || 'เลือกตำแหน่ง';
+        document.getElementById('positionDropdownText').textContent = value;
       } else if (inputId === 'meetingProject') {
-        document.getElementById('projectDropdownText').textContent = value || 'ไม่มีโปรเจค';
+        document.getElementById('projectDropdownText').textContent = value;
       }
-
-      dropdown.items.classList.remove('open');
-
-      document.querySelectorAll(`#${dropdown.items.id} .modal-dropdown-item`).forEach(item => {
-        item.classList.toggle('selected', item.textContent === value);
+      
+      // Update selected state
+      items.querySelectorAll('.modal-dropdown-item').forEach(el => {
+        el.classList.toggle('selected', el.textContent === value);
       });
-
-      if (dropdown.onSelect) dropdown.onSelect(value);
     }
+  });
 
-    function initializeModalDropdowns() {
-      setupModalDropdown('positionDropdownToggle', 'positionDropdownItems', 'meetingPosition');
-      setupModalDropdown('projectDropdownToggle', 'projectDropdownItems', 'meetingProject');
+  document.addEventListener('click', (e) => {
+    if (!toggle.contains(e.target) && !items.contains(e.target)) {
+      items.classList.remove('open');
     }
+  });
+}
+
+function setModalDropdownItems(inputId, items) {
+  const containerId = inputId === 'meetingPosition' ? 'positionDropdownItems' : 'projectDropdownItems';
+  const itemsContainer = document.getElementById(containerId);
+  if (!itemsContainer) return;
+
+  itemsContainer.innerHTML = '';
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'modal-dropdown-item';
+    div.textContent = item;
+    itemsContainer.appendChild(div);
+  });
+}
 
     /* ===== Name dropdown ===== */
     function setupNameDropdown() {
@@ -3574,52 +3573,34 @@
     /* =========================
        ✅ Data loaders (NOW: BACKEND.api)
        ========================= */
-    async function loadInternNamesForMeeting() {
-      try {
-        const internList = await BACKEND.api.getInternData();
+async function loadDataForModal() {
+  // ✅ FIX: Setup dropdown ก่อน
+  setupModalDropdown('positionDropdownToggle', 'positionDropdownItems', 'meetingPosition');
+  setupModalDropdown('projectDropdownToggle', 'projectDropdownItems', 'meetingProject');
 
-        const names = new Set();
-        if (Array.isArray(internList)) {
-          internList.forEach(intern => { if (intern.name) names.add(intern.name); });
-        }
+  try {
+    // โหลด members
+    const internList = await BACKEND.api.getInternData();
+    const names = new Set();
+    internList.forEach(i => { if (i.name) names.add(i.name); });
+    window.internNames = Array.from(names).sort();
+    setupNameDropdown();
 
-        window.internNames = Array.from(names).sort();
-        setupNameDropdown();
-        filterAndShowNames('');
-      } catch (e) {
-        window.internNames = [];
-      }
-    }
+    // โหลด positions
+    const positions = new Set();
+    internList.forEach(i => { if (i.position) positions.add(String(i.position).trim()); });
+    const positionArray = Array.from(positions).filter(Boolean);
+    setModalDropdownItems('meetingPosition', positionArray);
 
-    async function loadInternPositionsForMeeting() {
-      try {
-        const internList = await BACKEND.api.getInternData();
-        const positions = new Set();
-
-        if (Array.isArray(internList)) {
-          internList.forEach(intern => {
-            if (intern.position) positions.add(String(intern.position).trim());
-          });
-        }
-
-        const positionArray = Array.from(positions).filter(Boolean);
-        setModalDropdownItems('meetingPosition', positionArray);
-      } catch (e) {
-        setModalDropdownItems('meetingPosition', []);
-      }
-    }
-
-    async function loadProjectDropdownForMeeting() {
-      try {
-        const res = await BACKEND.api.getProjectList();
-        const projects = (res && res.projects) ? res.projects : [];
-        const projectNames = projects.map(p => String(p.name || "").trim()).filter(Boolean);
-        const itemsWithBlank = ["ไม่มีโปรเจค", ...projectNames];
-        setModalDropdownItems('meetingProject', itemsWithBlank);
-      } catch (e) {
-        setModalDropdownItems('meetingProject', ["ไม่มีโปรเจค"]);
-      }
-    }
+    // โหลด projects
+    const res = await BACKEND.api.getProjectList();
+    const projects = (res && res.projects) ? res.projects : [];
+    const projectNames = projects.map(p => String(p.name || "").trim()).filter(Boolean);
+    setModalDropdownItems('meetingProject', ['ไม่มีโปรเจค', ...projectNames]);
+  } catch (err) {
+    console.error('Error loading modal data:', err);
+  }
+}
   </script>
 
 </body>

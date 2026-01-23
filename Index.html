@@ -1,792 +1,596 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>PM Tool </title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <style>
-    :root {
-      --bg-color: #f3f3f3;
-      --card-bg: #fff;
-      --card-radius: 10px;
-      --card-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      --header-border: 1px solid #ddd;
-      --text-muted: #666;
-      --primary-color: black;
-      --success-color: green;
-      --warning-color: #d1a300;
-      --danger-color: red;
-      --orange-color: #ff6e00;
-      --table-odd: #fafafa;
-      --table-border: #eee;
-    }
+<style>
+:root {
+  --bg-color: #f3f3f3;
+  --card-bg: #fff;
+  --card-radius: 10px;
+  --card-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  --header-border: 1px solid #ddd;
+  --text-muted: #666;
+  --primary-color: black;
+  --success-color: green;
+  --warning-color: #d1a300;
+  --danger-color: red;
+  --orange-color: #ff6e00;
+  --table-odd: #fafafa;
+  --table-border: #eee;
+}
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-text-size-adjust: 100%;
-    }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-text-size-adjust: 100%;
+}
 
-    html {
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-      overflow-y: scroll;
-      /* ✅ ป้องกัน scrollbar ปรากฏ/หายไป */
-    }
+html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: scroll; /* ✅ ป้องกัน scrollbar ปรากฏ/หายไป */
+}
 
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: #333;
-      font-size: 16px;
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-      position: relative;
-      min-height: 100vh;
-      min-height: -webkit-fill-available;
-    }
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: #333;
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  position: relative;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
 
-    header {
-      background: var(--card-bg);
-      padding: 15px 25px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: var(--header-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
+header {
+  background: var(--card-bg);
+  padding: 15px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: var(--header-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
 
-    header h1 {
-      font-size: 22px;
-      font-weight: 600;
-    }
+header h1 {
+  font-size: 22px;
+  font-weight: 600;
+}
 
-    nav {
-      background: var(--bg-color);
-      padding: 20px 0 20px 0;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      max-width: 1200px;
-      margin: 0 auto 20px auto;
-      padding-left: 25px;
-      padding-right: 25px;
-    }
+nav {
+  background: var(--bg-color);
+  padding: 20px 0 20px 0;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto 20px auto;
+  padding-left: 25px;
+  padding-right: 25px;
+}
 
-    nav button {
-      padding: 8px 18px;
-      background: var(--card-bg);
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: 0.2s;
-      -webkit-tap-highlight-color: transparent;
-      /* ✅ ลบ tap highlight */
-      outline: none;
-      /* ✅ ลบ outline เมื่อ focus */
-    }
+nav button {
+  padding: 8px 18px;
+  background: var(--card-bg);
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+  -webkit-tap-highlight-color: transparent; /* ✅ ลบ tap highlight */
+  outline: none; /* ✅ ลบ outline เมื่อ focus */
+}
 
-    nav button:focus {
-      outline: none;
-      /* ✅ ป้องกันการขยับ focus outline */
-    }
+nav button:focus {
+  outline: none; /* ✅ ป้องกันการขยับ focus outline */
+}
 
-    nav button.active {
-      background: var(--primary-color);
-      color: var(--card-bg);
-      border-color: var(--primary-color);
-    }
+nav button.active {
+  background: var(--primary-color);
+  color: var(--card-bg);
+  border-color: var(--primary-color);
+}
 
-    #dashboardTab .status-body {
-      padding: 10px 14px 12px;
-    }
+#dashboardTab .status-body {
+  padding: 10px 14px 12px;
+}
 
-    #dashboardTab .status-table-wrap {
-      height: 310px;
-      max-height: 310px;
-      overflow-y: scroll;
-      -webkit-overflow-scrolling: touch;
-      border-top: 1px solid #eee;
-    }
+#dashboardTab .status-table-wrap {
+  height: 310px;
+  max-height: 310px;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  border-top: 1px solid #eee;
+}
 
-    #dashboardTab .status-table thead th {
-      position: sticky;
-      top: 0;
-      background: #fff;
-      z-index: 2;
-    }
+#dashboardTab .status-table thead th {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 2;
+}
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto 20px auto;
-      padding: 25px;
-      background: var(--card-bg);
-      border-radius: var(--card-radius);
-      box-shadow: var(--card-shadow);
-    }
+.container {
+  max-width: 1200px;
+  margin: 0 auto 20px auto;
+  padding: 25px;
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+}
 
-    .title {
-      font-size: 20px;
-      font-weight: bold;
-      margin-bottom: 15px;
-    }
+.title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
 
-    .loading {
-      text-align: center;
-      padding: 50px;
-      color: #999;
-    }
+.loading {
+  text-align: center;
+  padding: 50px;
+  color: #999;
+}
 
-    .tab-content {
-      display: none;
-    }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
 
-    .tab-content.active {
-      display: block;
-    }
+#dashboardTab .dash-wrap {
+  max-width: 1200px;
+  margin: 0 auto 20px auto;
+  padding: 0 25px 25px;
+}
 
-    #dashboardTab .dash-wrap {
-      max-width: 1200px;
-      margin: 0 auto 20px auto;
-      padding: 0 25px 25px;
-    }
+#dashboardTab .dash-grid-top {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 18px;
+  align-items: start;
+}
 
-    #dashboardTab .dash-grid-top {
-      display: grid;
-      grid-template-columns: 1.05fr 1fr;
-      gap: 18px;
-      align-items: start;
-    }
+#dashboardTab .dash-left {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
 
-    #dashboardTab .dash-left {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
+#dashboardTab .stat-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  padding: 14px 16px;
+  position: relative;
+  min-height: 84px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
 
-    #dashboardTab .stat-card {
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-      padding: 14px 16px;
-      position: relative;
-      min-height: 84px;
-      overflow: hidden;
-      border: 1px solid rgba(0, 0, 0, 0.06);
-    }
+#dashboardTab .stat-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #111;
+}
 
-    #dashboardTab .stat-card::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 4px;
-      background: #111;
-    }
+#dashboardTab .stat-card.all::before { background: #111827; }
+#dashboardTab .stat-card.notstarted::before { background: #f59e0b; }
+#dashboardTab .stat-card.inprogress::before { background: #3b82f6; }
+#dashboardTab .stat-card.finished::before { background: #16a34a; }
+#dashboardTab .stat-card.delayed::before { background: #dc2626; }
+#dashboardTab .stat-card.pending::before { background: #FFB6C1; }
 
-    #dashboardTab .stat-card.all::before {
-      background: #111827;
-    }
+#dashboardTab .stat-title {
+  font-size: 12px;
+  color: #374151;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
 
-    #dashboardTab .stat-card.notstarted::before {
-      background: #f59e0b;
-    }
+#dashboardTab .stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1;
+}
 
-    #dashboardTab .stat-card.inprogress::before {
-      background: #3b82f6;
-    }
+#dashboardTab .stat-wide { grid-column: 1 / span 2; }
 
-    #dashboardTab .stat-card.finished::before {
-      background: #16a34a;
-    }
+#dashboardTab .status-panel {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
 
-    #dashboardTab .stat-card.delayed::before {
-      background: #dc2626;
-    }
+#dashboardTab .status-header {
+  padding: 12px 14px;
+  border-bottom: 1px solid #eee;
+  font-weight: 800;
+  color: #111827;
+  text-align: center;
+}
 
-    #dashboardTab .stat-card.pending::before {
-      background: #FFB6C1;
-    }
+#dashboardTab .status-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
 
-    #dashboardTab .stat-title {
-      font-size: 12px;
-      color: #374151;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
+#dashboardTab .status-filter input {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  outline: none;
+  font-size: 13px;
+  background: #fff;
+}
 
-    #dashboardTab .stat-value {
-      font-size: 28px;
-      font-weight: 800;
-      color: #111827;
-      line-height: 1;
-    }
+#dashboardTab .status-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
 
-    #dashboardTab .stat-wide {
-      grid-column: 1 / span 2;
-    }
+#dashboardTab .status-table th,
+#dashboardTab .status-table td {
+  padding: 10px 8px;
+  border-top: 1px solid #eee;
+  font-size: 13px;
+  color: #111827;
+  vertical-align: middle;
+}
 
-    #dashboardTab .status-panel {
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-      border: 1px solid rgba(0, 0, 0, 0.06);
-      overflow: hidden;
-    }
+#dashboardTab .status-table th {
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 700;
+  text-align: left;
+}
 
-    #dashboardTab .status-header {
-      padding: 12px 14px;
-      border-bottom: 1px solid #eee;
-      font-weight: 800;
-      color: #111827;
-      text-align: center;
-    }
+#dashboardTab .status-table td:last-child,
+#dashboardTab .status-table th:last-child {
+  text-align: right;
+}
 
-    #dashboardTab .status-filter {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 12px;
-      color: #6b7280;
-      margin-bottom: 6px;
-    }
+#dashboardTab .pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  white-space: nowrap;
+}
 
-    #dashboardTab .status-filter input {
-      flex: 1;
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid #d1d5db;
-      outline: none;
-      font-size: 13px;
-      background: #fff;
-    }
+#dashboardTab .pill.ns {
+  background: #ffedd5;
+  color: #9a3412;
+  border-color: #fdba74;
+}
+#dashboardTab .pill.pending {
+  background: #FFB6C1;
+  color: #7a1f3d;
+  border-color: #FF8FA3;
+}
+#dashboardTab .pill.ip {
+  background: #e0f2fe;
+  color: #075985;
+}
+#dashboardTab .pill.fn {
+  background: #dcfce7;
+  color: #166534;
+}
+#dashboardTab .pill.dy {
+  background: #fee2e2;
+  color: #991b1b;
+}
 
-    #dashboardTab .status-table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-    }
+#dashboardTab .see-all {
+  width: 100%;
+  border: none;
+  background: #000;
+  color: #fff;
+  padding: 10px 12px;
+  font-weight: 800;
+  cursor: pointer;
+  border-radius: 5px;
+}
+#dashboardTab .see-all:hover { filter: brightness(0.95); }
 
-    #dashboardTab .status-table th,
-    #dashboardTab .status-table td {
-      padding: 10px 8px;
-      border-top: 1px solid #eee;
-      font-size: 13px;
-      color: #111827;
-      vertical-align: middle;
-    }
+#dashboardTab .dash-grid-bottom {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
 
-    #dashboardTab .status-table th {
-      font-size: 11px;
-      color: #6b7280;
-      font-weight: 700;
-      text-align: left;
-    }
+#dashboardTab .big-box {
+  background: #fff;
+  border-radius: 10px;
+  border: 2px dashed rgba(0, 0, 0, 0.12);
+  min-height: 150px;
+  position: relative;
+  padding: 14px;
+}
 
-    #dashboardTab .status-table td:last-child,
-    #dashboardTab .status-table th:last-child {
-      text-align: right;
-    }
+#dashboardTab .big-title {
+  font-weight: 800;
+  color: #111827;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
 
-    #dashboardTab .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 700;
-      border: 1px solid rgba(0, 0, 0, 0.08);
-      white-space: nowrap;
-    }
+#dashboardTab .big-center {
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  color: #374151;
+}
 
-    #dashboardTab .pill.ns {
-      background: #ffedd5;
-      color: #9a3412;
-      border-color: #fdba74;
-    }
+#dashboardTab .plus-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: #e5e7eb;
+  font-size: 24px;
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent; /* ✅ ลบ tap highlight */
+  outline: none;
+}
 
-    #dashboardTab .pill.pending {
-      background: #FFB6C1;
-      color: #7a1f3d;
-      border-color: #FF8FA3;
-    }
+#projectsTab {
+  height: calc(100vh - 170px);
+  max-height: calc(100vh - 170px);
+  overflow-y: scroll !important;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 24px;
+}
+#projectsTab .container { margin-bottom: 0; }
 
-    #dashboardTab .pill.ip {
-      background: #e0f2fe;
-      color: #075985;
-    }
+@keyframes globalSpin { to { transform: rotate(360deg); } }
 
-    #dashboardTab .pill.fn {
-      background: #dcfce7;
-      color: #166534;
-    }
-
-    #dashboardTab .pill.dy {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-
-    #dashboardTab .see-all {
-      width: 100%;
-      border: none;
-      background: #000;
-      color: #fff;
-      padding: 10px 12px;
-      font-weight: 800;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-
-    #dashboardTab .see-all:hover {
-      filter: brightness(0.95);
-    }
-
-    #dashboardTab .dash-grid-bottom {
-      margin-top: 16px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-    }
-
-    #dashboardTab .big-box {
-      background: #fff;
-      border-radius: 10px;
-      border: 2px dashed rgba(0, 0, 0, 0.12);
-      min-height: 150px;
-      position: relative;
-      padding: 14px;
-    }
-
-    #dashboardTab .big-title {
-      font-weight: 800;
-      color: #111827;
-      font-size: 13px;
-      margin-bottom: 10px;
-    }
-
-    #dashboardTab .big-center {
-      height: 110px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 8px;
-      color: #374151;
-    }
-
-    #dashboardTab .plus-btn {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
-      border: 1px solid rgba(0, 0, 0, 0.15);
-      background: #e5e7eb;
-      font-size: 24px;
-      font-weight: 800;
-      cursor: pointer;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-      /* ✅ ลบ tap highlight */
-      outline: none;
-    }
-
-    #projectsTab {
-      height: calc(100vh - 170px);
-      max-height: calc(100vh - 170px);
-      overflow-y: scroll !important;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom: 24px;
-    }
-
-    #projectsTab .container {
-      margin-bottom: 0;
-    }
-
-    @keyframes globalSpin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    /* ============================================
+/* ============================================
    MOBILE + TABLET - ต่ำกว่า 1024px
    ============================================ */
-    @media (max-width: 1023px) {
-      body {
-        margin: 0;
-        padding: 0;
-      }
+@media (max-width: 1023px) {
+  body { margin: 0; padding: 0; }
 
-      nav {
-        padding: 10px;
-        gap: 6px;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        max-width: 100%;
-        margin: 0 0 16px 0;
-        padding-left: 10px;
-        padding-right: 10px;
-      }
+  nav {
+    padding: 10px;
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    margin: 0 0 16px 0;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 
-      nav button {
-        padding: 7px 11px;
-        font-size: 11px;
-        white-space: nowrap;
-        flex-shrink: 0;
-      }
+  nav button {
+    padding: 7px 11px;
+    font-size: 11px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
 
-      .container {
-        margin: 0 auto 0 auto;
-        padding: 14px;
-        border-radius: 8px;
-      }
+  .container {
+    margin: 0 auto 0 auto;
+    padding: 14px;
+    border-radius: 8px;
+  }
 
-      .title {
-        font-size: 14px;
-        margin-bottom: 10px;
-      }
+  .title {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
 
-      .loading {
-        padding: 20px 14px;
-        font-size: 13px;
-      }
+  .loading {
+    padding: 20px 14px;
+    font-size: 13px;
+  }
 
-      #dashboardTab .dash-wrap {
-        margin: 0 auto 0 auto;
-        padding: 0 10px 0;
-      }
+  #dashboardTab .dash-wrap {
+    margin: 0 auto 0 auto;
+    padding: 0 10px 0;
+  }
 
-      #dashboardTab .dash-grid-top {
-        grid-template-columns: 1fr;
-        gap: 10px;
-      }
+  #dashboardTab .dash-grid-top {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
 
-      #dashboardTab .dash-left {
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-      }
+  #dashboardTab .dash-left {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
 
-      #dashboardTab .stat-card {
-        padding: 12px;
-        min-height: 80px;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-      }
+  #dashboardTab .stat-card {
+    padding: 12px;
+    min-height: 80px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
 
-      #dashboardTab .stat-title {
-        font-size: 11px;
-        margin-bottom: 4px;
-        color: #666;
-      }
+  #dashboardTab .stat-title { font-size: 11px; margin-bottom: 4px; color: #666; }
+  #dashboardTab .stat-value { font-size: 24px; }
 
-      #dashboardTab .stat-value {
-        font-size: 24px;
-      }
+  #dashboardTab .status-panel {
+    grid-column: 1 / -1;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    border-radius: 8px;
+  }
 
-      #dashboardTab .status-panel {
-        grid-column: 1 / -1;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-        border-radius: 8px;
-      }
+  #dashboardTab .status-header { padding: 10px 12px; font-size: 12px; }
+  #dashboardTab .status-body { padding: 8px 12px 10px; }
+  #dashboardTab .status-filter { gap: 6px; margin-bottom: 6px; }
+  #dashboardTab .status-filter input { padding: 7px 9px; font-size: 12px; }
 
-      #dashboardTab .status-header {
-        padding: 10px 12px;
-        font-size: 12px;
-      }
+  #dashboardTab .status-table-wrap {
+    max-height: 250px;
+    border: 1px solid #f0f0f0;
+    border-radius: 5px;
+    margin-bottom: 8px;
+  }
 
-      #dashboardTab .status-body {
-        padding: 8px 12px 10px;
-      }
+  #dashboardTab .status-table th,
+  #dashboardTab .status-table td {
+    padding: 7px 6px;
+    font-size: 11px;
+  }
 
-      #dashboardTab .status-filter {
-        gap: 6px;
-        margin-bottom: 6px;
-      }
+  #dashboardTab .pill { padding: 3px 7px; font-size: 9px; gap: 3px; }
+  #dashboardTab .see-all { padding: 9px; font-size: 12px; }
 
-      #dashboardTab .status-filter input {
-        padding: 7px 9px;
-        font-size: 12px;
-      }
+  #dashboardTab .dash-grid-bottom {
+    margin-top: 10px;
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+  }
 
-      #dashboardTab .status-table-wrap {
-        max-height: 250px;
-        border: 1px solid #f0f0f0;
-        border-radius: 5px;
-        margin-bottom: 8px;
-      }
+  #dashboardTab .big-box { min-height: 140px; padding: 16px; border-radius: 8px; }
+  #dashboardTab .big-title { font-size: 13px; margin-bottom: 12px; }
+  #dashboardTab .big-center { height: 90px; gap: 8px; }
+  #dashboardTab .plus-btn { width: 48px; height: 48px; font-size: 22px; border-radius: 8px; }
 
-      #dashboardTab .status-table th,
-      #dashboardTab .status-table td {
-        padding: 7px 6px;
-        font-size: 11px;
-      }
+  #projectsTab {
+    height: calc(100vh - 140px);
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0;
+  }
+}
 
-      #dashboardTab .pill {
-        padding: 3px 7px;
-        font-size: 9px;
-        gap: 3px;
-      }
-
-      #dashboardTab .see-all {
-        padding: 9px;
-        font-size: 12px;
-      }
-
-      #dashboardTab .dash-grid-bottom {
-        margin-top: 10px;
-        gap: 10px;
-        display: flex;
-        flex-direction: column;
-      }
-
-      #dashboardTab .big-box {
-        min-height: 140px;
-        padding: 16px;
-        border-radius: 8px;
-      }
-
-      #dashboardTab .big-title {
-        font-size: 13px;
-        margin-bottom: 12px;
-      }
-
-      #dashboardTab .big-center {
-        height: 90px;
-        gap: 8px;
-      }
-
-      #dashboardTab .plus-btn {
-        width: 48px;
-        height: 48px;
-        font-size: 22px;
-        border-radius: 8px;
-      }
-
-      #projectsTab {
-        height: calc(100vh - 140px);
-        max-height: calc(100vh - 140px);
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        padding-bottom: 0;
-      }
-    }
-
-    /* ============================================
+/* ============================================
    EXTRA SMALL - ต่ำกว่า 480px
    ============================================ */
-    @media (max-width: 479px) {
-      html {
-        height: 100%;
-        overflow-x: hidden;
-        margin: 0 !important;
-        padding: 0 !important;
-      }
+@media (max-width: 479px) {
+  html { height: 100%; overflow-x: hidden; margin: 0 !important; padding: 0 !important; }
+  body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    overflow-x: hidden;
+    margin: 0 !important;
+    padding: 0 !important;
+    overscroll-behavior-y: none;
+    -webkit-overflow-scrolling: touch;
+  }
 
-      body {
-        min-height: 100vh;
-        min-height: -webkit-fill-available;
-        overflow-x: hidden;
-        margin: 0 !important;
-        padding: 0 !important;
-        overscroll-behavior-y: none;
-        -webkit-overflow-scrolling: touch;
-      }
+  nav { padding: 10px; gap: 8px; margin: 0 0 12px 0 !important; }
+  nav button { padding: 10px 14px; font-size: 13px; }
+  .container { padding: 16px; margin: 0 auto 0 auto !important; }
+  .title { font-size: 18px; margin-bottom: 12px; font-weight: 700; }
 
-      nav {
-        padding: 10px;
-        gap: 8px;
-        margin: 0 0 12px 0 !important;
-      }
+  #dashboardTab { padding: 0 !important; margin: 0 !important; }
+  #dashboardTab .dash-wrap { padding: 0 12px 0 !important; margin: 0 auto 0 auto !important; }
+  #dashboardTab .dash-grid-top { grid-template-columns: 1fr; gap: 12px; align-items: start; }
+  #dashboardTab .dash-left { grid-template-columns: 1fr; gap: 12px; }
 
-      nav button {
-        padding: 10px 14px;
-        font-size: 13px;
-      }
+  #dashboardTab .stat-card {
+    padding: 20px 22px;
+    min-height: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  }
+  #dashboardTab .stat-title { font-size: 18px; margin-bottom: 14px; font-weight: 700; color: #374151; }
+  #dashboardTab .stat-value { font-size: 18px; font-weight: 900; color: #111827; line-height: 1; }
 
-      .container {
-        padding: 16px;
-        margin: 0 auto 0 auto !important;
-      }
+  #dashboardTab .status-panel {
+    grid-column: 1 / -1;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+  }
+  #dashboardTab .status-header { padding: 14px 16px; font-size: 14px; font-weight: 800; }
+  #dashboardTab .status-body { padding: 12px 16px 14px; }
 
-      .title {
-        font-size: 18px;
-        margin-bottom: 12px;
-        font-weight: 700;
-      }
+  #dashboardTab .status-filter { gap: 8px; margin-bottom: 10px; font-size: 14px; }
+  #dashboardTab .status-filter input { padding: 10px 12px; font-size: 14px; border-radius: 8px; }
 
-      #dashboardTab {
-        padding: 0 !important;
-        margin: 0 !important;
-      }
+  #dashboardTab .status-table-wrap {
+    max-height: 320px;
+    border: 1px solid #f0f0f0;
+    border-radius: 6px;
+    margin-bottom: 12px;
+  }
 
-      #dashboardTab .dash-wrap {
-        padding: 0 12px 0 !important;
-        margin: 0 auto 0 auto !important;
-      }
+  #dashboardTab .pill { padding: 5px 10px; font-size: 11px; border-radius: 999px; }
 
-      #dashboardTab .dash-grid-top {
-        grid-template-columns: 1fr;
-        gap: 12px;
-        align-items: start;
-      }
+  #dashboardTab .see-all { padding: 12px 14px; font-size: 14px; font-weight: 800; border-radius: 6px; }
 
-      #dashboardTab .dash-left {
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
+  #dashboardTab .dash-grid-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
 
-      #dashboardTab .stat-card {
-        padding: 20px 22px;
-        min-height: 15px;
-        border-radius: 10px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-      }
+  #dashboardTab .big-box {
+    min-height: 220px;
+    padding: 24px;
+    border-radius: 10px;
+    border: 2px dashed rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    margin-bottom: 10px;
+  }
 
-      #dashboardTab .stat-title {
-        font-size: 18px;
-        margin-bottom: 14px;
-        font-weight: 700;
-        color: #374151;
-      }
+  #dashboardTab .big-title { font-size: 16px;  font-weight: 800; color: #111827; }
+  #dashboardTab .big-center { height: 150px; gap: 16px; }
+  #dashboardTab .plus-btn { width: 65px; height: 65px; font-size: 36px; border-radius: 12px; font-weight: 800; }
 
-      #dashboardTab .stat-value {
-        font-size: 18px;
-        font-weight: 900;
-        color: #111827;
-        line-height: 1;
-      }
+  #dashboardTab {
+    height: calc(100vh - 140px) !important;
+    max-height: calc(100vh - 140px) !important;
+    overflow-y: scroll !important;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0 !important;
+  }
 
-      #dashboardTab .status-panel {
-        grid-column: 1 / -1;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-        border-radius: 10px;
-      }
+  #projectsTab {
+    height: calc(100vh - 140px) !important;
+    max-height: calc(100vh - 140px) !important;
+  }
 
-      #dashboardTab .status-header {
-        padding: 14px 16px;
-        font-size: 14px;
-        font-weight: 800;
-      }
+  .tab-content { padding: 0 !important; margin: 0 !important; }
+  .container:last-child { margin-bottom: 0 !important; }
+}
 
-      #dashboardTab .status-body {
-        padding: 12px 16px 14px;
-      }
-
-      #dashboardTab .status-filter {
-        gap: 8px;
-        margin-bottom: 10px;
-        font-size: 14px;
-      }
-
-      #dashboardTab .status-filter input {
-        padding: 10px 12px;
-        font-size: 14px;
-        border-radius: 8px;
-      }
-
-      #dashboardTab .status-table-wrap {
-        max-height: 320px;
-        border: 1px solid #f0f0f0;
-        border-radius: 6px;
-        margin-bottom: 12px;
-      }
-
-      #dashboardTab .pill {
-        padding: 5px 10px;
-        font-size: 11px;
-        border-radius: 999px;
-      }
-
-      #dashboardTab .see-all {
-        padding: 12px 14px;
-        font-size: 14px;
-        font-weight: 800;
-        border-radius: 6px;
-      }
-
-      #dashboardTab .dash-grid-bottom {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        margin-top: 8px !important;
-        margin-bottom: 0 !important;
-        padding-bottom: 0 !important;
-      }
-
-      #dashboardTab .big-box {
-        min-height: 220px;
-        padding: 24px;
-        border-radius: 10px;
-        border: 2px dashed rgba(0, 0, 0, 0.12);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-        margin-bottom: 10px;
-      }
-
-      #dashboardTab .big-title {
-        font-size: 16px;
-        font-weight: 800;
-        color: #111827;
-      }
-
-      #dashboardTab .big-center {
-        height: 150px;
-        gap: 16px;
-      }
-
-      #dashboardTab .plus-btn {
-        width: 65px;
-        height: 65px;
-        font-size: 36px;
-        border-radius: 12px;
-        font-weight: 800;
-      }
-
-      #dashboardTab {
-        height: calc(100vh - 140px) !important;
-        max-height: calc(100vh - 140px) !important;
-        overflow-y: scroll !important;
-        -webkit-overflow-scrolling: touch;
-        padding-bottom: 0 !important;
-      }
-
-      #projectsTab {
-        height: calc(100vh - 140px) !important;
-        max-height: calc(100vh - 140px) !important;
-      }
-
-      .tab-content {
-        padding: 0 !important;
-        margin: 0 !important;
-      }
-
-      .container:last-child {
-        margin-bottom: 0 !important;
-      }
-    }
-
-    #dashboardTab {
-      height: calc(100vh - 170px);
-      max-height: calc(100vh - 170px);
-      overflow-y: scroll !important;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom: 24px;
-    }
-
-    #globalLoading {
-      pointer-events: none;
-    }
-  </style>
+#dashboardTab{
+  height: calc(100vh - 170px);
+  max-height: calc(100vh - 170px);
+  overflow-y: scroll !important;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 24px;
+}
+#globalLoading{ pointer-events:none; }
+</style>
 </head>
 
 <body>
@@ -843,490 +647,350 @@
   <div id="modalsContainer"></div>
 
   <!-- Global Loading Overlay (เพิ่มให้ตรงกับ showGlobalLoading/hideGlobalLoading) -->
-  <div id="globalLoading"
-    style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;background:rgba(255,255,255,.75);backdrop-filter: blur(1px);">
+  <div id="globalLoading" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;background:rgba(255,255,255,.75);backdrop-filter: blur(1px);">
     <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
-      <div
-        style="width:44px;height:44px;border-radius:50%;border:4px solid rgba(0,0,0,.15);border-top-color:#111;animation:globalSpin 1s linear infinite;">
-      </div>
+      <div style="width:44px;height:44px;border-radius:50%;border:4px solid rgba(0,0,0,.15);border-top-color:#111;animation:globalSpin 1s linear infinite;"></div>
       <div id="globalLoadingText" style="font-weight:800;color:#111;">กำลังโหลด...</div>
     </div>
   </div>
 
   <script>
-    /* =========================
-       ✅ TAB LOADER (GAS + FETCH)
-       ========================= */
+  /* =========================
+     ✅ TAB LOADER (GAS + FETCH)
+     ========================= */
 
-    const WEB_APP_URL = "";
-    const API_BASE_URL = "http://localhost:3000";
+  const WEB_APP_URL = ""; 
+const API_BASE_URL = "http://localhost:3000";
 
-    let loadedTabs = {};
-    let currentTab = "dashboard";
-    let currentProjectId = null;
+  let loadedTabs = {};
+  let currentTab = "dashboard";
+  let currentProjectId = null;
 
 
-    // ===== FIX: รอให้ init ของแต่ละแท็บพร้อมก่อน =====
-    window.__tabInitRetry = window.__tabInitRetry || {};
+  // ===== FIX: รอให้ init ของแต่ละแท็บพร้อมก่อน =====
+  window.__tabInitRetry = window.__tabInitRetry || {};
 
-    function initWhenReady(fnName, runner, key, maxTry = 120) {
-      window.__tabInitRetry[key] = window.__tabInitRetry[key] || 0;
+  function initWhenReady(fnName, runner, key, maxTry = 120) {
+    window.__tabInitRetry[key] = window.__tabInitRetry[key] || 0;
 
-      if (typeof window[fnName] === "function") {
-        window.__tabInitRetry[key] = 0;
-        try { runner(); } catch (e) { console.error(`[tab] ${key} init failed`, e); }
-        return;
-      }
-
-      if (window.__tabInitRetry[key] >= maxTry) {
-        console.warn(`[tab] init timeout: ${fnName}`);
-        return;
-      }
-
-      window.__tabInitRetry[key]++;
-      setTimeout(() => initWhenReady(fnName, runner, key, maxTry), 50);
+    if (typeof window[fnName] === "function") {
+      window.__tabInitRetry[key] = 0;
+      try { runner(); } catch (e) { console.error(`[tab] ${key} init failed`, e); }
+      return;
     }
 
-    function showGlobalLoading(msg = "กำลังโหลด...") {
-      const el = document.getElementById("globalLoading");
-      const txt = document.getElementById("globalLoadingText");
-      if (txt) txt.textContent = msg;
-      if (el) {
-        el.style.display = "flex";
-        el.style.pointerEvents = "auto";
-      }
-    }
-    function hideGlobalLoading() {
-      const el = document.getElementById("globalLoading");
-      if (el) {
-        el.style.display = "none";
-        el.style.pointerEvents = "none";
-      }
+    if (window.__tabInitRetry[key] >= maxTry) {
+      console.warn(`[tab] init timeout: ${fnName}`);
+      return;
     }
 
-    function hasGAS() {
-      return (window.google && google.script && google.script.run);
+    window.__tabInitRetry[key]++;
+    setTimeout(() => initWhenReady(fnName, runner, key, maxTry), 50);
+  }
+
+  function showGlobalLoading(msg = "กำลังโหลด...") {
+    const el = document.getElementById("globalLoading");
+    const txt = document.getElementById("globalLoadingText");
+    if (txt) txt.textContent = msg;
+    if (el) {
+      el.style.display = "flex";
+      el.style.pointerEvents = "auto";
     }
+  }
+  function hideGlobalLoading() {
+    const el = document.getElementById("globalLoading");
+    if (el) {
+      el.style.display = "none";
+      el.style.pointerEvents = "none";
+    }
+  }
 
-    // ===== เพิ่มส่วนนี้ในฟังก์ชัน setTabHTML() ประมาณ line 177 =====
+  function hasGAS() {
+    return (window.google && google.script && google.script.run);
+  }
 
-    function setTabHTML(tabElement, html, tabName) {
-      if (!tabElement) return;
+function setTabHTML(tabElement, html, tabName) {
+  if (!tabElement) return;
 
-      const scopeSel = `#${tabName}Tab`;
-      const styleId = `tab-style-${tabName}`;
+  const scopeSel = `#${tabName}Tab`;
+  const styleId = `tab-style-${tabName}`;
 
-      let doc;
-      try {
-        doc = new DOMParser().parseFromString(html, "text/html");
-      } catch (e) {
-        console.error("Parse error:", e);
-        tabElement.innerHTML = html;
-        return;
+  let doc;
+  try {
+    doc = new DOMParser().parseFromString(html, "text/html");
+  } catch (e) {
+    console.error("Parse error:", e);
+    tabElement.innerHTML = html;
+    return;
+  }
+
+  const bodyHtml = (doc.body && doc.body.innerHTML) ? doc.body.innerHTML : html;
+  const styleTags = Array.from(doc.querySelectorAll("style"));
+  const rawCss = styleTags.map(s => s.textContent || "").join("\n").trim();
+
+  const oldStyle = document.getElementById(styleId);
+  if (oldStyle) {
+    console.log(`[${tabName}] Removing style: ${styleId}`);
+    oldStyle.remove();
+  }
+
+  const oldExtra = document.getElementById(`${styleId}-extra`);
+  if (oldExtra) {
+    console.log(`[${tabName}] Removing extra: ${styleId}-extra`);
+    oldExtra.remove();
+  }
+
+ if (rawCss) {
+    // ✅ แก้ไขตรงนี้ - เลือกว่า tab ไหนควร scope
+const noScopeTabs = ["todos", "intern"];    
+    let finalCss;
+    if (noScopeTabs.includes(tabName)) {
+      finalCss = rawCss; // ไม่ scope
+    } else {
+      finalCss = scopeCssForTab(rawCss, scopeSel); // scope สำหรับ tabs อื่น เช่น intern
+    }
+    
+    const styleEl = document.createElement("style");
+    styleEl.id = styleId;
+    styleEl.textContent = finalCss;
+    document.head.appendChild(styleEl);
+    console.log(`[${tabName}] Added style: ${styleId}`);
+  }
+
+  // Notes tab special style
+  if (tabName === "note") {
+    const extraStyle = document.createElement("style");
+    extraStyle.id = `${styleId}-extra`;
+    extraStyle.textContent = `#notesTab .notes-main-title { margin-top: 0 !important; }`;
+    document.head.appendChild(extraStyle);
+  }
+
+  tabElement.innerHTML = bodyHtml;
+
+  // ===== Script execution =====
+  if (!tabElement.dataset.scriptsExecuted) {
+    const scripts = Array.from(tabElement.querySelectorAll("script"));
+
+    const collected = scripts.map(s => ({
+      src: (s.getAttribute("src") || "").trim(),
+      type: (s.getAttribute("type") || "").trim(),
+      code: s.src ? "" : (s.textContent || "")
+    }));
+
+    scripts.forEach(s => s.remove());
+
+    const sanitizeCode = (code) => {
+      return String(code || "")
+        .replace(/\u00A0/g, " ")
+        .replace(/\uFEFF/g, "")
+        .replace(/[\u200B-\u200D\u2060]/g, "")
+        .replace(/\u2028|\u2029/g, "\n")
+        .replace(/\r\n/g, "\n");
+    };
+
+    const loadExternal = (src, type = "") => new Promise((resolve, reject) => {
+      const sc = document.createElement("script");
+      if (type) sc.type = type;
+      sc.src = src;
+      sc.onload = () => resolve();
+      sc.onerror = () => reject(new Error("Failed to load " + src));
+      document.head.appendChild(sc);
+    });
+
+    const injectInlineAsScriptTag = (code, type = "text/javascript", label = "") => {
+      const sc = document.createElement("script");
+      sc.type = type || "text/javascript";
+      sc.textContent = code;
+      if (label) sc.setAttribute("data-from", label);
+      document.head.appendChild(sc);
+    };
+
+    (async () => {
+      for (let i = 0; i < collected.length; i++) {
+        const s = collected[i];
+        if (!s.src) continue;
+        try { await loadExternal(s.src, s.type); }
+        catch (e) { console.error(`[${tabName}] external script #${i} failed`, e); }
       }
 
-      const bodyHtml = (doc.body && doc.body.innerHTML) ? doc.body.innerHTML : html;
-      const styleTags = Array.from(doc.querySelectorAll("style"));
-      const rawCss = styleTags.map(s => s.textContent || "").join("\n").trim();
+      for (let i = 0; i < collected.length; i++) {
+        const s = collected[i];
+        if (s.src) continue;
 
-      const oldStyle = document.getElementById(styleId);
-      if (oldStyle) {
-        console.log(`[${tabName}] Removing style: ${styleId}`);
-        oldStyle.remove();
-      }
+        const safe = sanitizeCode(s.code);
+        const isModule =
+          (s.type && s.type.toLowerCase() === "module") ||
+          /\b(import|export)\b/.test(safe);
 
-      const oldExtra = document.getElementById(`${styleId}-extra`);
-      if (oldExtra) {
-        console.log(`[${tabName}] Removing extra: ${styleId}-extra`);
-        oldExtra.remove();
-      }
-
-      if (rawCss) {
-        const noScopeTabs = ["todos"];
-        const inheritRootVarsTabs = ["intern"]; // ✅ Intern ต้อง inherit :root vars
-
-        let finalCss;
-        if (noScopeTabs.includes(tabName)) {
-          finalCss = rawCss;
-        } else if (inheritRootVarsTabs.includes(tabName)) {
-          // ✅ สำหรับ intern: scope แต่ keep :root variables ไว้ที่ #internTab
-          finalCss = scopeCssForTabWithRootVars(rawCss, scopeSel);
-        } else {
-          finalCss = scopeCssForTab(rawCss, scopeSel);
+        try {
+          injectInlineAsScriptTag(safe, isModule ? "module" : "text/javascript", `${tabName}#${i}`);
+        } catch (e) {
+          console.error(`[${tabName}] inline inject failed`, e);
         }
-
-        const styleEl = document.createElement("style");
-        styleEl.id = styleId;
-        styleEl.textContent = finalCss;
-        document.head.appendChild(styleEl);
-        console.log(`[${tabName}] Added style: ${styleId}`);
       }
+    })();
 
-      // Notes tab special style
-      if (tabName === "note") {
-        const extraStyle = document.createElement("style");
-        extraStyle.id = `${styleId}-extra`;
-        extraStyle.textContent = `#notesTab .notes-main-title { margin-top: 0 !important; }`;
-        document.head.appendChild(extraStyle);
-      }
+    tabElement.dataset.scriptsExecuted = "1";
+  } else {
+    tabElement.querySelectorAll("script").forEach(s => s.remove());
+  }
+}
 
-      tabElement.innerHTML = bodyHtml;
+  function scopeCssForTab(cssText, scopeSel) {
+  let css = String(cssText || "")
+    .replace(/(^|[,{]\s*):root(\s*[,{])/g, `$1${scopeSel}$2`)
+    .replace(/(^|[,{]\s*)body(\s*[,{])/g, `$1${scopeSel}$2`)
+    .replace(/(^|[,{]\s*)html(\s*[,{])/g, `$1${scopeSel}$2`);
 
-      // ===== Script execution =====
-      if (!tabElement.dataset.scriptsExecuted) {
-        const scripts = Array.from(tabElement.querySelectorAll("script"));
+  const out = [];
+  const blocks = css.split("}");
+  
+  for (let b of blocks) {
+    b = b.trim();
+    if (!b) continue;
+    const parts = b.split("{");
+    if (parts.length < 2) continue;
 
-        const collected = scripts.map(s => ({
-          src: (s.getAttribute("src") || "").trim(),
-          type: (s.getAttribute("type") || "").trim(),
-          code: s.src ? "" : (s.textContent || "")
-        }));
+    const sel = parts[0].trim();
+    const body = parts.slice(1).join("{");
 
-        scripts.forEach(s => s.remove());
-
-        const sanitizeCode = (code) => {
-          return String(code || "")
-            .replace(/\u00A0/g, " ")
-            .replace(/\uFEFF/g, "")
-            .replace(/[\u200B-\u200D\u2060]/g, "")
-            .replace(/\u2028|\u2029/g, "\n")
-            .replace(/\r\n/g, "\n");
-        };
-
-        const loadExternal = (src, type = "") => new Promise((resolve, reject) => {
-          const sc = document.createElement("script");
-          if (type) sc.type = type;
-          sc.src = src;
-          sc.onload = () => resolve();
-          sc.onerror = () => reject(new Error("Failed to load " + src));
-          document.head.appendChild(sc);
-        });
-
-        const injectInlineAsScriptTag = (code, type = "text/javascript", label = "") => {
-          const sc = document.createElement("script");
-          sc.type = type || "text/javascript";
-          sc.textContent = code;
-          if (label) sc.setAttribute("data-from", label);
-          document.head.appendChild(sc);
-        };
-
-        (async () => {
-          for (let i = 0; i < collected.length; i++) {
-            const s = collected[i];
-            if (!s.src) continue;
-            try { await loadExternal(s.src, s.type); }
-            catch (e) { console.error(`[${tabName}] external script #${i} failed`, e); }
-          }
-
-          for (let i = 0; i < collected.length; i++) {
-            const s = collected[i];
-            if (s.src) continue;
-
-            const safe = sanitizeCode(s.code);
-            const isModule =
-              (s.type && s.type.toLowerCase() === "module") ||
-              /\b(import|export)\b/.test(safe);
-
-            try {
-              injectInlineAsScriptTag(safe, isModule ? "module" : "text/javascript", `${tabName}#${i}`);
-            } catch (e) {
-              console.error(`[${tabName}] inline inject failed`, e);
-            }
-          }
-        })();
-
-        tabElement.dataset.scriptsExecuted = "1";
-      } else {
-        tabElement.querySelectorAll("script").forEach(s => s.remove());
-      }
+    if (sel.startsWith("@")) {
+      out.push(sel + "{" + body + "}");
+      continue;
     }
 
-    // ===== ฟังก์ชัน scopeCssForTab() เดิม (เก็บไว้ยังไง) =====
-    function scopeCssForTab(cssText, scopeSel) {
-      let css = String(cssText || "")
-        .replace(/(^|[,{]\s*):root(\s*[,{])/g, `$1${scopeSel}$2`)
-        .replace(/(^|[,{]\s*)body(\s*[,{])/g, `$1${scopeSel}$2`)
-        .replace(/(^|[,{]\s*)html(\s*[,{])/g, `$1${scopeSel}$2`);
-
-      const out = [];
-      const blocks = css.split("}");
-
-      for (let b of blocks) {
-        b = b.trim();
-        if (!b) continue;
-        const parts = b.split("{");
-        if (parts.length < 2) continue;
-
-        const sel = parts[0].trim();
-        const body = parts.slice(1).join("{");
-
-        if (sel.startsWith("@")) {
-          out.push(sel + "{" + body + "}");
-          continue;
+    const scopedSel = sel.split(",")
+      .map(s => s.trim())
+      .map(s => {
+        if (!s) return s;
+        if (s.startsWith(scopeSel)) return s;
+        if (/^(table|button|input|select|textarea|form|div|span|p|h\d|ul|ol|li|a)(\s|$|:|\[)/.test(s)) {
+          return `${scopeSel} ${s}`;
         }
+        return `${scopeSel} ${s}`;
+      })
+      .join(", ");
 
-        const scopedSel = sel.split(",")
-          .map(s => s.trim())
-          .map(s => {
-            if (!s) return s;
-            if (s.startsWith(scopeSel)) return s;
-            if (/^(table|button|input|select|textarea|form|div|span|p|h\d|ul|ol|li|a)(\s|$|:|\[)/.test(s)) {
-              return `${scopeSel} ${s}`;
-            }
-            return `${scopeSel} ${s}`;
-          })
-          .join(", ");
+    out.push(scopedSel + "{" + body + "}");
+  }
+  
+  return out.join("\n");
+}
 
-        out.push(scopedSel + "{" + body + "}");
-      }
+  function escapeHtml(str) {
+    return String(str ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
 
-      return out.join("\n");
-    }
+  /* =========================
+     TAB NAV
+     ========================= */
 
-    // ✅ เพิ่มฟังก์ชันใหม่ตรงนี้ (หลัง scopeCssForTab)
-    function scopeCssForTabWithRootVars(cssText, scopeSel) {
-      let css = String(cssText || "");
+  function showTab(tabName) {
+    const raw = String(tabName || "").trim();
+    const key = raw.toLowerCase();
 
-      // Extract :root block
-      let rootBlock = "";
-      const rootRegex = /:root\s*\{([^}]*)\}/;
-      const rootMatch = css.match(rootRegex);
+    const map = {
+      "dashboard": "dashboard",
+      "projects": "projects",
+      "todos": "todos",
+      "intern": "intern",
+      "note": "notes",
+      "notes": "notes",
+      "meeting": "meeting",
+      "aboutpm": "aboutPM",
+    };
 
-      if (rootMatch) {
-        rootBlock = rootMatch[1].trim();
-        css = css.replace(rootRegex, "");
-      }
+    tabName = map[key] || key;
+    currentTab = tabName;
 
-      // Inject :root variables
-      let scopedRoot = "";
-      if (rootBlock) {
-        scopedRoot = `${scopeSel} { ${rootBlock} }\n`;
-      }
+    showGlobalLoading("กำลังโหลด " + tabName + "...");
 
-      // Replace body/html selectors
-      css = css
-        .replace(/(^|[,{]\s*)body(\s*[,{])/g, `$1${scopeSel}$2`)
-        .replace(/(^|[,{]\s*)html(\s*[,{])/g, `$1${scopeSel}$2`);
+    document.querySelectorAll("nav button").forEach(btn => btn.classList.remove("active"));
 
-      const out = [];
-      const blocks = css.split("}");
+    const btnIdMap = {
+      dashboard: "btnDashboard",
+      projects: "btnProjects",
+      todos: "btnTodos",
+      intern: "btnIntern",
+      notes: "btnNotes",
+      meeting: "btnMeeting",
+      aboutPM: "btnAboutPM",
+    };
+    const btn = document.getElementById(btnIdMap[tabName]);
+    if (btn) btn.classList.add("active");
 
-      for (let b of blocks) {
-        b = b.trim();
-        if (!b) continue;
-        const parts = b.split("{");
-        if (parts.length < 2) continue;
+    document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
+    const targetTab = document.getElementById(tabName + "Tab");
+    if (targetTab) targetTab.classList.add("active");
 
-        const sel = parts[0].trim();
-        const body = parts.slice(1).join("{");
-
-        if (sel.startsWith("@")) {
-          if (sel.startsWith("@media")) {
-            const mediaBody = body;
-            let mediaCss = "";
-            const mediaBlocks = mediaBody.split("}");
-            for (let mb of mediaBlocks) {
-              mb = mb.trim();
-              if (!mb) continue;
-              const mediaParts = mb.split("{");
-              if (mediaParts.length < 2) continue;
-              const mediaSel = mediaParts[0].trim();
-              const mediaBodyContent = mediaParts.slice(1).join("{");
-              const scopedMediaSel = mediaSel.split(",")
-                .map(s => s.trim())
-                .map(s => {
-                  if (!s || s.startsWith(scopeSel)) return s;
-                  if (s === "*") return `${scopeSel} *`;
-                  if (/^(table|button|input|select|textarea|form|div|span|p|h\d|ul|ol|li|a|label|section)(\s|$|:|\[|,)/.test(s)) {
-                    return `${scopeSel} ${s}`;
-                  }
-                  if (/^[\.#]/.test(s)) return `${scopeSel} ${s}`;
-                  return `${scopeSel} ${s}`;
-                })
-                .join(", ");
-              mediaCss += scopedMediaSel + "{" + mediaBodyContent + "}\n";
-            }
-            out.push(sel + "{" + mediaCss + "}");
-          } else {
-            out.push(sel + "{" + body + "}");
-          }
-          continue;
-        }
-
-        const scopedSel = sel.split(",")
-          .map(s => s.trim())
-          .map(s => {
-            if (!s) return s;
-            if (s.startsWith(scopeSel)) return s;
-            if (s === "*") return `${scopeSel} *`;
-            if (/^(table|button|input|select|textarea|form|div|span|p|h\d|ul|ol|li|a|label|section|header|footer|nav|body)(\s|$|:|\[|,)/.test(s)) {
-              return `${scopeSel} ${s}`;
-            }
-            if (/^[\.#]/.test(s)) return `${scopeSel} ${s}`;
-            return `${scopeSel} ${s}`;
-          })
-          .join(", ");
-
-        out.push(scopedSel + "{" + body + "}");
-      }
-
-      return scopedRoot + out.join("\n");
-    }
-
-    // ===== ฟังก์ชันต่อไปจะเป็น escapeHtml() หรือฟังก์ชันอื่น =====
-
-    function escapeHtml(str) {
-      return String(str ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    /* =========================
-       TAB NAV
-       ========================= */
-
-    function showTab(tabName) {
-      const raw = String(tabName || "").trim();
-      const key = raw.toLowerCase();
-
-      const map = {
-        "dashboard": "dashboard",
-        "projects": "projects",
-        "todos": "todos",
-        "intern": "intern",
-        "note": "notes",
-        "notes": "notes",
-        "meeting": "meeting",
-        "aboutpm": "aboutPM",
-      };
-
-      tabName = map[key] || key;
-      currentTab = tabName;
-
-      showGlobalLoading("กำลังโหลด " + tabName + "...");
-
-      document.querySelectorAll("nav button").forEach(btn => btn.classList.remove("active"));
-
-      const btnIdMap = {
-        dashboard: "btnDashboard",
-        projects: "btnProjects",
-        todos: "btnTodos",
-        intern: "btnIntern",
-        notes: "btnNotes",
-        meeting: "btnMeeting",
-        aboutPM: "btnAboutPM",
-      };
-      const btn = document.getElementById(btnIdMap[tabName]);
-      if (btn) btn.classList.add("active");
-
-      document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
-      const targetTab = document.getElementById(tabName + "Tab");
-      if (targetTab) targetTab.classList.add("active");
-
-      if (tabName === "dashboard") {
-        loadedTabs["dashboard"] = true;
-        initializeTab("dashboard");
-        localStorage.setItem("activeTab", tabName);
-        return;
-      }
-
-      if (!loadedTabs[tabName]) {
-        loadTabContent(tabName);
-        loadedTabs[tabName] = true;
-      } else {
-        initializeTab(tabName);
-        hideGlobalLoading();
-      }
-
+    if (tabName === "dashboard") {
+      loadedTabs["dashboard"] = true;
+      initializeTab("dashboard");
       localStorage.setItem("activeTab", tabName);
+      return;
     }
 
-    function loadTabContent(tabName) {
-      const tabElement = document.getElementById(tabName + "Tab");
-      if (!tabElement) { hideGlobalLoading(); return; }
+    if (!loadedTabs[tabName]) {
+      loadTabContent(tabName);
+      loadedTabs[tabName] = true;
+    } else {
+      initializeTab(tabName);
+      hideGlobalLoading();
+    }
 
-      tabElement.innerHTML = `<div class="loading">⏳ กำลังโหลด...</div>`;
+    localStorage.setItem("activeTab", tabName);
+  }
 
-      // แมปชื่อไฟล์
-      const fileMap = {
-        dashboard: "Dashboard",
-        projects: "Projects",
-        todos: "Todos",
-        intern: "Intern",
-        notes: "Note",
-        meeting: "Meeting",
-        aboutPM: "AboutPM",
-      };
+  function loadTabContent(tabName) {
+    const tabElement = document.getElementById(tabName + "Tab");
+    if (!tabElement) { hideGlobalLoading(); return; }
 
-      function loadTabContent(tabName) {
-        const fileBase = fileMap[tabName];
-        // โหลดไฟล์ HTML ของแต่ละแท็บ
-        fetch(fileBase + ".html")
-          .then(r => r.text())
-          .then(html => {
-            setTabHTML(tabElement, html, tabName);
-          });
-      }
+    tabElement.innerHTML = `<div class="loading">⏳ กำลังโหลด...</div>`;
 
-      const fileBase = fileMap[tabName];
-      if (!fileBase) {
-        tabElement.innerHTML = `<div class="container" style="padding:24px;color:#dc3545;">ไม่รู้ไฟล์ของแท็บ ${escapeHtml(tabName)}</div>`;
-        hideGlobalLoading();
-        return;
-      }
+// แมปชื่อไฟล์
+const fileMap = {
+  dashboard: "Dashboard",
+  projects: "Projects",
+  todos: "Todos",
+  intern: "Intern",
+  notes: "Note",
+  meeting: "Meeting",
+  aboutPM: "AboutPM",
+};
 
-      // GAS
-      if (hasGAS()) {
-        google.script.run
-          .withSuccessHandler((html) => {
-            setTabHTML(tabElement, html, tabName);
-            loadedTabs[tabName] = true;
+function loadTabContent(tabName) {
+  const fileBase = fileMap[tabName];
+  // โหลดไฟล์ HTML ของแต่ละแท็บ
+  fetch(fileBase + ".html")
+    .then(r => r.text())
+    .then(html => {
+      setTabHTML(tabElement, html, tabName);
+    });
+}
 
-            // ✅ แจ้งว่าแท็บถูก inject เสร็จแล้ว
-            window.dispatchEvent(new CustomEvent("tab:loaded", { detail: { tabName } }));
+    const fileBase = fileMap[tabName];
+    if (!fileBase) {
+      tabElement.innerHTML = `<div class="container" style="padding:24px;color:#dc3545;">ไม่รู้ไฟล์ของแท็บ ${escapeHtml(tabName)}</div>`;
+      hideGlobalLoading();
+      return;
+    }
 
-            if (tabName === "intern") {
-              initWhenReady("initIntern", () => {
-                if (typeof window.initIntern === "function") {
-                  window.initIntern();
-                }
-              }, "intern", 160);
-            }
-
-            // ✅ สำคัญ: todos ให้รอ init หลัง inject
-            if (tabName === "todos") {
-              initWhenReady("initTodos", () => window.initTodos(), "todos", 160);
-            }
-
-            setTimeout(() => {
-              initializeTab(tabName);
-              hideGlobalLoading();
-            }, 50);
-          })
-          .withFailureHandler((err) => {
-            console.error(err);
-            tabElement.innerHTML = `<div class="container" style="padding:24px;color:#dc3545;">โหลด ${fileBase}.html ไม่สำเร็จ</div>`;
-            hideGlobalLoading();
-          })
-          .getHtml(fileBase);
-        return;
-      }
-
-      // Fetch (non-GAS)
-      fetch(fileBase + ".html", { cache: "no-store" })
-        .then(r => {
-          if (!r.ok) throw new Error("HTTP " + r.status);
-          return r.text();
-        })
-        .then(html => {
+    // GAS
+    if (hasGAS()) {
+      google.script.run
+        .withSuccessHandler((html) => {
           setTabHTML(tabElement, html, tabName);
           loadedTabs[tabName] = true;
 
+          // ✅ แจ้งว่าแท็บถูก inject เสร็จแล้ว
           window.dispatchEvent(new CustomEvent("tab:loaded", { detail: { tabName } }));
 
+          // ✅ สำคัญ: todos ให้รอ init หลัง inject
           if (tabName === "todos") {
             initWhenReady("initTodos", () => window.initTodos(), "todos", 160);
           }
@@ -1336,63 +1000,93 @@
             hideGlobalLoading();
           }, 50);
         })
-        .catch(err => {
+        .withFailureHandler((err) => {
           console.error(err);
-          tabElement.innerHTML = `<div class="container" style="padding:24px;color:#dc3545;">โหลด ${fileBase}.html ไม่ได้ (${escapeHtml(err.message)})</div>`;
+          tabElement.innerHTML = `<div class="container" style="padding:24px;color:#dc3545;">โหลด ${fileBase}.html ไม่สำเร็จ</div>`;
           hideGlobalLoading();
-        });
+        })
+        .getHtml(fileBase);
+      return;
     }
 
-    function initializeTab(tabName) {
-      switch (tabName) {
-        case "dashboard":
-          if (typeof window.initDashboard === "function") window.initDashboard();
-          break;
+    // Fetch (non-GAS)
+    fetch(fileBase + ".html", { cache: "no-store" })
+      .then(r => {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.text();
+      })
+      .then(html => {
+        setTabHTML(tabElement, html, tabName);
+        loadedTabs[tabName] = true;
 
-        case "projects":
-          if (typeof window.loadProjects === "function") window.loadProjects();
-          else if (typeof window.initProjects === "function") window.initProjects();
-          break;
+        window.dispatchEvent(new CustomEvent("tab:loaded", { detail: { tabName } }));
 
-        case "todos":
-          if (typeof window.initTodos === "function") window.initTodos();
-          else {
-            console.warn("[todos] initTodos not found. Waiting for tab:loaded hook...");
-            // fallback เบื้องต้น เผื่อชื่อฟังก์ชันใน Todos.html เป็น loadTodos
-            if (typeof window.loadTodos === "function") window.loadTodos();
-          }
-          break;
+        if (tabName === "todos") {
+          initWhenReady("initTodos", () => window.initTodos(), "todos", 160);
+        }
 
-        case "intern":
-          if (typeof window.initIntern === "function") window.initIntern();
-          break;
+        setTimeout(() => {
+          initializeTab(tabName);
+          hideGlobalLoading();
+        }, 50);
+      })
+      .catch(err => {
+        console.error(err);
+        tabElement.innerHTML = `<div class="container" style="padding:24px;color:#dc3545;">โหลด ${fileBase}.html ไม่ได้ (${escapeHtml(err.message)})</div>`;
+        hideGlobalLoading();
+      });
+  }
 
-        case "notes":
-          setTimeout(() => {
-            if (typeof window.loadNotesData === "function") window.loadNotesData();
-            else if (typeof window.initNotes === "function") window.initNotes();
-          }, 50);
-          break;
+  function initializeTab(tabName) {
+    switch (tabName) {
+      case "dashboard":
+        if (typeof window.initDashboard === "function") window.initDashboard();
+        break;
 
-        case "aboutPM":
-          if (typeof window.initAboutPM === "function") window.initAboutPM();
-          break;
+      case "projects":
+        if (typeof window.loadProjects === "function") window.loadProjects();
+        else if (typeof window.initProjects === "function") window.initProjects();
+        break;
 
-        case "meeting":
-          if (typeof window.loadMeeting === "function") window.loadMeeting();
-          else if (typeof window.initMeeting === "function") window.initMeeting();
-          break;
-      }
+      case "todos":
+        if (typeof window.initTodos === "function") window.initTodos();
+        else {
+          console.warn("[todos] initTodos not found. Waiting for tab:loaded hook...");
+          // fallback เบื้องต้น เผื่อชื่อฟังก์ชันใน Todos.html เป็น loadTodos
+          if (typeof window.loadTodos === "function") window.loadTodos();
+        }
+        break;
+
+      case "intern":
+        if (typeof window.initIntern === "function") window.initIntern();
+        break;
+
+      case "notes":
+        setTimeout(() => {
+          if (typeof window.loadNotesData === "function") window.loadNotesData();
+          else if (typeof window.initNotes === "function") window.initNotes();
+        }, 50);
+        break;
+
+      case "aboutPM":
+        if (typeof window.initAboutPM === "function") window.initAboutPM();
+        break;
+
+      case "meeting":
+        if (typeof window.loadMeeting === "function") window.loadMeeting();
+        else if (typeof window.initMeeting === "function") window.initMeeting();
+        break;
     }
+  }
 
-    document.addEventListener("DOMContentLoaded", function () {
-      const savedTab = localStorage.getItem("activeTab") || "dashboard";
-      showTab(savedTab);
-    });
+  document.addEventListener("DOMContentLoaded", function () {
+    const savedTab = localStorage.getItem("activeTab") || "dashboard";
+    showTab(savedTab);
+  });
 
-    function showNotification(message, type = "info") {
-      const notification = document.createElement("div");
-      notification.style.cssText = `
+  function showNotification(message, type = "info") {
+    const notification = document.createElement("div");
+    notification.style.cssText = `
       position: fixed;
       top: 20px;
       right: 20px;
@@ -1404,98 +1098,98 @@
       z-index: 9999;
       animation: slideIn 0.3s ease;
     `;
-      notification.textContent = message;
-      document.body.appendChild(notification);
+    notification.textContent = message;
+    document.body.appendChild(notification);
 
-      setTimeout(() => {
-        notification.style.animation = "slideOut 0.3s ease";
-        setTimeout(() => notification.remove(), 300);
-      }, 3000);
-    }
+    setTimeout(() => {
+      notification.style.animation = "slideOut 0.3s ease";
+      setTimeout(() => notification.remove(), 300);
+    }, 3000);
+  }
 
-    const style = document.createElement("style");
-    style.textContent = `
+  const style = document.createElement("style");
+  style.textContent = `
     @keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(400px); opacity: 0; } }
   `;
-    document.head.appendChild(style);
+  document.head.appendChild(style);
   </script>
 
   <!-- =========================
        DASHBOARD (mock/local)
        ========================= -->
   <script>
-    let dashboardAllProjects = [];
-    let dashboardFilteredProjects = [];
+  let dashboardAllProjects = [];
+  let dashboardFilteredProjects = [];
 
-    const LS_DASH_PROJECTS = "pmtool_dashboard_projects_v1";
+  const LS_DASH_PROJECTS = "pmtool_dashboard_projects_v1";
 
-    function getMockProjectsForDashboard() {
-      return [
-        { id: "p1", name: "ระบบ PM Tool", status: "In Progress" },
-        { id: "p2", name: "จัดการ Intern", status: "Not Started" },
-        { id: "p3", name: "สรุปงานประจำสัปดาห์", status: "Finished" },
-        { id: "p4", name: "งานล่าช้า QA", status: "Delayed" },
-        { id: "p5", name: "โปรเจครอประกาศ", status: "N/A" },
-      ];
+  function getMockProjectsForDashboard() {
+    return [
+      { id: "p1", name: "ระบบ PM Tool", status: "In Progress" },
+      { id: "p2", name: "จัดการ Intern", status: "Not Started" },
+      { id: "p3", name: "สรุปงานประจำสัปดาห์", status: "Finished" },
+      { id: "p4", name: "งานล่าช้า QA", status: "Delayed" },
+      { id: "p5", name: "โปรเจครอประกาศ", status: "N/A" },
+    ];
+  }
+
+// แทนที่ฟังก์ชัน loadDashboardProjectsLocal()
+async function loadDashboardProjectsFromAPI() {
+  // โหลด "ทุกหน้า" จาก GET /projects (มี pagination)
+  // ตามเอกสาร API: GET /projects จะคืน { data: [...], pagination: { page, limit, total, totalPages } }
+  const limit = 100;
+  let page = 1;
+  const all = [];
+
+  while (true) {
+    const url = `${API_BASE_URL}/projects?page=${page}&limit=${limit}`;
+    const response = await fetch(url, { headers: { "Accept": "application/json" } });
+    if (!response.ok) {
+      throw new Error(`GET /projects failed: ${response.status} ${response.statusText}`);
     }
 
-    // แทนที่ฟังก์ชัน loadDashboardProjectsLocal()
-    async function loadDashboardProjectsFromAPI() {
-      // โหลด "ทุกหน้า" จาก GET /projects (มี pagination)
-      // ตามเอกสาร API: GET /projects จะคืน { data: [...], pagination: { page, limit, total, totalPages } }
-      const limit = 100;
-      let page = 1;
-      const all = [];
+    const data = await response.json();
+    const rows = Array.isArray(data?.data) ? data.data : [];
+    all.push(...rows);
 
-      while (true) {
-        const url = `${API_BASE_URL}/projects?page=${page}&limit=${limit}`;
-        const response = await fetch(url, { headers: { "Accept": "application/json" } });
-        if (!response.ok) {
-          throw new Error(`GET /projects failed: ${response.status} ${response.statusText}`);
-        }
+    const totalPages = Number(data?.pagination?.totalPages || 1);
+    if (page >= totalPages) break;
+    page += 1;
+  }
 
-        const data = await response.json();
-        const rows = Array.isArray(data?.data) ? data.data : [];
-        all.push(...rows);
+  // แปลง API response เป็น format ที่ Dashboard ใช้
+  return all.map(p => ({
+    id: p._id,
+    name: p.name,
+    status: mapAPIStatusToDashboard(p.status)
+  }));
+}
 
-        const totalPages = Number(data?.pagination?.totalPages || 1);
-        if (page >= totalPages) break;
-        page += 1;
-      }
+function mapAPIStatusToDashboard(apiStatus) {
+  const s = String(apiStatus || "").toLowerCase().trim();
 
-      // แปลง API response เป็น format ที่ Dashboard ใช้
-      return all.map(p => ({
-        id: p._id,
-        name: p.name,
-        status: mapAPIStatusToDashboard(p.status)
-      }));
-    }
+  // ✅ enum จริงของ backend: not_started | on_track | delayed | completed
+  if (s === "not_started") return "Not Started";
+  if (s === "on_track") return "In Progress";
+  if (s === "delayed") return "Delayed";
+  if (s === "completed") return "Finished";
 
-    function mapAPIStatusToDashboard(apiStatus) {
-      const s = String(apiStatus || "").toLowerCase().trim();
+  // เผื่อค่าเก่าหรือค่าอื่น
+  if (s.includes("not started")) return "Not Started";
+  if (s.includes("on") || s.includes("progress") || s.includes("ongoing")) return "In Progress";
+  if (s.includes("delay") || s.includes("hold")) return "Delayed";
+  if (s.includes("finish") || s.includes("done") || s.includes("complete")) return "Finished";
 
-      // ✅ enum จริงของ backend: not_started | on_track | delayed | completed
-      if (s === "not_started") return "Not Started";
-      if (s === "on_track") return "In Progress";
-      if (s === "delayed") return "Delayed";
-      if (s === "completed") return "Finished";
+  return "to be announced";
+}
 
-      // เผื่อค่าเก่าหรือค่าอื่น
-      if (s.includes("not started")) return "Not Started";
-      if (s.includes("on") || s.includes("progress") || s.includes("ongoing")) return "In Progress";
-      if (s.includes("delay") || s.includes("hold")) return "Delayed";
-      if (s.includes("finish") || s.includes("done") || s.includes("complete")) return "Finished";
+  function initDashboard() {
+    const content = document.getElementById("dashboardContent");
+    if (!content) return;
 
-      return "to be announced";
-    }
-
-    function initDashboard() {
-      const content = document.getElementById("dashboardContent");
-      if (!content) return;
-
-      content.className = "";
-      content.innerHTML = `
+    content.className = "";
+    content.innerHTML = `
       <div class="dash-wrap">
         <div class="dash-grid-top">
           <div class="dash-left" id="dashLeftCards">
@@ -1560,64 +1254,64 @@
       </div>
     `;
 
-      loadDashboardData();
+    loadDashboardData();
+  }
+
+async function loadDashboardData() {
+  try {
+    const projects = await loadDashboardProjectsFromAPI();
+    const stats = calcDashboardStats(projects);
+    applyDashboardData(stats, projects);
+  } catch (e) {
+    console.error("Dashboard load failed:", e);
+    // แสดง error ใน status-body โดยไม่ใช้ mock
+    const tbody = document.getElementById("dashProjectRows");
+    const showing = document.getElementById("dashShowing");
+    if (showing) showing.textContent = "Showing 0/0";
+    if (tbody) {
+      tbody.innerHTML = `<tr><td colspan="2" style="padding:14px;color:#ef4444;font-weight:700;">โหลดข้อมูลโปรเจคไม่สำเร็จ</td></tr>`;
     }
+    // อัปเดตการ์ดซ้ายเป็น 0
+    applyDashboardData({ total: 0, notStarted: 0, inProgress: 0, finished: 0, delayed: 0, pending: 0 }, []);
+  }
+}
 
-    async function loadDashboardData() {
-      try {
-        const projects = await loadDashboardProjectsFromAPI();
-        const stats = calcDashboardStats(projects);
-        applyDashboardData(stats, projects);
-      } catch (e) {
-        console.error("Dashboard load failed:", e);
-        // แสดง error ใน status-body โดยไม่ใช้ mock
-        const tbody = document.getElementById("dashProjectRows");
-        const showing = document.getElementById("dashShowing");
-        if (showing) showing.textContent = "Showing 0/0";
-        if (tbody) {
-          tbody.innerHTML = `<tr><td colspan="2" style="padding:14px;color:#ef4444;font-weight:700;">โหลดข้อมูลโปรเจคไม่สำเร็จ</td></tr>`;
-        }
-        // อัปเดตการ์ดซ้ายเป็น 0
-        applyDashboardData({ total: 0, notStarted: 0, inProgress: 0, finished: 0, delayed: 0, pending: 0 }, []);
-      }
-    }
+  function calcDashboardStats(projects) {
+    const arr = Array.isArray(projects) ? projects : [];
+    const norm = (s) => String(s || "").toLowerCase();
 
-    function calcDashboardStats(projects) {
-      const arr = Array.isArray(projects) ? projects : [];
-      const norm = (s) => String(s || "").toLowerCase();
+    const pending = arr.filter(p => {
+      const s = norm(p.status);
+      return s === "n/a" || s.includes("n/a") || s.includes("#n/a");
+    }).length;
 
-      const pending = arr.filter(p => {
-        const s = norm(p.status);
-        return s === "n/a" || s.includes("n/a") || s.includes("#n/a");
-      }).length;
+    const finished = arr.filter(p => {
+      const s = norm(p.status);
+      return s.includes("finished") || s.includes("done") || s.includes("เสร็จ");
+    }).length;
 
-      const finished = arr.filter(p => {
-        const s = norm(p.status);
-        return s.includes("finished") || s.includes("done") || s.includes("เสร็จ");
-      }).length;
+    const delayed = arr.filter(p => {
+      const s = norm(p.status);
+      return s.includes("delayed") || s.includes("ล่าช้า") || s.includes("ช้ากว่ากำหนด");
+    }).length;
 
-      const delayed = arr.filter(p => {
-        const s = norm(p.status);
-        return s.includes("delayed") || s.includes("ล่าช้า") || s.includes("ช้ากว่ากำหนด");
-      }).length;
+    const inProgress = arr.filter(p => {
+      const s = norm(p.status);
+      return s.includes("in progress") || s.includes("กำลัง") || s.includes("อยู่ในกำหนด");
+    }).length;
 
-      const inProgress = arr.filter(p => {
-        const s = norm(p.status);
-        return s.includes("in progress") || s.includes("กำลัง") || s.includes("อยู่ในกำหนด");
-      }).length;
+    const notStarted = arr.filter(p => {
+      const s = norm(p.status);
+      return s.includes("not started") || s.includes("ยังไม่เริ่ม");
+    }).length;
 
-      const notStarted = arr.filter(p => {
-        const s = norm(p.status);
-        return s.includes("not started") || s.includes("ยังไม่เริ่ม");
-      }).length;
+    return { total: arr.length, notStarted, inProgress, finished, delayed, pending };
+  }
 
-      return { total: arr.length, notStarted, inProgress, finished, delayed, pending };
-    }
-
-    function applyDashboardData(stats, projects) {
-      const left = document.getElementById("dashLeftCards");
-      if (left) {
-        left.innerHTML = `
+  function applyDashboardData(stats, projects) {
+    const left = document.getElementById("dashLeftCards");
+    if (left) {
+      left.innerHTML = `
         ${statCard("All Project", num(stats.total), false, "all")}
         ${statCard("Not Started", num(stats.notStarted), false, "notstarted")}
         ${statCard("In Progress", num(stats.inProgress), false, "inprogress")}
@@ -1625,101 +1319,100 @@
         ${statCard("Delayed", num(stats.delayed), false, "delayed")}
         ${statCard("to be announced", num(stats.pending), false, "pending")}
       `;
-      }
-
-      dashboardAllProjects = (projects || []).map((p, idx) => ({
-        id: p.id || `p_${idx}`,
-        name: String(p.name || "").trim(),
-        status: String(p.status || "Not Started").trim()
-      })).filter(p => p.name);
-
-      const pr = (s) => {
-        const x = String(s || "").toLowerCase();
-        if (x.includes("delayed") || x.includes("ช้ากว่ากำหนด") || x.includes("ล่าช้า")) return 1;
-        if (x.includes("in progress") || x.includes("อยู่ในกำหนด") || x.includes("กำลัง")) return 2;
-        if (x.includes("not started") || x.includes("ยังไม่เริ่ม")) return 3;
-        if (x.includes("finished") || x.includes("done") || x.includes("เสร็จ")) return 4;
-        if (x.includes("n/a") || x.includes("#n/a")) return 5;
-        return 6;
-      };
-      dashboardAllProjects.sort((a, b) => pr(a.status) - pr(b.status) || a.name.localeCompare(b.name, "th"));
-
-      dashboardFilteredProjects = dashboardAllProjects.slice();
-      renderDashboardProjectRows();
-      try { hideGlobalLoading(); } catch (e) { }
     }
 
-    function filterDashboardProjects() {
-      const input = document.getElementById("dashFilterInput");
-      const kw = String(input?.value || "").toLowerCase().trim();
+    dashboardAllProjects = (projects || []).map((p, idx) => ({
+      id: p.id || `p_${idx}`,
+      name: String(p.name || "").trim(),
+      status: String(p.status || "Not Started").trim()
+    })).filter(p => p.name);
 
-      dashboardFilteredProjects = !kw
-        ? dashboardAllProjects.slice()
-        : dashboardAllProjects.filter(p =>
+    const pr = (s) => {
+      const x = String(s || "").toLowerCase();
+      if (x.includes("delayed") || x.includes("ช้ากว่ากำหนด") || x.includes("ล่าช้า")) return 1;
+      if (x.includes("in progress") || x.includes("อยู่ในกำหนด") || x.includes("กำลัง")) return 2;
+      if (x.includes("not started") || x.includes("ยังไม่เริ่ม")) return 3;
+      if (x.includes("finished") || x.includes("done") || x.includes("เสร็จ")) return 4;
+      if (x.includes("n/a") || x.includes("#n/a")) return 5;
+      return 6;
+    };
+    dashboardAllProjects.sort((a, b) => pr(a.status) - pr(b.status) || a.name.localeCompare(b.name, "th"));
+
+    dashboardFilteredProjects = dashboardAllProjects.slice();
+    renderDashboardProjectRows();
+try { hideGlobalLoading(); } catch (e) {}
+  }
+
+  function filterDashboardProjects() {
+    const input = document.getElementById("dashFilterInput");
+    const kw = String(input?.value || "").toLowerCase().trim();
+
+    dashboardFilteredProjects = !kw
+      ? dashboardAllProjects.slice()
+      : dashboardAllProjects.filter(p =>
           String(p.name || "").toLowerCase().includes(kw) ||
           String(p.status || "").toLowerCase().includes(kw)
         );
 
-      renderDashboardProjectRows();
+    renderDashboardProjectRows();
+  }
+
+  function renderDashboardProjectRows() {
+    const tbody = document.getElementById("dashProjectRows");
+    if (!tbody) return;
+
+    const showing = document.getElementById("dashShowing");
+    if (showing) showing.textContent = `Showing ${dashboardFilteredProjects.length}/${dashboardAllProjects.length}`;
+
+    const rows = dashboardFilteredProjects;
+    if (!rows.length) {
+      tbody.innerHTML = `<tr><td colspan="2" style="padding:14px;color:#9ca3af;">ไม่มีข้อมูล</td></tr>`;
+      return;
     }
 
-    function renderDashboardProjectRows() {
-      const tbody = document.getElementById("dashProjectRows");
-      if (!tbody) return;
-
-      const showing = document.getElementById("dashShowing");
-      if (showing) showing.textContent = `Showing ${dashboardFilteredProjects.length}/${dashboardAllProjects.length}`;
-
-      const rows = dashboardFilteredProjects;
-      if (!rows.length) {
-        tbody.innerHTML = `<tr><td colspan="2" style="padding:14px;color:#9ca3af;">ไม่มีข้อมูล</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = rows.map(p => `
+    tbody.innerHTML = rows.map(p => `
       <tr>
         <td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(p.name || "")}</td>
         <td style="text-align:right;">${statusPill(p.status)}</td>
       </tr>
     `).join("");
-    }
+  }
 
-    function statusPill(status) {
-      const s = String(status || "").toLowerCase();
-      if (s === "n/a" || s.includes("n/a") || s.includes("#n/a")) return `<span class="pill pending">to be announced</span>`;
-      if (s.includes("finished") || s.includes("done") || s.includes("เสร็จ")) return `<span class="pill fn">Finished</span>`;
-      if (s.includes("delayed") || s.includes("ช้ากว่ากำหนด") || s.includes("ล่าช้า")) return `<span class="pill dy">Delayed</span>`;
-      if (s.includes("not started") || s.includes("ยังไม่เริ่ม")) return `<span class="pill ns">Not Started</span>`;
-      return `<span class="pill ip">In progress</span>`;
-    }
+  function statusPill(status) {
+    const s = String(status || "").toLowerCase();
+    if (s === "n/a" || s.includes("n/a") || s.includes("#n/a")) return `<span class="pill pending">to be announced</span>`;
+    if (s.includes("finished") || s.includes("done") || s.includes("เสร็จ")) return `<span class="pill fn">Finished</span>`;
+    if (s.includes("delayed") || s.includes("ช้ากว่ากำหนด") || s.includes("ล่าช้า")) return `<span class="pill dy">Delayed</span>`;
+    if (s.includes("not started") || s.includes("ยังไม่เริ่ม")) return `<span class="pill ns">Not Started</span>`;
+    return `<span class="pill ip">In progress</span>`;
+  }
 
-    function statCard(title, value, wide = false, extraClass = "") {
-      const cls = ["stat-card", wide ? "stat-wide" : "", extraClass].filter(Boolean).join(" ");
-      return `
+  function statCard(title, value, wide = false, extraClass = "") {
+    const cls = ["stat-card", wide ? "stat-wide" : "", extraClass].filter(Boolean).join(" ");
+    return `
       <div class="${cls}">
         <div class="stat-title">${escapeHtml(title)}</div>
         <div class="stat-value">${escapeHtml(String(value ?? "-"))}</div>
       </div>
     `;
-    }
+  }
 
-    function num(v) {
-      const n = Number(v);
-      return Number.isFinite(n) ? n : 0;
-    }
+  function num(v) {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : 0;
+  }
 
-    // Fix สำหรับ Samsung/Android - ป้องกันช่องว่างด้านล่าง
-    document.addEventListener("DOMContentLoaded", function () {
-      const setVH = () => {
-        let vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty("--vh", `${vh}px`);
-      };
-      setVH();
-      window.addEventListener("resize", setVH);
-      window.addEventListener("orientationchange", setVH);
-    });
+  // Fix สำหรับ Samsung/Android - ป้องกันช่องว่างด้านล่าง
+  document.addEventListener("DOMContentLoaded", function () {
+    const setVH = () => {
+      let vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty("--vh", `${vh}px`);
+    };
+    setVH();
+    window.addEventListener("resize", setVH);
+    window.addEventListener("orientationchange", setVH);
+  });
   </script>
 
 </body>
-
 </html>

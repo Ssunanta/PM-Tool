@@ -162,7 +162,7 @@
     }
 
     .ctrl-items {
-      position: fixed;
+      position: absolute;
       top: 100%;
       left: 0;
       width: 100%;
@@ -173,7 +173,7 @@
       max-height: 360px;
       overflow-y: auto;
       display: none;
-      z-index: 9999;
+      z-index: 100;
       padding: 10px;
       box-shadow: var(--shadow);
     }
@@ -955,7 +955,7 @@
       max-height: 90vh;
       display: flex;
       flex-direction: column;
-      overflow: visible;
+      overflow: hidden;
       /* ✅ ให้ overflow ที่ content wrapper แทน */
     }
 
@@ -1354,7 +1354,70 @@
         max-width: 100%;
       }
     }
-  </style>
+  
+    /* =========================
+       ✅ Member Name Autocomplete
+       ========================= */
+    .member-suggest{
+      position:absolute;
+      left:0;
+      right:0;
+      top: calc(100% + 8px);
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 10px;
+      max-height: 320px;
+      overflow-y: auto;
+      display: none;
+      z-index: 1200;
+    }
+    .member-suggest.open{ display:block; }
+
+    .member-suggest .ms-item{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 12px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 900;
+      background: #fff;
+      border: 1px solid rgba(15, 23, 42, .06);
+    }
+    .member-suggest .ms-item + .ms-item{ margin-top: 8px; }
+    .member-suggest .ms-item:hover{
+      background:#fafafa;
+      border-color: rgba(15, 23, 42, .12);
+    }
+    .member-suggest .ms-left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+    .member-suggest .ms-name{
+      overflow:hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 360px;
+    }
+    .member-suggest .ms-pos{
+      flex: 0 0 auto;
+      font-size: 12px;
+      font-weight: 1000;
+      color: #64748b;
+      border: 1px solid rgba(15, 23, 42, .10);
+      background: #f8fafc;
+      padding: 6px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+</style>
 
 <!-- === MOBILE-ONLY FIXES (iPhone) : does NOT affect PC/iPad === -->
 <style>
@@ -1529,6 +1592,7 @@
   <div class="container">
     <div class="title-row">
       <div class="title" id="pageTitle">
+        <span class="dot"></span>
         All Project
       </div>
 
@@ -1695,11 +1759,6 @@
         </div>
 
         <div class="field">
-          <div class="label">Mentor</div>
-          <input id="add_mentor" class="input" placeholder="เช่น พี่กิ๊ฟ, พี่แบงค์">
-        </div>
-
-        <div class="field">
           <div class="label">หมายเหตุ</div>
           <input id="add_note" class="input" placeholder="">
         </div>
@@ -1711,19 +1770,14 @@
 
         <div class="field">
           <div class="label">สถานะ</div>
-          <div class="ctrl" id="editStatusCtrl">
-  <div class="ctrl-selected" onclick="toggleModalCtrlDropdown('editStatusCtrl')">
-    <span id="editStatusText">อยู่ในกำหนด</span>
-    <span>▾</span>
-  </div>
-  <div class="ctrl-items" id="editStatusItems">
-    <div class="ctrl-item" onclick="selectEditStatus('ยังไม่เริ่มงาน')">ยังไม่เริ่มงาน</div>
-    <div class="ctrl-item" onclick="selectEditStatus('อยู่ในกำหนด')">อยู่ในกำหนด</div>
-    <div class="ctrl-item" onclick="selectEditStatus('ช้ากว่ากำหนด')">ช้ากว่ากำหนด</div>
-    <div class="ctrl-item" onclick="selectEditStatus('เสร็จแล้ว')">เสร็จแล้ว</div>
-  </div>
-</div>
+          <select id="add_status" class="select">
+          <option value="ยังไม่เริ่มงาน">ยังไม่เริ่มงาน</option>
+          <option value="อยู่ในกำหนด">อยู่ในกำหนด</option>
+          <option value="ช้ากว่ากำหนด">ช้ากว่ากำหนด</option>
+          <option value="เสร็จแล้ว">เสร็จแล้ว</option>
+        </select>
         </div>
+      </div>
 
       <div class="modal-actions">
         <button class="btn primary" id="btnAddSave" onclick="submitAdd()">
@@ -1753,19 +1807,14 @@
           <input id="edit_start" type="date" class="input">
         </div>
 
- <div class="field">
-          <div class="label">วันที่วางแผนสิ้นสุดโครงการ</div>
-          <input id="add_end" type="date" class="input">
-        </div>
-
         <div class="field">
-          <div class="label">Mentor</div>
-          <input id="add_mentor" class="input" placeholder="เช่น พี่กิ๊ฟ, พี่แบงค์">
+          <div class="label">วันที่วางแผนสิ้นสุดโครงการ</div>
+          <input id="edit_end" type="date" class="input">
         </div>
 
         <div class="field">
           <div class="label">หมายเหตุ</div>
-          <input id="add_note" class="input" placeholder="">
+          <input id="edit_note" class="input" placeholder="">
         </div>
 
         <div class="field">
@@ -1775,19 +1824,24 @@
 
         <div class="field">
           <div class="label">สถานะ</div>
-          <div class="ctrl" id="editStatusCtrl">
-  <div class="ctrl-selected" onclick="toggleModalCtrlDropdown('editStatusCtrl')">
-    <span id="editStatusText">อยู่ในกำหนด</span>
-    <span>▾</span>
-  </div>
-  <div class="ctrl-items" id="editStatusItems">
-    <div class="ctrl-item" onclick="selectEditStatus('ยังไม่เริ่มงาน')">ยังไม่เริ่มงาน</div>
-    <div class="ctrl-item" onclick="selectEditStatus('อยู่ในกำหนด')">อยู่ในกำหนด</div>
-    <div class="ctrl-item" onclick="selectEditStatus('ช้ากว่ากำหนด')">ช้ากว่ากำหนด</div>
-    <div class="ctrl-item" onclick="selectEditStatus('เสร็จแล้ว')">เสร็จแล้ว</div>
-  </div>
-</div>
+          <select id="edit_status" class="select">
+          <option value="ยังไม่เริ่มงาน">ยังไม่เริ่มงาน</option>
+          <option value="อยู่ในกำหนด">อยู่ในกำหนด</option>
+          <option value="ช้ากว่ากำหนด">ช้ากว่ากำหนด</option>
+          <option value="เสร็จแล้ว">เสร็จแล้ว</option>
+        </select>
         </div>
+
+      <div class="modal-actions">
+        <button class="btn primary" id="btnEditSave" onclick="submitEdit()">
+        <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000"
+             style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" alt="Edit">
+        Edit Project
+      </button>
+        <button class="btn cancel" onclick="closeEdit()">Cancel</button>
+      </div>
+    </div>
+  </div>
 
       <div class="modal-actions">
         <button class="btn primary" id="btnEditSave" onclick="submitEdit()">
@@ -1808,50 +1862,24 @@
     </div>
   </div>
 
-<!-- ✅ Member Modal -->
-<div id="memberModal" class="modal-overlay">
-  <div class="modal-box">
-    <div class="modal-title" id="memberModalTitle">Add Member</div>
+  <!-- ✅ Member Modal -->
+  <div id="memberModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-title" id="memberModalTitle">Add Member</div>
 
-    <div class="modal-content">
       <div class="field">
         <div class="label">ชื่อ</div>
-        <div class="ctrl" id="memberNameCtrl">
-          <div class="ctrl-selected" onclick="toggleModalCtrlDropdown('memberNameCtrl')">
-            <span id="memberNameText">เลือกชื่อ</span>
-            <span>▾</span>
-          </div>
-          <div class="ctrl-items" id="memberNameItems">
-            <div class="ctrl-item" onclick="selectMemberName('กิ๊ฟ')">กิ๊ฟ</div>
-            <div class="ctrl-item" onclick="selectMemberName('แบงค์')">แบงค์</div>
-            <div class="ctrl-item" onclick="selectMemberName('บอส')">บอส</div>
-            <div class="ctrl-item" onclick="selectMemberName('มิว')">มิว</div>
-            <div class="ctrl-item" onclick="selectMemberName('เอ')">เอ</div>
-            <div class="ctrl-item" onclick="selectMemberName('พลอย')">พลอย</div>
-            <div class="ctrl-item" onclick="selectMemberName('ออม')">ออม</div>
-          </div>
+        <div class="member-autocomplete" style="position:relative;">
+          <input id="m_name" class="input" placeholder="พิมพ์ชื่อเพื่อค้นหา..." autocomplete="off">
+          <div id="m_nameList" class="member-suggest"></div>
+          <input type="hidden" id="m_memberId">
         </div>
       </div>
 
       <div class="field">
         <div class="label">ตำแหน่ง</div>
-        <div class="ctrl" id="memberPosCtrl">
-          <div class="ctrl-selected" onclick="toggleModalCtrlDropdown('memberPosCtrl')">
-            <span id="memberPosText">เลือกตำแหน่ง</span>
-            <span>▾</span>
-          </div>
-          <div class="ctrl-items" id="memberPosItems">
-            <div class="ctrl-item" onclick="selectMemberPos('BA')">BA</div>
-            <div class="ctrl-item" onclick="selectMemberPos('UX/UI')">UX/UI</div>
-            <div class="ctrl-item" onclick="selectMemberPos('Web Dev')">Web Dev</div>
-            <div class="ctrl-item" onclick="selectMemberPos('Data Sci')">Data Sci</div>
-            <div class="ctrl-item" onclick="selectMemberPos('Mentor')">Mentor</div>
-            <div class="ctrl-item" onclick="selectMemberPos('DM')">DM</div>
-            <div class="ctrl-item" onclick="selectMemberPos('IC')">IC</div>
-          </div>
-        </div>
+        <input id="m_pos" class="input" placeholder="จะถูกเติมอัตโนมัติ" readonly>
       </div>
-    </div>
 
       <div class="modal-actions">
         <button class="btn primary" id="btnMemberSave" onclick="submitMemberModal()">
@@ -1864,6 +1892,7 @@
       </div>
     </div>
   </div>
+
     <script>
     function byId(id){ return document.getElementById(id); }
 
@@ -2178,13 +2207,152 @@ async function fetchProjectMembersAPI(projectId) {
     return memberObjs.map(m => ({
       tag: m._id || m.id,
       name: m.displayName || m.nickname || m.name || '-',
-      position: m.position || '-'
+      position: m.position || '-',
+      role: (m.role || '').toString()
     }));
   } catch (e) {
     console.error('Failed to fetch members:', e);
     return [];
   }
 }
+
+/* =========================
+   ✅ Members Autocomplete (เลือกชื่อจาก members เดิม)
+   - พิมพ์เพื่อ filter รายชื่อ
+   - เลือกแล้วจะเติม "ตำแหน่ง" ให้อัตโนมัติ
+   - ✅ ตอน Add Member: ไม่ POST /members แล้ว (assign อย่างเดียว)
+   ========================= */
+async function fetchAllMembersAPI() {
+  try {
+    const limit = 200;
+    let page = 1;
+    const all = [];
+
+    while (true) {
+      const url = `${API_BASE_URL}/members?page=${page}&limit=${limit}`;
+      const r = await fetch(url, { headers: { "Accept": "application/json" } });
+      if (!r.ok) {
+        const t = await r.text().catch(() => "");
+        throw new Error(`GET /members failed: ${r.status} ${t}`);
+      }
+      const data = await r.json();
+      const rows = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
+      all.push(...rows);
+
+      const totalPages = Number(data?.pagination?.totalPages || 1);
+      if (page >= totalPages) break;
+      page += 1;
+    }
+
+    return all.map(m => ({
+      _id: m._id || m.id,
+      displayName: m.displayName || m.nickname || m.name || "",
+      nickname: m.nickname || "",
+      position: m.position || "",
+      role: m.role || ""
+    })).filter(m => m._id && m.displayName);
+  } catch (e) {
+    console.error("fetchAllMembersAPI failed:", e);
+    return [];
+  }
+}
+
+async function ensureMembersCacheFresh() {
+  const S = window.__proj = window.__proj || {};
+  const now = Date.now();
+  const ttl = 1000 * 60 * 5; // 5 นาที
+
+  if (Array.isArray(S.allMembers) && S.allMembers.length && S.allMembersFetchedAt && (now - S.allMembersFetchedAt < ttl)) {
+    return S.allMembers;
+  }
+  S.allMembers = await fetchAllMembersAPI();
+  S.allMembersFetchedAt = now;
+  return S.allMembers;
+}
+
+function openMemberSuggest(){ byId("m_nameList")?.classList.add("open"); }
+function closeMemberSuggest(){ byId("m_nameList")?.classList.remove("open"); }
+
+function filterMembersByKeyword(all, q){
+  const kw = String(q||"").trim().toLowerCase();
+  if (!kw) return all.slice(0, 30);
+  return all.filter(m=>{
+    const dn = String(m.displayName||"").toLowerCase();
+    const nn = String(m.nickname||"").toLowerCase();
+    const pos = String(m.position||"").toLowerCase();
+    return dn.includes(kw) || nn.includes(kw) || pos.includes(kw);
+  });
+}
+
+function renderMemberSuggest(items){
+  const box = byId("m_nameList");
+  if (!box) return;
+
+  if (!items.length){
+    box.innerHTML = `<div class="loading" style="padding:12px 12px;">ไม่พบชื่อที่ตรงกัน</div>`;
+    openMemberSuggest();
+    return;
+  }
+
+  box.innerHTML = "";
+  items.slice(0,30).forEach(m=>{
+    const div = document.createElement("div");
+    div.className = "ms-item";
+    div.innerHTML = `
+      <div class="ms-left">
+        <span class="ms-name" title="${escapeHtml(m.displayName)}">${escapeHtml(m.displayName)}</span>
+      </div>
+      <span class="ms-pos" title="${escapeHtml(m.position||"-")}">${escapeHtml(m.position||"-")}</span>
+    `;
+    div.onclick = ()=> selectMemberFromSuggest(m);
+    box.appendChild(div);
+  });
+  openMemberSuggest();
+}
+
+function selectMemberFromSuggest(m){
+  if (!m) return;
+  byId("m_memberId").value = String(m._id||"");
+  byId("m_name").value = String(m.displayName||"");
+  byId("m_pos").value = String(m.position||"");
+  closeMemberSuggest();
+}
+
+async function refreshMemberSuggest(){
+  const all = await ensureMembersCacheFresh();
+  const q = byId("m_name")?.value || "";
+  renderMemberSuggest(filterMembersByKeyword(all, q));
+}
+
+// bind once
+(function bindMemberAutocompleteOnce(){
+  if (window.__proj?.__memberAutoBound) return;
+  window.__proj.__memberAutoBound = true;
+
+  document.addEventListener("click", (e)=>{
+    const wrap = byId("m_name")?.closest(".member-autocomplete");
+    if (!wrap) return;
+    if (wrap.contains(e.target)) return;
+    closeMemberSuggest();
+  });
+
+  document.addEventListener("input", (e)=>{
+    if (e.target && e.target.id === "m_name"){
+      // พอพิมพ์ใหม่ → ล้าง id/pos (ต้องเลือกใหม่)
+      byId("m_memberId").value = "";
+      byId("m_pos").value = "";
+      refreshMemberSuggest();
+    }
+  });
+
+  document.addEventListener("focusin", (e)=>{
+    if (e.target && e.target.id === "m_name"){
+      refreshMemberSuggest();
+    }
+  });
+})();
+
+
 
 async function createMemberAPI(memberData) {
   // ✅ Backend อาจบังคับ/ไม่บังคับ role และ enum อาจต่างกัน
@@ -2595,7 +2763,14 @@ async function fetchAllProjectsTable() {
       // ดึง members ของแต่ละโปรเจค
       const members = await fetchProjectMembersAPI(p._id);
       peopleMap[key] = members.map(m => m.name);
-      // สามารถเพิ่ม mentor logic ตามต้องการ
+      // ✅ Mentor: ถ้าในโปรเจคมี member role=mentor ให้เอาชื่อมาแสดงใน col Mentor
+      const mentors = members.filter(m => {
+        const role = String(m.role || "").toLowerCase();
+        const pos = String(m.position || "").toLowerCase();
+        return role === "mentor" || pos.includes("mentor") || pos.includes("พี่เลี้ยง");
+      }).map(m => m.name).filter(Boolean);
+      mentorMap[key] = mentors;
+
     }
 
     window.__proj.mentorMap = mentorMap;
@@ -2976,6 +3151,7 @@ function renderTableWithCachedMentors(rows, mentorMap) {
       window.__proj.selectedProjectName = name;
       window.__proj.selectedProjectIdForMembers = pid; // ✅ ใช้ตอน add member / load members
 
+      byId("pageTitle").innerHTML = `<span class="dot"></span>${escapeHtml(name)}`;
       byId("btnBackAll").style.display = "inline-flex";
 
       byId("projectSection").style.display = "none";
@@ -2991,6 +3167,7 @@ function renderTableWithCachedMentors(rows, mentorMap) {
       document.body.classList.remove("in-members");
 
       window.__proj.selectedProjectName = "";
+      byId("pageTitle").innerHTML = `<span class="dot"></span> All Project`;
       byId("btnBackAll").style.display = "none";
 
       byId("memberSection").style.display = "none";
@@ -3073,7 +3250,11 @@ async function fetchPeopleTable() {
       byId("memberModalTitle").textContent = "Add Member";
       byId("m_name").value = "";
       byId("m_pos").value = "";
+      byId("m_memberId").value = "";
       byId("memberModal").classList.add("show");
+
+      // ✅ โหลด members เพื่อให้ค้นหา/เลือกชื่อได้
+      ensureMembersCacheFresh().then(()=>refreshMemberSuggest());
     }
 
     function openMemberEdit(row){
@@ -3087,7 +3268,10 @@ async function fetchPeopleTable() {
       byId("memberModalTitle").textContent = "Edit Member";
       byId("m_name").value = String(row.name || "");
       byId("m_pos").value = String(row.position || "");
+      byId("m_memberId").value = String(row.tag || "");
       byId("memberModal").classList.add("show");
+
+      ensureMembersCacheFresh().then(()=>refreshMemberSuggest());
     }
 
     function closeMemberModal(){ byId("memberModal").classList.remove("show"); }
@@ -3097,26 +3281,44 @@ async function submitMemberModal() {
   const projectId = String(window.__proj?.selectedProjectIdForMembers || "").trim();
   if (!projectId) { alert("ไม่พบ Project ID"); return; }
 
-  const name = byId("m_name").value.trim();
-  const pos = byId("m_pos").value.trim();
-  if (!name) { alert("กรอกชื่อ"); return; }
-  if (!pos) { alert("กรอกตำแหน่ง"); return; }
+  const typedName = (byId("m_name")?.value || "").trim();
+  const pickedId = (byId("m_memberId")?.value || "").trim();
+
+  // ✅ ต้องเลือกจากรายการ (ไม่ POST /members แล้ว)
+  let memberId = pickedId;
+
+  // fallback: ถ้าพิมพ์ชื่อแล้ว match ตรงเป๊ะ → จับ id ให้
+  if (!memberId && typedName) {
+    const all = await ensureMembersCacheFresh();
+    const hit = all.find(m => String(m.displayName || "").trim().toLowerCase() === typedName.toLowerCase());
+    if (hit) memberId = String(hit._id || "");
+  }
+
+  if (!memberId) {
+    alert("กรุณาเลือกชื่อจากรายการ (ระบบจะเติมตำแหน่งให้อัตโนมัติ)");
+    return;
+  }
 
   const btn = byId("btnMemberSave");
   btn.disabled = true;
 
   try {
     if (window.__proj.memberMode === "add") {
-      const newMember = await createMemberAPI({ name, position: pos });
-      await assignMemberToProjectAPI(projectId, newMember._id);
+      // ✅ Add: assign อย่างเดียว (ไม่สร้าง member ใหม่)
+      await assignMemberToProjectAPI(projectId, memberId);
     } else {
-      await updateMemberAPI(window.__proj.memberEditOldTag, { name, position: pos });
+      // ✅ Edit: เปลี่ยนคนในโปรเจค (remove เก่า + assign ใหม่)
+      const oldId = String(window.__proj.memberEditOldTag || "").trim();
+      if (oldId && oldId !== memberId) {
+        await removeMemberFromProjectAPI(projectId, oldId);
+        await assignMemberToProjectAPI(projectId, memberId);
+      }
     }
 
     closeMemberModal();
     await fetchPeopleTable();
   } catch (e) {
-    alert(`บันทึกไม่สำเร็จ: ${e.message}`);
+    alert(`บันทึกไม่สำเร็จ: ${e.message || e}`);
   } finally {
     btn.disabled = false;
   }

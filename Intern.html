@@ -63,740 +63,802 @@
       display: inline-block;
     }
 
-    .intern-wrapper .intern-controls {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-      padding: 14px;
-      background: #f8fafc;
-      border: 1px solid rgba(15, 23, 42, .08);
-      border-radius: 16px;
-      box-shadow: var(--shadow2);
-    }
-
-    .intern-wrapper .intern-controls input {
-      height: 44px;
-      padding: 0 14px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: #fff;
-      font-size: 14px;
-      font-weight: 900;
-      box-shadow: 0 6px 16px rgba(15, 23, 42, .06);
-      flex: 1 1 200px;
-      min-width: 200px;
-    }
-
-    .intern-wrapper .intern-controls input::placeholder {
-      color: #94a3b8;
-      font-weight: 900;
-    }
-
-    .intern-wrapper .intern-controls input:focus {
-      outline: none;
-      border-color: #111;
-      box-shadow: 0 10px 22px rgba(15, 23, 42, .10);
-    }
-
-    .intern-wrapper .intern-controls button {
-      height: 44px;
-      padding: 0 14px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: #fff;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 900;
-      box-shadow: 0 6px 16px rgba(15, 23, 42, .06);
-      transition: 0.2s;
-      white-space: nowrap;
-      flex: 0 1 auto;
-      min-width: fit-content;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    .intern-wrapper .intern-controls button:hover {
-      border-color: #cbd5e1;
-      background: #fafafa;
-    }
-
-    .intern-wrapper .manage-btn {
-      height: 44px;
-      padding: 0 18px;
-      border-radius: 14px;
-      border: none;
-      background: var(--btn);
-      color: #fff;
-      font-size: 14px;
-      font-weight: 900;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      box-shadow: var(--shadow2);
-      white-space: nowrap;
-      opacity: 1;
-      flex: 0 1 auto;
-      min-width: fit-content;
-      -webkit-appearance: none;
-      appearance: none;
-      -webkit-text-fill-color: #fff;
-      text-rendering: geometricPrecision;
-    }
-
-    .intern-wrapper .manage-btn span {
-      color: #fff;
-      -webkit-text-fill-color: #fff;
-      font-weight: inherit;
-    }
-
-    .intern-wrapper .manage-btn:hover {
-      background: var(--btnHover);
-    }
-
-    .intern-wrapper .manage-btn.active {
-      background: #10b981;
-    }
-
-    .intern-wrapper .intern-controls .manage-btn {
-      background: var(--btn);
-      color: #fff;
-      border: none;
-    }
-
-    .intern-wrapper .intern-controls .manage-btn:hover {
-      background: var(--btnHover);
-      color: #fff;
-      border: none;
-    }
-
-    .intern-wrapper .intern-controls .manage-btn.active {
-      background: #10b981;
-      color: #fff;
-    }
-
-    .intern-wrapper .intern-controls button:last-child {
-      background: #fff;
-      border: 1px solid rgba(15, 23, 42, .16);
-    }
-
-    .intern-wrapper .intern-controls button:last-child:hover {
-      background: #f1f5f9;
-      border-color: rgba(15, 23, 42, .22);
-    }
-
-    .intern-wrapper .intern-controls select {
-      display: none !important;
-    }
-
-    .intern-wrapper .custom-dropdown-intern {
-      position: relative;
-      flex: 0 1 auto;
-      width: 260px;
-      min-width: 180px;
-      max-width: 260px;
-    }
-
-    .intern-wrapper .dropdown-selected-intern {
-      padding: 12px 14px;
-      border-radius: 14px;
-      background: #fff;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-      border: 1px solid var(--border);
-      font-size: 14px;
-      font-weight: 900;
-      box-shadow: var(--shadow2);
-      width: 100%;
-      height: 44px;
-      gap: 10px;
-    }
-
-    .intern-wrapper #selectedPositionText {
-      display: block;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      max-width: calc(100% - 24px);
-    }
-
-    .intern-wrapper .dropdown-selected-intern:hover {
-      border-color: #cbd5e1;
-    }
-
-    .intern-wrapper .dropdown-items-intern {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      width: 100%;
-      background: #f1f5f9;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      margin-top: 8px;
-      max-height: 360px;
-      overflow-y: auto;
-      display: none;
-      z-index: 100;
-      padding: 10px;
-      box-shadow: var(--shadow);
-    }
-
-    .intern-wrapper .dropdown-items-intern.open {
-      display: block;
-    }
-
-    .intern-wrapper .dd-item-intern {
-      display: block;
-      padding: 12px 12px;
-      border-radius: 14px;
-      cursor: pointer;
-      font-size: 15px;
-      color: #111;
-      border: 1px solid rgba(15, 23, 42, .06);
-      background: #fff;
-      font-weight: 900;
-      white-space: normal;
-      word-break: normal;
-      overflow-wrap: anywhere;
-      line-height: 1.25;
-    }
-
-    .intern-wrapper .dd-item-intern+.dd-item-intern {
-      margin-top: 8px;
-    }
-
-    .intern-wrapper .dd-item-intern:hover {
-      background: #fafafa;
-      border-color: rgba(15, 23, 42, .12);
-    }
-
-    .intern-wrapper .status-dd {
-      position: relative;
-      display: inline-block;
-      width: 140px;
-    }
-
-    .intern-wrapper .status-selected {
-      height: 36px;
-      padding: 0 12px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      cursor: pointer;
-      box-shadow: var(--shadow2);
-      font-size: 13px;
-      font-weight: 900;
-      user-select: none;
-    }
-
-    .intern-wrapper .status-selected:hover {
-      border-color: #cbd5e1;
-      background: #fafafa;
-    }
-
-    .intern-wrapper .status-items {
-      position: fixed;
-      margin-top: 6px;
-      background: #f1f5f9;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 8px;
-      display: none;
-      z-index: 250;
-      box-shadow: var(--shadow);
-      min-width: 140px;
-    }
-
-    .intern-wrapper .status-items.open {
-      display: block;
-    }
-
-    .intern-wrapper .status-item {
-      padding: 10px 10px;
-      border-radius: 12px;
-      background: #fff;
-      cursor: pointer;
-      text-align: center;
-      border: 1px solid rgba(15, 23, 42, .06);
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .intern-wrapper .status-item+.status-item {
-      margin-top: 8px;
-    }
-
-    .intern-wrapper .status-item:hover {
-      background: #fafafa;
-      border-color: rgba(15, 23, 42, .12);
-    }
-
-    .intern-wrapper .table-wrap {
-      margin-top: 8px;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: var(--shadow2);
-      background: #fff;
-      display: flex;
-      flex-direction: column;
-      max-height: 100vh;
-    }
-
-    .intern-wrapper .table-header-wrapper {
-      overflow-x: auto;
-      overflow-y: hidden;
-      flex-shrink: 0;
-      scrollbar-width: none;
-    }
-
-    .intern-wrapper .table-header-wrapper::-webkit-scrollbar {
-      height: 0;
-    }
-
-    .intern-wrapper .table-body-wrapper {
-      overflow-y: auto;
-      overflow-x: auto;
-      flex: 1;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .intern-wrapper table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      table-layout: fixed;
-      min-width: 1020px;
-    }
-
-    .intern-wrapper table thead th {
-      background: #f8fafc;
-      font-weight: 900;
-      color: #111827;
-      border-bottom: 1px solid var(--border);
-      padding: 14px;
-      font-size: 14px;
-      text-align: center;
-      vertical-align: middle;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .intern-wrapper table tbody td {
-      padding: 14px;
-      font-size: 14px;
-      border-bottom: 1px solid rgba(15, 23, 42, .06);
-      text-align: center;
-      vertical-align: middle;
-      color: #333;
-    }
-
-    .intern-wrapper table tbody tr:nth-child(odd) {
-      background: #fff;
-    }
-
-    .intern-wrapper table tbody tr:nth-child(even) {
-      background: #fcfcfd;
-    }
-
-    .intern-wrapper table tbody tr:hover {
-      background: #f7fafc;
-    }
-
-    .intern-wrapper table input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-      accent-color: var(--btn);
-    }
-
-    .intern-wrapper table select {
-      padding: 6px 10px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 900;
-      cursor: pointer;
-      background: #fff;
-      box-shadow: var(--shadow2);
-    }
-
-    .intern-wrapper table select:focus {
-      outline: none;
-      border-color: var(--btn);
-      box-shadow: 0 10px 22px rgba(15, 23, 42, .10);
-    }
-
-    .intern-wrapper .delete-btn {
-      padding: 6px 10px;
-      border-radius: 10px;
-      border: 1px solid rgba(239, 68, 68, .35);
-      background: #fff1f2;
-      color: #b91c1c;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 900;
-      transition: 0.2s;
-    }
-
-    .intern-wrapper .delete-btn:hover {
-      filter: brightness(.95);
-    }
-
-    .intern-wrapper a {
-      color: #1a73e8;
-      text-decoration: none;
-    }
-
-    .intern-wrapper a:hover {
-      text-decoration: underline;
-    }
-
-    .intern-wrapper .loading {
-      text-align: center;
-      padding: 50px;
-      color: #999;
-      font-weight: 900;
-    }
-
-    .intern-wrapper .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 18px;
-      font-weight: 900;
-      margin: 20px 0 16px 0;
-      color: #111827;
-      letter-spacing: .2px;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .intern-wrapper .h3-actions {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .intern-wrapper .section-header button {
-      padding: 10px 14px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: #fff;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 900;
-      box-shadow: var(--shadow2);
-      transition: 0.2s;
-      white-space: nowrap;
-    }
-
-    .intern-wrapper .section-header button:hover {
-      border-color: #cbd5e1;
-      background: #fafafa;
-    }
-
-    .intern-wrapper #startingAddForm,
-    .intern-wrapper #endingAddForm,
-    .intern-wrapper #addInternForm {
-      display: none;
-      gap: 10px;
-      align-items: center;
-      margin-top: 14px;
-      padding: 14px;
-      background: #f8fafc;
-      border-radius: 12px;
-      flex-wrap: wrap;
-      border: 1px solid rgba(15, 23, 42, .08);
-    }
-
-    .intern-wrapper #startingAddForm.show,
-    .intern-wrapper #endingAddForm.show,
-    .intern-wrapper #addInternForm.show {
-      display: flex;
-    }
-
-    .intern-wrapper #startingAddForm input,
-    .intern-wrapper #endingAddForm input,
-    .intern-wrapper #addInternForm input {
-      height: 44px;
-      padding: 0 12px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: 900;
-      box-shadow: var(--shadow2);
-      flex: 1;
-      min-width: 160px;
-      background: #fff;
-    }
-
-    .intern-wrapper #startingAddForm input:focus,
-    .intern-wrapper #endingAddForm input:focus,
-    .intern-wrapper #addInternForm input:focus {
-      outline: none;
-      border-color: var(--btn);
-      box-shadow: 0 10px 22px rgba(15, 23, 42, .10);
-    }
-
-    .intern-wrapper #startingAddForm button,
-    .intern-wrapper #endingAddForm button,
-    .intern-wrapper #addInternForm button {
-      height: 44px;
-      padding: 0 14px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: #fff;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 900;
-      box-shadow: var(--shadow2);
-      transition: 0.2s;
-      white-space: nowrap;
-    }
-
-    .intern-wrapper #startingAddForm button:hover,
-    .intern-wrapper #endingAddForm button:hover,
-    .intern-wrapper #addInternForm button:hover {
-      background: #f7f7f7;
-      border-color: #cbd5e1;
-    }
-
-    @media (max-width: 1200px) {
-      .intern-wrapper .container {
-        padding: 20px;
-      }
-
-      .intern-wrapper .intern-controls {
-        flex-wrap: wrap;
-      }
-
-      .intern-wrapper .intern-controls input {
-        flex: 1 1 auto;
-        min-width: 160px;
-      }
-
-      .intern-wrapper .custom-dropdown-intern {
-        width: 220px;
-        min-width: 220px;
-        max-width: 220px;
-      }
-
-      .intern-wrapper #internManageBtn,
-      .intern-wrapper .intern-controls button:last-child {
-        flex: 0 0 auto;
-      }
-
-      .intern-wrapper table {
-        min-width: 1000px;
-      }
-    }
-
-    @media (max-width: 920px) {
-      .intern-wrapper .container {
-        padding: 18px;
-        margin: 0 auto 18px;
-      }
-
-      .intern-wrapper .title {
-        font-size: 22px;
-      }
-
-      .intern-wrapper .section-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-      }
-
-      .intern-wrapper .h3-actions {
-        width: 100%;
-        justify-content: flex-start;
-      }
-
-      .intern-wrapper .intern-controls {
-        padding: 12px;
-        flex-direction: column;
-      }
-
-      .intern-wrapper .intern-controls input {
-        width: 100%;
-        order: 1;
-      }
-
-      .intern-wrapper .custom-dropdown-intern {
-        width: 100%;
-        max-width: none;
-        order: 2;
-      }
-
-      .intern-wrapper #internManageBtn {
-        width: 100%;
-        order: 3;
-      }
-
-      .intern-wrapper .intern-controls button:last-child {
-        width: 100%;
-        order: 4;
-      }
-
-      .intern-wrapper table th,
-      .intern-wrapper table td {
-        padding: 12px 10px;
-        font-size: 13px;
-      }
-
-      .intern-wrapper .table-wrap {
-        max-height: 500px;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .intern-wrapper .container {
-        padding: 16px;
-        border-radius: 14px;
-      }
-
-      .intern-wrapper .title {
-        font-size: 20px;
-        margin-bottom: 12px;
-      }
-
-      .intern-wrapper .intern-controls {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        padding: 12px;
-      }
-
-      .intern-wrapper .intern-controls input {
-        width: 100%;
-        height: 48px;
-        font-size: 15px;
-        order: 1;
-      }
-
-      .intern-wrapper .custom-dropdown-intern {
-        width: 100%;
-        order: 2;
-      }
-
-      .intern-wrapper .dropdown-selected-intern {
-        height: 48px;
-        font-size: 15px;
-      }
-
-      .intern-wrapper #internManageBtn {
-        width: 100%;
-        height: 48px;
-        font-size: 15px;
-        order: 3;
-      }
-
-      .intern-wrapper .intern-controls button:last-child {
-        width: 100%;
-        height: 48px;
-        font-size: 15px;
-        order: 4;
-      }
-
-      .intern-wrapper .status-dd {
-        width: 130px;
-      }
-
-      .intern-wrapper .table-wrap {
-        max-height: 450px;
-      }
-
-      .intern-wrapper #startingAddForm,
-      .intern-wrapper #endingAddForm,
-      .intern-wrapper #addInternForm {
-        padding: 12px;
-        gap: 8px;
-      }
-
-      .intern-wrapper #startingAddForm input,
-      .intern-wrapper #endingAddForm input,
-      .intern-wrapper #addInternForm input {
-        min-width: 140px;
-        height: 48px;
-        font-size: 15px;
-      }
-
-      .intern-wrapper #startingAddForm button,
-      .intern-wrapper #endingAddForm button,
-      .intern-wrapper #addInternForm button {
-        height: 48px;
-        font-size: 15px;
-      }
-
-      .intern-wrapper .section-header button {
-        height: 44px;
-        font-size: 14px;
-        padding: 0 16px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .intern-wrapper .container {
-        padding: 14px;
-        margin: 0 auto 16px;
-      }
-
-      .intern-wrapper .title {
-        font-size: 20px;
-        margin-bottom: 14px;
-      }
-
-      .intern-wrapper .intern-controls {
-        padding: 12px;
-        gap: 10px;
-      }
-
-      .intern-wrapper .intern-controls input {
-        height: 52px;
-        font-size: 17px;
-      }
-
-      .intern-wrapper .intern-controls button,
-      .intern-wrapper .manage-btn {
-        height: 52px;
-        font-size: 17px;
-      }
-
-      .intern-wrapper .section-header {
-        font-size: 17px;
-        margin: 18px 0 12px 0;
-      }
-
-      .intern-wrapper table {
-        min-width: 880px;
-      }
-
-      .intern-wrapper table thead th {
-        font-size: 12px;
-        padding: 10px 6px;
-      }
-
-      .intern-wrapper table tbody td {
-        padding: 10px 6px;
-        font-size: 12px;
-      }
-    }
+    /* =========================================================
+     ✅ CONTROLS ROW - ปรับให้ flex items เท่ากัน
+     ========================================================= */
+
+.intern-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  padding: 14px;
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, .08);
+  border-radius: 16px;
+  box-shadow: var(--shadow2);
+}
+
+.intern-controls input {
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: #fff;
+  font-size: 14px;
+  font-weight: 900;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, .06);
+  flex: 1 1 200px;
+  min-width: 200px;
+}
+
+.intern-controls input::placeholder {
+  color: #94a3b8;
+  font-weight: 900;
+}
+
+.intern-controls input:focus {
+  outline: none;
+  border-color: #111;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, .10);
+}
+
+.intern-controls button {
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 900;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, .06);
+  transition: 0.2s;
+  white-space: nowrap;
+  flex: 0 1 auto;
+  min-width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.intern-controls button:hover {
+  border-color: #cbd5e1;
+  background: #fafafa;
+}
+
+/* ปุ่ม เพิ่ม/ลดงาน */
+.manage-btn {
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 14px;
+  border: none;
+  background: var(--btn);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: var(--shadow2);
+  white-space: nowrap;
+  opacity: 1;
+  flex: 0 1 auto;
+  min-width: fit-content;
+}
+
+button.manage-btn {
+  -webkit-appearance: none;
+  appearance: none;
+  border: none;
+  outline: none;
+  -webkit-text-fill-color: #fff;
+  text-rendering: geometricPrecision;
+  background-color: var(--btn);
+  color: #fff;
+}
+
+button.manage-btn span {
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+  font-weight: inherit;
+}
+
+.manage-btn:hover {
+  background: var(--btnHover);
+}
+
+.manage-btn.active {
+  background: #10b981;
+}
+
+.intern-controls .manage-btn {
+  background: var(--btn);
+  color: #fff;
+  border: none;
+}
+
+.intern-controls .manage-btn:hover {
+  background: var(--btnHover);
+  color: #fff;
+  border: none;
+}
+
+.intern-controls .manage-btn.active {
+  background: #10b981;
+  color: #fff;
+}
+
+.intern-controls button:last-child {
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, .16);
+}
+
+.intern-controls button:last-child:hover {
+  background: #f1f5f9;
+  border-color: rgba(15, 23, 42, .22);
+}
+
+/* =========================================================
+ ✅ CUSTOM DROPDOWN (ตำแหน่ง)
+ ========================================================= */
+
+.intern-controls select {
+  display: none !important;
+}
+
+.custom-dropdown-intern {
+  position: relative;
+  flex: 0 1 auto;
+  width: 260px;
+  min-width: 180px;
+  max-width: 260px;
+}
+
+.dropdown-selected-intern {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  font-size: 14px;
+  font-weight: 900;
+  box-shadow: var(--shadow2);
+  width: 100%;
+  height: 44px;
+  gap: 10px;
+}
+
+#selectedPositionText {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: calc(100% - 24px);
+}
+
+.dropdown-selected-intern:hover {
+  border-color: #cbd5e1;
+}
+
+.dropdown-items-intern {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: #f1f5f9;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  margin-top: 8px;
+  max-height: 360px;
+  overflow-y: auto;
+  display: none;
+  z-index: 100;
+  padding: 10px;
+  box-shadow: var(--shadow);
+}
+
+.dropdown-items-intern.open {
+  display: block;
+}
+
+.dd-item-intern {
+  display: block;
+  padding: 12px 12px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 15px;
+  color: #111;
+  border: 1px solid rgba(15, 23, 42, .06);
+  background: #fff;
+  font-weight: 900;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.25;
+}
+
+.dd-item-intern+.dd-item-intern {
+  margin-top: 8px;
+}
+
+.dd-item-intern:hover {
+  background: #fafafa;
+  border-color: rgba(15, 23, 42, .12);
+}
+
+/* =========================================================
+ ✅ STATUS DROPDOWN (custom)
+ ========================================================= */
+.status-dd {
+  position: relative;
+  display: inline-block;
+  width: 140px;
+}
+
+.status-selected {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: var(--shadow2);
+  font-size: 13px;
+  font-weight: 900;
+  user-select: none;
+}
+
+.status-selected:hover {
+  border-color: #cbd5e1;
+  background: #fafafa;
+}
+
+.status-items {
+  position: fixed;
+  margin-top: 6px;
+  background: #f1f5f9;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 8px;
+  display: none;
+  z-index: 250;
+  box-shadow: var(--shadow);
+  min-width: 140px;
+}
+
+.status-items.open {
+  display: block;
+}
+
+.status-item {
+  padding: 10px 10px;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  text-align: center;
+  border: 1px solid rgba(15, 23, 42, .06);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.status-item+.status-item {
+  margin-top: 8px;
+}
+
+.status-item:hover {
+  background: #fafafa;
+  border-color: rgba(15, 23, 42, .12);
+}
+
+/* =========================================================
+ TABLE WRAPPER
+ ========================================================= */
+.table-wrap {
+  margin-top: 8px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: var(--shadow2);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  max-height: 100vh;
+}
+
+.table-header-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex-shrink: 0;
+  scrollbar-width: none;
+}
+
+.table-header-wrapper::-webkit-scrollbar {
+  height: 0;
+}
+
+.table-body-wrapper {
+  overflow-y: auto;
+  overflow-x: auto;
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  min-width: 1020px;
+}
+
+table thead th {
+  background: #f8fafc;
+  font-weight: 900;
+  color: #111827;
+  border-bottom: 1px solid var(--border);
+  padding: 14px;
+  font-size: 14px;
+  text-align: center;
+  vertical-align: middle;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+table tbody td {
+  padding: 14px;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(15, 23, 42, .06);
+  text-align: center;
+  vertical-align: middle;
+  color: #333;
+}
+
+table tbody tr:nth-child(odd) {
+  background: #fff;
+}
+
+table tbody tr:nth-child(even) {
+  background: #fcfcfd;
+}
+
+table tbody tr:hover {
+  background: #f7fafc;
+}
+
+table input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--btn);
+}
+
+table select {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  background: #fff;
+  box-shadow: var(--shadow2);
+}
+
+table select:focus {
+  outline: none;
+  border-color: var(--btn);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, .10);
+}
+
+.delete-btn {
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(239, 68, 68, .35);
+  background: #fff1f2;
+  color: #b91c1c;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 900;
+  transition: 0.2s;
+}
+
+.delete-btn:hover {
+  filter: brightness(.95);
+}
+
+a {
+  color: #1a73e8;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.loading {
+  text-align: center;
+  padding: 50px;
+  color: #999;
+  font-weight: 900;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 900;
+  margin: 20px 0 16px 0;
+  color: #111827;
+  letter-spacing: .2px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.h3-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.section-header button {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 900;
+  box-shadow: var(--shadow2);
+  transition: 0.2s;
+  white-space: nowrap;
+}
+
+.section-header button:hover {
+  border-color: #cbd5e1;
+  background: #fafafa;
+}
+
+#startingAddForm,
+#endingAddForm,
+#addInternForm {
+  display: none;
+  gap: 10px;
+  align-items: center;
+  margin-top: 14px;
+  padding: 14px;
+  background: #f8fafc;
+  border-radius: 12px;
+  flex-wrap: wrap;
+  border: 1px solid rgba(15, 23, 42, .08);
+}
+
+#startingAddForm.show,
+#endingAddForm.show,
+#addInternForm.show {
+  display: flex;
+}
+
+#startingAddForm input,
+#endingAddForm input,
+#addInternForm input {
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 900;
+  box-shadow: var(--shadow2);
+  flex: 1;
+  min-width: 160px;
+  background: #fff;
+
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+
+
+
+/* ✅ ให้ select สวยเหมือน input */
+#startingAddForm select,
+#endingAddForm select,
+#addInternForm select {
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 900;
+  box-shadow: var(--shadow2);
+  flex: 1;
+  min-width: 160px;
+  background: #fff;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+#startingAddForm input:focus,
+#endingAddForm input:focus,
+#addInternForm input:focus {
+  outline: none;
+  border-color: var(--btn);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, .10);
+}
+
+
+#startingAddForm select:focus,
+#endingAddForm select:focus,
+#addInternForm select:focus {
+  outline: none;
+  border-color: var(--btn);
+  box-shadow: 0 0 0 3px rgba(17,17,17,.08);
+}
+#startingAddForm button,
+#endingAddForm button,
+#addInternForm button {
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 900;
+  box-shadow: var(--shadow2);
+  transition: 0.2s;
+  white-space: nowrap;
+}
+
+#startingAddForm button:hover,
+#endingAddForm button:hover,
+#addInternForm button:hover {
+  background: #f7f7f7;
+  border-color: #cbd5e1;
+}
+
+/* =========================================================
+ RESPONSIVE - ปรับให้ input search มีความกว้างเท่ากับปุ่ม
+ ========================================================= */
+
+@media (max-width: 1200px) {
+  .container {
+    padding: 20px;
+  }
+
+  .intern-controls {
+    flex-wrap: wrap;
+  }
+
+  .intern-controls input {
+    flex: 1 1 auto;
+    min-width: 160px;
+  }
+
+  .custom-dropdown-intern {
+    width: 220px;
+    min-width: 220px;
+    max-width: 220px;
+  }
+
+  #internManageBtn,
+  .intern-controls button:last-child {
+    flex: 0 0 auto;
+  }
+
+  table {
+    min-width: 1000px;
+  }
+}
+
+@media (max-width: 920px) {
+  .container {
+    padding: 18px;
+    margin: 0 auto 18px;
+  }
+
+  .title {
+    font-size: 22px;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .h3-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .intern-controls {
+    padding: 12px;
+    flex-direction: column;
+  }
+
+  .intern-controls input {
+    width: 100%;
+    order: 1;
+  }
+
+  .custom-dropdown-intern {
+    width: 100%;
+    max-width: none;
+    order: 2;
+  }
+
+  #internManageBtn {
+    width: 100%;
+    order: 3;
+  }
+
+  .intern-controls button:last-child {
+    width: 100%;
+    order: 4;
+  }
+
+  table th,
+  table td {
+    padding: 12px 10px;
+    font-size: 13px;
+  }
+
+  .table-wrap {
+    max-height: 500px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .title {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  .intern-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .intern-controls input {
+    width: 100%;
+    height: 48px;
+    font-size: 15px;
+    order: 1;
+  }
+
+  .custom-dropdown-intern {
+    width: 100%;
+    order: 2;
+  }
+
+  .dropdown-selected-intern {
+    height: 48px;
+    font-size: 15px;
+  }
+
+  #internManageBtn {
+    width: 100%;
+    height: 48px;
+    font-size: 15px;
+    order: 3;
+  }
+
+  .intern-controls button:last-child {
+    width: 100%;
+    height: 48px;
+    font-size: 15px;
+    order: 4;
+  }
+
+  .status-dd {
+    width: 130px;
+  }
+
+  .table-wrap {
+    max-height: 450px;
+  }
+
+  #startingAddForm,
+  #endingAddForm,
+  #addInternForm {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  #startingAddForm input,
+  #endingAddForm input,
+  #addInternForm input {
+    min-width: 140px;
+    height: 48px;
+    font-size: 15px;
+  }
+
+  #startingAddForm button,
+  #endingAddForm button,
+  #addInternForm button {
+    height: 48px;
+    font-size: 15px;
+  }
+
+  .section-header button {
+    height: 44px;
+    font-size: 14px;
+    padding: 0 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 14px;
+    margin: 0 auto 16px;
+  }
+
+  .title {
+    font-size: 20px;
+    margin-bottom: 14px;
+  }
+
+  .intern-controls {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .intern-controls input {
+    height: 52px;
+    font-size: 17px;
+  }
+
+  .intern-controls button,
+  .manage-btn {
+    height: 52px;
+    font-size: 17px;
+  }
+
+  .section-header {
+    font-size: 17px;
+    margin: 18px 0 12px 0;
+  }
+
+  table {
+    min-width: 880px;
+  }
+
+  table thead th {
+    font-size: 12px;
+    padding: 10px 6px;
+  }
+
+  table tbody td {
+    padding: 10px 6px;
+    font-size: 12px;
+  }
+}
   </style>
 
 </head>
@@ -836,34 +898,29 @@
         </button>
       </div>
 
-      <div class="table-wrap">
-        <div class="table-header-wrapper">
-          <table>
-            <!-- Table Header -->
-            <colgroup>
-              <col style="width:120px;"> <!-- ชื่อ -->
-              <col style="width:150px;"> <!-- ตำแหน่ง -->
-              <col style="width:70px;"> <!-- เช้า -->
-              <col style="width:70px;"> <!-- บ่าย -->
-              <col style="width:140px;"> <!-- สถานะ -->
-              <col style="width:200px;"> <!-- หมายเหตุ -->
-              <col style="width:180px;"> <!-- ไฟล์อัปเดตงาน -->
-              <col id="internActionsHeaderCol" style="width:100px; display:none;"> <!-- ลบ -->
-            </colgroup>
-            <thead>
-              <tr>
-                <th>ชื่อ</th>
-                <th>ตำแหน่ง</th>
-                <th>เช้า</th>
-                <th>บ่าย</th>
-                <th>สถานะ</th>
-                <th>หมายเหตุ</th>
-                <th>ไฟล์อัปเดตงาน</th>
-                <th id="internActionsHeader" style="display:none;">ลบ</th>
-              </tr>
-            </thead>
-          </table>
-        </div>
+    <!-- ✅ เพิ่มฟอร์ม inline สำหรับเพิ่มเด็กฝึกงาน -->
+    <div id="addInternForm">
+      <input type="text" id="newInternName" placeholder="ชื่อเด็กฝึกงาน">
+      <input type="text" id="newInternPosition" placeholder="ตำแหน่ง" list="addInternPositionDatalist">
+      <datalist id="addInternPositionDatalist"></datalist>
+      <input type="text" id="newInternNote" placeholder="หมายเหตุ (ไม่บังคับ)">
+      <input type="text" id="newInternNickname" placeholder="ชื่อเล่น (ไม่บังคับ)">
+      <select id="newInternRole" title="Role">
+        <option value="intern" selected="">INTERN</option>
+        <option value="fulltime">FULLTIME</option>
+        <option value="mentor">MENTOR</option>
+        <option value="admin">ADMIN</option>
+      </select>
+      <input type="url" id="newInternDocsUpdateWorks" placeholder="docsUpdateWorks (URL) (ไม่บังคับ)">
+      <button onclick="addNewInternSubmit()">
+        <img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" alt="check" style="width:16px;height:16px;">
+        เพิ่ม
+      </button>
+      <button onclick="hideAddInternForm()">
+        <img src="https://img.icons8.com/?size=100&id=QlMnqMXDMws3&format=png&color=000000" alt="close" style="width:16px;height:16px;">
+        ยกเลิก
+      </button>
+    </div>
 
         <div class="table-body-wrapper">
           <table>
@@ -1320,30 +1377,27 @@
         function escapeAttr(str) {
           return String(str ?? "").replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("'", "&#039;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
         }
+        return { success: true };
+      } catch (err) {
+        console.error("saveInternEnding error:", err);
+        return { success: false, message: err.message };
+      }
+    },
 
-        window.reloadInternTab = function () {
-          S.internData = [];
-          S.internFiltered = [];
-          S.internStartingData = [];
-          S.internEndingData = [];
-          window.loadInternTab(true);
+    async addNewIntern(member) {
+      try {
+        // ✅ Backend หลายตัว "ต้องการ role" และอาจไม่รู้จัก field docsUpdateWorks
+        // เราเลยส่งเฉพาะ field มาตรฐาน + role intern
+        const basePayload = {
+          displayName: (member?.displayName || "").toString().trim(),
+          nickname: (member?.nickname || "").toString().trim() || undefined,
+          position: (member?.position || "").toString().trim() || undefined,
+          note: (member?.note || "").toString().trim() || undefined,
+          docsUpdateWorks: (member?.docsUpdateWorks || "").toString().trim() || undefined,
+          role: (member?.role || "intern").toString().trim().toLowerCase()
         };
 
-        window.clearInternFilters = function () {
-          const searchInput = document.getElementById("internSearch");
-          if (searchInput) searchInput.value = "";
-          S.selectedPosition = "";
-          const selectedText = document.getElementById("selectedPositionText");
-          if (selectedText) selectedText.textContent = "ตำแหน่งทั้งหมด";
-          const dropdownItems = document.getElementById("positionDropdownItems");
-          if (dropdownItems) dropdownItems.classList.remove("open");
-          window.filterInterns();
-        };
-
-        window.togglePositionDropdown = function () {
-          const items = document.getElementById("positionDropdownItems");
-          if (items) items.classList.toggle("open");
-        };
+        const attempts = [ basePayload ];
 
         window.selectPosition = function (value, label) {
           S.selectedPosition = value || "";
@@ -1386,41 +1440,13 @@
           renderInternTable();
         };
 
-        window.loadInternTab = function () {
-          fetchInternMain();
-          fetchStarting();
-          fetchEnding();
-        };
-
-        window.toggleStartingAdd = function () {
-          const form = document.getElementById("startingAddForm");
-          if (!form) return;
-          form.classList.toggle("show");
-        };
-
-        window.toggleEndingAdd = function () {
-          const form = document.getElementById("endingAddForm");
-          if (!form) return;
-          form.classList.toggle("show");
-        };
-
-        window.toggleEditStarting = function () {
-          S.editingStarting = !S.editingStarting;
-          const btn = document.getElementById("editStartingBtn");
-          const col = document.getElementById("startingActionCol");
-          if (btn) {
-            btn.innerHTML = S.editingStarting ? '<img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" alt="check" style="width:14px;height:14px;"> เสร็จ' : '<img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" alt="edit" style="width:14px;height:14px;"> แก้ไข';
-          }
-          if (col) col.style.display = S.editingStarting ? "table-cell" : "none";
-          renderInternStartingTable();
-        };
-
-        window.toggleEditEnding = function () {
-          S.editingEnding = !S.editingEnding;
-          const btn = document.getElementById("editEndingBtn");
-          const col = document.getElementById("endingActionCol");
-          if (btn) {
-            btn.innerHTML = S.editingEnding ? '<img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" alt="check" style="width:14px;height:14px;"> เสร็จ' : '<img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" alt="edit" style="width:14px;height:14px;"> แก้ไข';
+            // ✅ เก็บ docsUpdateWorks ไว้ local ต่อ memberId (ไม่พัง DTO ฝั่ง backend)
+            const id = String(created?._id || created?.id || "");
+            const duw = String(payload?.docsUpdateWorks || "").trim();
+            if (id && duw) {
+              writeMeta(id, { docsUpdateWorks: duw });
+            }
+            return { success: true, created };
           }
           if (col) col.style.display = S.editingEnding ? "table-cell" : "none";
           renderInternEndingTable();
@@ -1515,201 +1541,18 @@
           tbody.innerHTML = html;
         }
 
-        function rowInternHtml(i) {
-          const rawName = String(i.displayName || "");
-          const rawPos = String(i.position || "");
-          const memberId = String(i._id || "");
-          const meta = i._meta || {};
+        return { success: false, message: lastTxt || "เพิ่มไม่สำเร็จ" };
+      } catch (err) {
+        return { success: false, message: err.message };
+      }
+    },
 
-          const rawStatus = String(meta.status || i.status || "ทำงาน");
-          const rawNote = String(i.note || "");
-          const rawFileLink = String(meta.fileLink || i.fileLink || "");
-
-          const name = escapeHtml(rawName);
-          const position = escapeHtml(rawPos);
-          const note = escapeHtml(rawNote);
-
-          const morningChecked = meta.morning ? "checked" : "";
-          const noonChecked = meta.noon ? "checked" : "";
-
-          const morning = '<input type="checkbox" ' + morningChecked +
-            ' onchange="onInternCheckChange(\'' + escapeAttr(memberId) + '\', \'D\', this.checked)">';
-          const noon = '<input type="checkbox" ' + noonChecked +
-            ' onchange="onInternCheckChange(\'' + escapeAttr(memberId) + '\', \'E\', this.checked)">';
-
-          const status =
-            '<div class="status-dd" data-id="' + escapeAttr(memberId) + '" data-value="' + escapeAttr(rawStatus) + '">' +
-            '<div class="status-selected" onclick="toggleStatusDD(this)">' +
-            '<span class="status-text">' + escapeHtml(rawStatus) + '</span><span>▾</span>' +
-            '</div>' +
-            '<div class="status-items">' +
-            '<div class="status-item" onclick="selectStatusDD(this, \'ทำงาน\')">ทำงาน</div>' +
-            '<div class="status-item" onclick="selectStatusDD(this, \'ลา\')">ลา</div>' +
-            '<div class="status-item" onclick="selectStatusDD(this, \'ไม่มาทำงาน\')">ไม่มาทำงาน</div>' +
-            '<div class="status-item" onclick="selectStatusDD(this, \'จบแล้ว\')">จบแล้ว</div>' +
-            '</div>' +
-            '</div>';
-
-          let fileCell = '<span style="color:#999;">-</span>';
-          if (rawFileLink.trim()) {
-            const url = escapeAttr(rawFileLink.trim());
-            fileCell = '<a href="' + url + '" target="_blank" rel="noopener">📄 อัปเดตงาน</a>';
-          }
-
-          let actionCell = "";
-          if (S.internManageMode) {
-            actionCell =
-              '<td style="text-align: center;">' +
-              '<button onclick="deleteIntern(\'' + escapeAttr(memberId) + '\', \'' + escapeAttr(rawName) + '\')" ' +
-              'style="background: none; border: none; cursor: pointer; color: #ef4444;">' +
-              '<img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000" alt="Delete" style="width: 20px; height: 20px;">' +
-              '</button>' +
-              '</td>';
-          }
-
-          return '<tr>' +
-            '<td><b>' + name + '</b></td>' +
-            '<td>' + position + '</td>' +
-            '<td>' + morning + '</td>' +
-            '<td>' + noon + '</td>' +
-            '<td>' + status + '</td>' +
-            '<td>' + note + '</td>' +
-            '<td>' + fileCell + '</td>' +
-            actionCell +
-            '</tr>';
-        }
-
-        function renderInternStartingTable() {
-          const tbody = document.getElementById("internStartingBody");
-          if (!tbody) return;
-          const colSpan = S.editingStarting ? 6 : 5;
-          if (!S.internStartingData || !S.internStartingData.length) { tbody.innerHTML = '<tr><td colspan="' + colSpan + '" style="text-align:center;color:#999;">ไม่มีข้อมูล</td></tr>'; return; }
-          let html = "";
-          S.internStartingData.forEach(function (i, idx) {
-            const nick = (i.nickName ?? i.nickname ?? "");
-            const date = (i.date ?? i.dateRange ?? "");
-            const notified = !!(i.notified || i.notifyStatus);
-            html += '<tr><td>' + escapeHtml(i.fullName || "") + '</td><td>' + escapeHtml(nick) + '</td><td>' + escapeHtml(i.position || "") + '</td><td style="text-align:center;">' + (escapeHtml(date) || "-") + '</td><td style="text-align:center;"><input type="checkbox" ' + (notified ? "checked" : "") + ' onchange="toggleStartingNotified(' + idx + ')"></td>';
-            if (S.editingStarting) { html += '<td style="text-align:center;"><button class="delete-btn" onclick="deleteStartingIntern(' + idx + ')"><img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000" alt="trash" style="width:14px;height:14px;"></button></td>'; }
-            html += '</tr>';
-          });
-          tbody.innerHTML = html;
-        }
-
-        function renderInternEndingTable() {
-          const tbody = document.getElementById("internEndingBody");
-          if (!tbody) return;
-          const colSpan = S.editingEnding ? 6 : 5;
-          if (!S.internEndingData || !S.internEndingData.length) { tbody.innerHTML = '<tr><td colspan="' + colSpan + '" style="text-align:center;color:#999;">ไม่มีข้อมูล</td></tr>'; return; }
-          let html = "";
-          S.internEndingData.forEach(function (i, idx) {
-            const nick = (i.nickName ?? i.nickname ?? "");
-            const date = (i.date ?? i.dateRange ?? "");
-            const notified = !!(i.notified || i.notifyStatus);
-            html += '<tr><td>' + escapeHtml(i.fullName || "") + '</td><td>' + escapeHtml(nick) + '</td><td>' + escapeHtml(i.position || "") + '</td><td style="text-align:center;">' + (escapeHtml(date) || "-") + '</td><td style="text-align:center;"><input type="checkbox" ' + (notified ? "checked" : "") + ' onchange="toggleEndingNotified(' + idx + ')"></td>';
-            if (S.editingEnding) { html += '<td style="text-align:center;"><button class="delete-btn" onclick="deleteEndingIntern(' + idx + ')"><img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000" alt="trash" style="width:14px;height:14px;"></button></td>'; }
-            html += '</tr>';
-          });
-          tbody.innerHTML = html;
-        }
-
-        async function fetchInternMain() {
-          try {
-            console.log("[Intern] fetchInternMain started");
-            const result = await window.BACKEND.getInternData(1, 100);
-            console.log("[Intern] getInternData result:", result);
-
-            const items = Array.isArray(result.items) ? result.items : [];
-            console.log("[Intern] items count:", items.length);
-
-            // ✅ ผสาน meta (เช้า/บ่าย/สถานะ) จาก localStorage
-            items.forEach(function (it) {
-              const id = String(it?._id || "");
-              it._meta = id ? readMeta(id) : {};
-            });
-
-            S.internData = items;
-            S.internFiltered = S.internData.slice();
-
-            const posSet = new Set();
-            S.internData.forEach(function (i) { if (i.position) posSet.add(i.position); });
-            S.positions = Array.from(posSet).sort(function (a, b) { return String(a).localeCompare(String(b), "th"); });
-
-            console.log("[Intern] positions found:", S.positions);
-            window.updatePositionDropdown();
-            updateAddInternPositionDatalist();
-            renderInternTable();
-          } catch (err) {
-            console.error("[Intern] fetchInternMain error:", err);
-            S.internData = [];
-            S.internFiltered = [];
-            S.positions = [];
-            window.updatePositionDropdown();
-            renderInternTable();
-          }
-        }
-
-        async function fetchStarting() {
-          try {
-            S.internStartingData = await window.BACKEND.getInternStarting();
-            renderInternStartingTable();
-          } catch (e) {
-            S.internStartingData = [];
-            renderInternStartingTable();
-          }
-        }
-
-        async function fetchEnding() {
-          try {
-            S.internEndingData = await window.BACKEND.getInternEnding();
-            renderInternEndingTable();
-          } catch (e) {
-            S.internEndingData = [];
-            renderInternEndingTable();
-          }
-        }
-
-        async function saveStartingToStore() {
-          const res = await window.BACKEND.saveInternStarting(S.internStartingData);
-          if (!res?.success) console.warn("บันทึก starting ไม่สำเร็จ");
-        }
-
-        async function saveEndingToStore() {
-          const res = await window.BACKEND.saveInternEnding(S.internEndingData);
-          if (!res?.success) console.warn("บันทึก ending ไม่สำเร็จ");
-        }
-
-        function updateAddInternPositionDatalist() {
-          const dl = document.getElementById("addInternPositionDatalist");
-          if (!dl) return;
-          dl.innerHTML = "";
-          (S.positions || []).forEach(function (pos) {
-            const opt = document.createElement("option");
-            opt.value = pos;
-            dl.appendChild(opt);
-          });
-        }
-
-        window.addNewInternSubmit = async function () {
-          const name = (document.getElementById("newInternName")?.value || "").trim();
-          const position = (document.getElementById("newInternPosition")?.value || "").trim();
-          const note = (document.getElementById("newInternNote")?.value || "").trim();
-          const fileLink = (document.getElementById("newInternFileLink")?.value || "").trim();
-          if (!name || !position) { alert("กรุณากรอกชื่อและตำแหน่ง"); return; }
-          try {
-            const res = await window.BACKEND.addNewIntern(name, position, note, fileLink);
-            if (res?.success) {
-              document.getElementById("newInternName").value = "";
-              document.getElementById("newInternPosition").value = "";
-              document.getElementById("newInternNote").value = "";
-              document.getElementById("newInternFileLink").value = "";
-              window.reloadInternTab();
-            } else {
-              alert(res?.message || "เพิ่มไม่สำเร็จ");
-            }
-          } catch (err) {
-            alert("เกิดข้อผิดพลาด: " + (err?.message || err));
-          }
+    async updateIntern(memberId, name, position, note, docsUpdateWorks) {
+      try {
+        const memberData = {
+          displayName: name,
+          position: position,
+          note: note
         };
 
         window.hideAddInternForm = function () {
@@ -1745,66 +1588,11 @@
           }
         }
 
-        window.toggleStatusDD = function (el) {
-          const items = el ? el.nextElementSibling : null;
-          if (!items) return;
-          document.querySelectorAll(".status-items.open").forEach(function (other) {
-            if (other !== items) other.classList.remove("open");
-          });
-          const willOpen = !items.classList.contains("open");
-          items.classList.toggle("open");
-          if (willOpen) {
-            const rect = el.getBoundingClientRect();
-            items.style.top = (rect.bottom + 6) + "px";
-            items.style.left = rect.left + "px";
-          }
-        };
-
-        window.selectStatusDD = function (el, value) {
-          const wrap = el ? el.closest(".status-dd") : null;
-          if (!wrap) return;
-          const memberId = wrap.dataset.id;
-          wrap.dataset.value = value;
-          const textEl = wrap.querySelector(".status-text");
-          if (textEl) textEl.textContent = value;
-          const items = wrap.querySelector(".status-items");
-          if (items) items.classList.remove("open");
-          onInternStatusChange(memberId, value);
-        };
-
-        document.addEventListener("click", function (e) {
-          document.querySelectorAll(".status-items.open").forEach(function (items) {
-            if (!items.parentElement.contains(e.target)) items.classList.remove("open");
-          });
-        }, true);
-
-        window.deleteIntern = async function (memberId, name) {
-          if (!confirm('ยืนยันลบ "' + name + '" ?')) return;
-          try {
-            const res = await window.BACKEND.deleteIntern(memberId);
-            if (res?.success) window.reloadInternTab();
-            else alert(res?.message || "ลบไม่สำเร็จ");
-          } catch (err) {
-            alert("เกิดข้อผิดพลาด: " + (err?.message || err));
-          }
-        };
-
-        window.initIntern = function () {
-          console.log("[Intern] initIntern called");
-          if (typeof window.loadInternTab === "function") {
-            window.loadInternTab();
-          }
-        };
-
-        // อัพเดทโปรแกรมตรวจสอบการเตรียมการ init
-        if (document.readyState === "loading") {
-          document.addEventListener("DOMContentLoaded", function () {
-            console.log("[Intern] DOMContentLoaded fired");
-            window.initIntern();
-          });
+        // ✅ docsUpdateWorks เก็บ local
+        if (docsUpdateWorks && String(docsUpdateWorks).trim()) {
+          writeMeta(String(memberId), { docsUpdateWorks: String(docsUpdateWorks).trim() });
         } else {
-          console.log("[Intern] Page already loaded, initializing...");
-          setTimeout(window.initIntern, 100);
+          writeMeta(String(memberId), { docsUpdateWorks: "" });
         }
 
         // Fallback: ตรวจสอบ custom tab:loaded event จาก Index.html
@@ -1837,17 +1625,593 @@
           sync();
         }
 
-        function bindAll() {
-          document.querySelectorAll(".table-wrap").forEach(bindOneTableWrap);
-        }
+        return { success: true };
+      } catch (err) {
+        return { success: false, message: err.message };
+      }
+    },
 
-        document.addEventListener("DOMContentLoaded", bindAll);
-        window.addEventListener("load", bindAll);
-        window.addEventListener("resize", bindAll);
-        const mo = new MutationObserver(() => bindAll());
-        mo.observe(document.documentElement, { childList: true, subtree: true });
-      })();
-    </script>
+    async updateInternCheckbox(memberId, col, checked) {
+      // ✅ เก็บสถานะเช้า/บ่ายไว้ใน localStorage (ไม่พึ่ง backend)
+      const id = String(memberId || "");
+      if (id) {
+        if (col === "D") writeMeta(id, { morning: !!checked });
+        if (col === "E") writeMeta(id, { noon: !!checked });
+      }
+      return { success: true };
+    },
+
+    async updateInternStatus(memberId, status) {
+      // ✅ เก็บสถานะงานไว้ใน localStorage (ไม่พึ่ง backend)
+      const id = String(memberId || "");
+      if (id) writeMeta(id, { status: String(status || "") });
+      return { success: true };
+    }
+  };
+})();
+
+/* Intern Module */
+(function initInternTabOnce() {
+  if (window.__internTabInited) return;
+  window.__internTabInited = true;
+
+  const S = window.__internState = {
+    internData: [],
+    internFiltered: [],
+    internStartingData: [],
+    internEndingData: [],
+    editingStarting: false,
+    editingEnding: false,
+    positions: [],
+    internManageMode: false,
+    selectedPosition: ""
+  };
+
+  // ✅ Local meta (เช้า/บ่าย/สถานะ) เก็บใน localStorage ต่อ memberId
+  function metaKey(memberId){ return `pm_intern_meta:${memberId}`; }
+
+  function readMeta(memberId){
+    try { return JSON.parse(localStorage.getItem(metaKey(memberId)) || "{}") || {}; }
+    catch { return {}; }
+  }
+
+  function writeMeta(memberId, patch){
+    const cur = readMeta(memberId);
+    const next = { ...cur, ...patch };
+    try { localStorage.setItem(metaKey(memberId), JSON.stringify(next)); } catch {}
+    return next;
+  }
+
+  // ✅ expose meta helpers (กัน ReferenceError จาก handler ที่เป็น global)
+  window.readMeta = readMeta;
+  window.writeMeta = writeMeta;
+
+
+
+  function escapeHtml(str) {
+    return String(str ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+  }
+
+  function escapeAttr(str) {
+    return String(str ?? "").replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("'", "&#039;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+  }
+
+  window.reloadInternTab = function () {
+    S.internData = [];
+    S.internFiltered = [];
+    S.internStartingData = [];
+    S.internEndingData = [];
+    window.loadInternTab(true);
+  };
+
+  window.clearInternFilters = function () {
+    const searchInput = document.getElementById("internSearch");
+    if (searchInput) searchInput.value = "";
+    S.selectedPosition = "";
+    const selectedText = document.getElementById("selectedPositionText");
+    if (selectedText) selectedText.textContent = "ตำแหน่งทั้งหมด";
+    const dropdownItems = document.getElementById("positionDropdownItems");
+    if (dropdownItems) dropdownItems.classList.remove("open");
+    window.filterInterns();
+  };
+
+  window.togglePositionDropdown = function () {
+    const items = document.getElementById("positionDropdownItems");
+    if (items) items.classList.toggle("open");
+  };
+
+  window.selectPosition = function (value, label) {
+    S.selectedPosition = value || "";
+    const t = document.getElementById("selectedPositionText");
+    if (t) t.textContent = label || "ตำแหน่งทั้งหมด";
+    const items = document.getElementById("positionDropdownItems");
+    if (items) items.classList.remove("open");
+    window.filterInterns();
+  };
+
+  window.updatePositionDropdown = function () {
+    const items = document.getElementById("positionDropdownItems");
+    if (!items) return;
+    let html = '<div class="dd-item-intern" onclick="selectPosition(\'\', \'ตำแหน่งทั้งหมด\')">ตำแหน่งทั้งหมด</div>';
+    (S.positions || []).forEach(function (pos) {
+      const escaped = escapeAttr(pos);
+      html += '<div class="dd-item-intern" onclick="selectPosition(\'' + escaped + '\', \'' + escaped + '\')">' + escapeHtml(pos) + '</div>';
+    });
+    items.innerHTML = html;
+  };
+
+  document.addEventListener("click", function (e) {
+    const dd = document.getElementById("positionDropdownToggle");
+    const items = document.getElementById("positionDropdownItems");
+    if (!dd || !items) return;
+    if (e.target && e.target.closest && e.target.closest("#positionDropdownToggle")) return;
+    const container = dd.closest(".custom-dropdown-intern");
+    if (container && !container.contains(e.target)) items.classList.remove("open");
+  }, true);
+
+  window.filterInterns = function () {
+    const input = document.getElementById("internSearch");
+    const kw = (input ? input.value : "").toLowerCase().trim();
+    const selectedPos = S.selectedPosition || "";
+    S.internFiltered = (S.internData || []).filter(function (i) {
+      const matchName = !kw || String(i.displayName || "").toLowerCase().includes(kw) || String(i.position || "").toLowerCase().includes(kw);
+      const matchPos = !selectedPos || String(i.position || "") === selectedPos;
+      return matchName && matchPos;
+    });
+    renderInternTable();
+  };
+
+  window.loadInternTab = function () {
+    fetchInternMain();
+    fetchStarting();
+    fetchEnding();
+  };
+
+  window.toggleStartingAdd = function () {
+    const form = document.getElementById("startingAddForm");
+    if (!form) return;
+    form.classList.toggle("show");
+  };
+
+  window.toggleEndingAdd = function () {
+    const form = document.getElementById("endingAddForm");
+    if (!form) return;
+    form.classList.toggle("show");
+  };
+
+  window.toggleEditStarting = function () {
+    S.editingStarting = !S.editingStarting;
+    const btn = document.getElementById("editStartingBtn");
+    const col = document.getElementById("startingActionCol");
+    if (btn) {
+      btn.innerHTML = S.editingStarting ? '<img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" alt="check" style="width:14px;height:14px;"> เสร็จ' : '<img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" alt="edit" style="width:14px;height:14px;"> แก้ไข';
+    }
+    if (col) col.style.display = S.editingStarting ? "table-cell" : "none";
+    renderInternStartingTable();
+  };
+
+  window.toggleEditEnding = function () {
+    S.editingEnding = !S.editingEnding;
+    const btn = document.getElementById("editEndingBtn");
+    const col = document.getElementById("endingActionCol");
+    if (btn) {
+      btn.innerHTML = S.editingEnding ? '<img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" alt="check" style="width:14px;height:14px;"> เสร็จ' : '<img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" alt="edit" style="width:14px;height:14px;"> แก้ไข';
+    }
+    if (col) col.style.display = S.editingEnding ? "table-cell" : "none";
+    renderInternEndingTable();
+  };
+
+  window.toggleInternManageMode = function () {
+    S.internManageMode = !S.internManageMode;
+    const btn = document.getElementById("internManageBtn");
+    const actionsHeader = document.getElementById("internActionsHeader");
+    const actionsHeaderCol = document.getElementById("internActionsHeaderCol");
+    const actionsBodyCol = document.getElementById("internActionsBodyCol");
+    const addForm = document.getElementById("addInternForm");
+    if (btn) btn.classList.toggle("active", S.internManageMode);
+    const displayValue = S.internManageMode ? "" : "none";
+    if (actionsHeader) actionsHeader.style.display = displayValue;
+    if (actionsHeaderCol) actionsHeaderCol.style.display = displayValue;
+    if (actionsBodyCol) actionsBodyCol.style.display = displayValue;
+    if (addForm) {
+      if (S.internManageMode) { addForm.classList.add("show"); updateAddInternPositionDatalist(); }
+      else { addForm.classList.remove("show"); }
+    }
+    renderInternTable();
+  };
+
+  window.addStartingIntern = function () {
+    const fullName = (document.getElementById("startingFullName")?.value || "").trim();
+    const nickName = (document.getElementById("startingNickName")?.value || "").trim();
+    const position = (document.getElementById("startingPosition")?.value || "").trim();
+    const dateRange = (document.getElementById("startingDate")?.value || "").trim();
+    if (!fullName || !position || !dateRange) { alert("กรุณากรอกข้อมูลให้ครบ"); return; }
+    S.internStartingData.push({ fullName: fullName, nickname: nickName, position: position, dateRange: dateRange, notifyStatus: "" });
+    document.getElementById("startingFullName").value = "";
+    document.getElementById("startingNickName").value = "";
+    document.getElementById("startingPosition").value = "";
+    document.getElementById("startingDate").value = "";
+    renderInternStartingTable();
+    saveStartingToStore();
+  };
+
+  window.deleteStartingIntern = function (idx) {
+    if (!confirm("ลบข้อมูลนี้ใช่หรือไม่?")) return;
+    S.internStartingData.splice(idx, 1);
+    renderInternStartingTable();
+    saveStartingToStore();
+  };
+
+  window.toggleStartingNotified = function (idx) {
+    const row = S.internStartingData[idx];
+    if (!row) return;
+    row.notifyStatus = row.notifyStatus ? "" : "แจ้งแล้ว";
+    renderInternStartingTable();
+    saveStartingToStore();
+  };
+
+  window.addEndingIntern = function () {
+    const fullName = (document.getElementById("endingFullName")?.value || "").trim();
+    const nickName = (document.getElementById("endingNickName")?.value || "").trim();
+    const position = (document.getElementById("endingPosition")?.value || "").trim();
+    const dateRange = (document.getElementById("endingDate")?.value || "").trim();
+    if (!fullName || !position || !dateRange) { alert("กรุณากรอกข้อมูลให้ครบ"); return; }
+    S.internEndingData.push({ fullName: fullName, nickname: nickName, position: position, dateRange: dateRange, notifyStatus: "" });
+    document.getElementById("endingFullName").value = "";
+    document.getElementById("endingNickName").value = "";
+    document.getElementById("endingPosition").value = "";
+    document.getElementById("endingDate").value = "";
+    renderInternEndingTable();
+    saveEndingToStore();
+  };
+
+  window.deleteEndingIntern = function (idx) {
+    if (!confirm("ลบข้อมูลนี้ใช่หรือไม่?")) return;
+    S.internEndingData.splice(idx, 1);
+    renderInternEndingTable();
+    saveEndingToStore();
+  };
+
+  window.toggleEndingNotified = function (idx) {
+    const row = S.internEndingData[idx];
+    if (!row) return;
+    row.notifyStatus = row.notifyStatus ? "" : "แจ้งแล้ว";
+    renderInternEndingTable();
+    saveEndingToStore();
+  };
+
+  function renderInternTable() {
+    const tbody = document.getElementById("internTableBody");
+    if (!tbody) return;
+    const colSpan = S.internManageMode ? 8 : 7;
+    if (!S.internFiltered || !S.internFiltered.length) { tbody.innerHTML = '<tr><td colspan="' + colSpan + '" style="text-align:center;color:#999;">ไม่มีข้อมูล</td></tr>'; return; }
+    let html = "";
+    S.internFiltered.forEach(function (i) { html += rowInternHtml(i); });
+    tbody.innerHTML = html;
+  }
+
+  function rowInternHtml(i) {
+    const rawName = String(i.displayName || "");
+    const rawPos = String(i.position || "");
+    const memberId = String(i._id || "");
+    const meta = i._meta || {};
+
+    const rawStatus = String(meta.status || i.status || "ทำงาน");
+    const rawNote = String(i.note || "");
+    const rawFileLink = String(meta.docsUpdateWorks || i.docsUpdateWorks || "");
+
+    const name = escapeHtml(rawName);
+    const position = escapeHtml(rawPos);
+    const note = escapeHtml(rawNote);
+
+    const morningChecked = meta.morning ? "checked" : "";
+    const noonChecked = meta.noon ? "checked" : "";
+
+    const morning = '<input type="checkbox" ' + morningChecked +
+      ' onchange="onInternCheckChange(\'' + escapeAttr(memberId) + '\', \'D\', this.checked)">';
+    const noon = '<input type="checkbox" ' + noonChecked +
+      ' onchange="onInternCheckChange(\'' + escapeAttr(memberId) + '\', \'E\', this.checked)">';
+
+    const status =
+      '<div class="status-dd" data-id="' + escapeAttr(memberId) + '" data-value="' + escapeAttr(rawStatus) + '">' +
+        '<div class="status-selected" onclick="toggleStatusDD(this)">' +
+          '<span class="status-text">' + escapeHtml(rawStatus) + '</span><span>▾</span>' +
+        '</div>' +
+        '<div class="status-items">' +
+          '<div class="status-item" onclick="selectStatusDD(this, \'ทำงาน\')">ทำงาน</div>' +
+          '<div class="status-item" onclick="selectStatusDD(this, \'ลา\')">ลา</div>' +
+          '<div class="status-item" onclick="selectStatusDD(this, \'ไม่มาทำงาน\')">ไม่มาทำงาน</div>' +
+          '<div class="status-item" onclick="selectStatusDD(this, \'จบแล้ว\')">จบแล้ว</div>' +
+        '</div>' +
+      '</div>';
+
+    let fileCell = '<span style="color:#999;">-</span>';
+    if (rawFileLink.trim()) {
+      const url = escapeAttr(rawFileLink.trim());
+      fileCell = '<a href="' + url + '" target="_blank" rel="noopener">📄 อัปเดตงาน</a>';
+    }
+
+    let actionCell = "";
+    if (S.internManageMode) {
+      actionCell =
+        '<td style="text-align: center;">' +
+          '<button onclick="deleteIntern(\'' + escapeAttr(memberId) + '\', \'' + escapeAttr(rawName) + '\')" ' +
+            'style="background: none; border: none; cursor: pointer; color: #ef4444;">' +
+            '<img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000" alt="Delete" style="width: 20px; height: 20px;">' +
+          '</button>' +
+        '</td>';
+    }
+
+    return '<tr>' +
+      '<td><b>' + name + '</b></td>' +
+      '<td>' + position + '</td>' +
+      '<td>' + morning + '</td>' +
+      '<td>' + noon + '</td>' +
+      '<td>' + status + '</td>' +
+      '<td>' + note + '</td>' +
+      '<td>' + fileCell + '</td>' +
+      actionCell +
+    '</tr>';
+  }
+
+  function renderInternStartingTable() {
+    const tbody = document.getElementById("internStartingBody");
+    if (!tbody) return;
+    const colSpan = S.editingStarting ? 6 : 5;
+    if (!S.internStartingData || !S.internStartingData.length) { tbody.innerHTML = '<tr><td colspan="' + colSpan + '" style="text-align:center;color:#999;">ไม่มีข้อมูล</td></tr>'; return; }
+    let html = "";
+    S.internStartingData.forEach(function (i, idx) {
+      const nick = (i.nickName ?? i.nickname ?? "");
+      const date = (i.date ?? i.dateRange ?? "");
+      const notified = !!(i.notified || i.notifyStatus);
+      html += '<tr><td>' + escapeHtml(i.fullName || "") + '</td><td>' + escapeHtml(nick) + '</td><td>' + escapeHtml(i.position || "") + '</td><td style="text-align:center;">' + (escapeHtml(date) || "-") + '</td><td style="text-align:center;"><input type="checkbox" ' + (notified ? "checked" : "") + ' onchange="toggleStartingNotified(' + idx + ')"></td>';
+      if (S.editingStarting) { html += '<td style="text-align:center;"><button class="delete-btn" onclick="deleteStartingIntern(' + idx + ')"><img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000" alt="trash" style="width:14px;height:14px;"></button></td>'; }
+      html += '</tr>';
+    });
+    tbody.innerHTML = html;
+  }
+
+  function renderInternEndingTable() {
+    const tbody = document.getElementById("internEndingBody");
+    if (!tbody) return;
+    const colSpan = S.editingEnding ? 6 : 5;
+    if (!S.internEndingData || !S.internEndingData.length) { tbody.innerHTML = '<tr><td colspan="' + colSpan + '" style="text-align:center;color:#999;">ไม่มีข้อมูล</td></tr>'; return; }
+    let html = "";
+    S.internEndingData.forEach(function (i, idx) {
+      const nick = (i.nickName ?? i.nickname ?? "");
+      const date = (i.date ?? i.dateRange ?? "");
+      const notified = !!(i.notified || i.notifyStatus);
+      html += '<tr><td>' + escapeHtml(i.fullName || "") + '</td><td>' + escapeHtml(nick) + '</td><td>' + escapeHtml(i.position || "") + '</td><td style="text-align:center;">' + (escapeHtml(date) || "-") + '</td><td style="text-align:center;"><input type="checkbox" ' + (notified ? "checked" : "") + ' onchange="toggleEndingNotified(' + idx + ')"></td>';
+      if (S.editingEnding) { html += '<td style="text-align:center;"><button class="delete-btn" onclick="deleteEndingIntern(' + idx + ')"><img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000" alt="trash" style="width:14px;height:14px;"></button></td>'; }
+      html += '</tr>';
+    });
+    tbody.innerHTML = html;
+  }
+
+  async function fetchInternMain() {
+    try {
+      const result = await window.BACKEND.getInternData(1, 100);
+      const items = Array.isArray(result.items) ? result.items : [];
+
+      // ✅ ผสาน meta (เช้า/บ่าย/สถานะ) จาก localStorage
+      items.forEach(function (it) {
+        const id = String(it?._id || "");
+        it._meta = id ? readMeta(id) : {};
+      });
+
+      S.internData = items;
+      S.internFiltered = S.internData.slice();
+
+      const posSet = new Set();
+      S.internData.forEach(function (i) { if (i.position) posSet.add(i.position); });
+      S.positions = Array.from(posSet).sort(function (a, b) { return String(a).localeCompare(String(b), "th"); });
+
+      window.updatePositionDropdown();
+      updateAddInternPositionDatalist();
+      renderInternTable();
+    } catch (err) {
+      console.error("โหลด interns ไม่สำเร็จ:", err);
+      S.internData = [];
+      S.internFiltered = [];
+      S.positions = [];
+      window.updatePositionDropdown();
+      renderInternTable();
+    }
+  }
+
+  async function fetchStarting() {
+    try {
+      S.internStartingData = await window.BACKEND.getInternStarting();
+      renderInternStartingTable();
+    } catch (e) {
+      S.internStartingData = [];
+      renderInternStartingTable();
+    }
+  }
+
+  async function fetchEnding() {
+    try {
+      S.internEndingData = await window.BACKEND.getInternEnding();
+      renderInternEndingTable();
+    } catch (e) {
+      S.internEndingData = [];
+      renderInternEndingTable();
+    }
+  }
+
+  async function saveStartingToStore() {
+    const res = await window.BACKEND.saveInternStarting(S.internStartingData);
+    if (!res?.success) console.warn("บันทึก starting ไม่สำเร็จ");
+  }
+
+  async function saveEndingToStore() {
+    const res = await window.BACKEND.saveInternEnding(S.internEndingData);
+    if (!res?.success) console.warn("บันทึก ending ไม่สำเร็จ");
+  }
+
+  function updateAddInternPositionDatalist() {
+    const dl = document.getElementById("addInternPositionDatalist");
+    if (!dl) return;
+    dl.innerHTML = "";
+    (S.positions || []).forEach(function (pos) {
+      const opt = document.createElement("option");
+      opt.value = pos;
+      dl.appendChild(opt);
+    });
+  }
+
+  window.addNewInternSubmit = async function () {
+    const displayName = (document.getElementById("newInternName")?.value || "").trim();
+    const position = (document.getElementById("newInternPosition")?.value || "").trim();
+    const note = (document.getElementById("newInternNote")?.value || "").trim();
+    const nickname = (document.getElementById("newInternNickname")?.value || "").trim();
+    const role = (document.getElementById("newInternRole")?.value || "intern").toString().trim(); // ✅ backend ต้องการตัวเล็ก
+    const docsUpdateWorks = (document.getElementById("newInternDocsUpdateWorks")?.value || "").trim();
+
+    if (!displayName) { alert("กรุณากรอกชื่อ (displayName)"); return; }
+
+    try {
+      const res = await window.BACKEND.addNewIntern({
+        displayName,
+        nickname: nickname || undefined,
+        position: position || undefined,
+        role,
+        note: note || undefined,
+        docsUpdateWorks: docsUpdateWorks || undefined
+      });
+
+      if (res?.success) {
+        document.getElementById("newInternName").value = "";
+        document.getElementById("newInternPosition").value = "";
+        document.getElementById("newInternNote").value = "";
+
+        const nn = document.getElementById("newInternNickname"); if (nn) nn.value = "";
+        const rr = document.getElementById("newInternRole"); if (rr) rr.value = "intern";
+        const duw = document.getElementById("newInternDocsUpdateWorks"); if (duw) duw.value = "";
+
+        if (typeof window.reloadInternTab === "function") window.reloadInternTab();
+      } else {
+        alert(res?.message || "เพิ่มไม่สำเร็จ");
+      }
+    } catch (err) {
+      alert("เกิดข้อผิดพลาด: " + (err?.message || err));
+    }
+  };
+
+  window.hideAddInternForm = function () {
+    S.internManageMode = false;
+    const btn = document.getElementById("internManageBtn");
+    const actionsHeader = document.getElementById("internActionsHeader");
+    const actionsHeaderCol = document.getElementById("internActionsHeaderCol");
+    const actionsBodyCol = document.getElementById("internActionsBodyCol");
+    const addForm = document.getElementById("addInternForm");
+    if (btn) btn.classList.remove("active");
+    if (actionsHeader) actionsHeader.style.display = "none";
+    if (actionsHeaderCol) actionsHeaderCol.style.display = "none";
+    if (actionsBodyCol) actionsBodyCol.style.display = "none";
+    if (addForm) addForm.classList.remove("show");
+    renderInternTable();
+  };
+
+  window.onInternCheckChange = async function (memberId, col, checked) {
+    try {
+      const res = await window.BACKEND.updateInternCheckbox(memberId, col, !!checked);
+      if (!res?.success) alert(res?.message || "บันทึกไม่สำเร็จ");
+    } catch (err) {
+      alert(err?.message || String(err));
+    }
+  };
+
+  async function onInternStatusChange(memberId, status) {
+    try {
+      const res = await window.BACKEND.updateInternStatus(memberId, status);
+      if (!res?.success) alert(res?.message || "บันทึกสถานะไม่สำเร็จ");
+    } catch (err) {
+      alert(err?.message || String(err));
+    }
+  }
+
+  window.toggleStatusDD = function (el) {
+    const items = el ? el.nextElementSibling : null;
+    if (!items) return;
+    document.querySelectorAll(".status-items.open").forEach(function (other) {
+      if (other !== items) other.classList.remove("open");
+    });
+    const willOpen = !items.classList.contains("open");
+    items.classList.toggle("open");
+    if (willOpen) {
+      const rect = el.getBoundingClientRect();
+      items.style.top = (rect.bottom + 6) + "px";
+      items.style.left = rect.left + "px";
+    }
+  };
+
+  window.selectStatusDD = function (el, value) {
+    const wrap = el ? el.closest(".status-dd") : null;
+    if (!wrap) return;
+    const memberId = wrap.dataset.id;
+    wrap.dataset.value = value;
+    const textEl = wrap.querySelector(".status-text");
+    if (textEl) textEl.textContent = value;
+    const items = wrap.querySelector(".status-items");
+    if (items) items.classList.remove("open");
+    onInternStatusChange(memberId, value);
+  };
+
+  document.addEventListener("click", function (e) {
+    document.querySelectorAll(".status-items.open").forEach(function (items) {
+      if (!items.parentElement.contains(e.target)) items.classList.remove("open");
+    });
+  }, true);
+
+  window.deleteIntern = async function (memberId, name) {
+    if (!confirm('ยืนยันลบ "' + name + '" ?')) return;
+    try {
+      const res = await window.BACKEND.deleteIntern(memberId);
+      if (res?.success) window.reloadInternTab();
+      else alert(res?.message || "ลบไม่สำเร็จ");
+    } catch (err) {
+      alert("เกิดข้อผิดพลาด: " + (err?.message || err));
+    }
+  };
+
+  document.addEventListener("DOMContentLoaded", function () {
+    window.loadInternTab();
+  });
+})();
+
+/* Scroll sync */
+(function () {
+  function bindOneTableWrap(wrap) {
+    const head = wrap.querySelector(".table-header-wrapper");
+    const body = wrap.querySelector(".table-body-wrapper");
+    if (!head || !body) return;
+    if (body.__boundScrollSync) return;
+    body.__boundScrollSync = true;
+    const sync = () => { head.scrollLeft = body.scrollLeft; };
+    body.addEventListener("scroll", () => {
+      requestAnimationFrame(sync);
+      document.querySelectorAll(".status-items.open").forEach(function (items) {
+        items.classList.remove("open");
+      });
+    }, { passive: true });
+    head.addEventListener("scroll", () => {
+      if (body.scrollLeft !== head.scrollLeft) body.scrollLeft = head.scrollLeft;
+    }, { passive: true });
+    sync();
+  }
+
+  function bindAll() {
+    document.querySelectorAll(".table-wrap").forEach(bindOneTableWrap);
+  }
+
+  document.addEventListener("DOMContentLoaded", bindAll);
+  window.addEventListener("load", bindAll);
+  window.addEventListener("resize", bindAll);
+  const mo = new MutationObserver(() => bindAll());
+  mo.observe(document.documentElement, { childList: true, subtree: true });
+})();
+  </script>
 
 </body>
 

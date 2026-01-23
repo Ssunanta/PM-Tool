@@ -1048,7 +1048,7 @@
         window.BACKEND = {
           async getInternData(page = 1, limit = 100, search = "", role = "") {
             try {
-              // ✅ ดึงทุกหน้า (pagination) จนหมด
+              console.log("[API] getInternData called with:", { page, limit, search, role });
               const all = [];
               let p = Number(page || 1);
               const lim = Number(limit || 100);
@@ -1061,17 +1061,23 @@
                 if (role && String(role).trim()) params.set("role", String(role).trim());
 
                 const url = `${API_BASE}/members?${params.toString()}`;
+                console.log("[API] Fetching:", url);
 
-                const res = await fetch(url, { method: "GET", headers: { "Accept": "application/json" } });
+                const res = await fetch(url, {
+                  method: "GET",
+                  headers: { "Accept": "application/json" },
+                  credentials: "same-origin"
+                });
 
                 if (!res.ok) {
                   const txt = await res.text().catch(() => "");
-                  console.error("GET /members failed:", res.status, txt);
+                  console.error("[API] GET /members failed:", res.status, txt);
                   // ❌ อย่าวนลูปต่อเมื่อ backend ตอบ 400/500
                   break;
                 }
 
                 const data = await res.json().catch(() => ({}));
+                console.log("[API] Response data:", data);
 
                 const items = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
                 all.push(...items);
@@ -1081,9 +1087,10 @@
                 p += 1;
               }
 
+              console.log("[API] getInternData completed, total items:", all.length);
               return { items: all, pagination: { loadedAll: true } };
             } catch (err) {
-              console.error("โหลด interns ไม่สำเร็จ:", err);
+              console.error("[API] โหลด interns ไม่สำเร็จ:", err);
               return { items: [], pagination: {} };
             }
           },
@@ -1277,8 +1284,6 @@
 
       /* Intern Module */
       (function initInternTabOnce() {
-        if (window.__internTabInited) return;
-        window.__internTabInited = true;
 
         const S = window.__internState = {
           internData: [],
@@ -1610,8 +1615,12 @@
 
         async function fetchInternMain() {
           try {
+            console.log("[Intern] fetchInternMain started");
             const result = await window.BACKEND.getInternData(1, 100);
+            console.log("[Intern] getInternData result:", result);
+
             const items = Array.isArray(result.items) ? result.items : [];
+            console.log("[Intern] items count:", items.length);
 
             // ✅ ผสาน meta (เช้า/บ่าย/สถานะ) จาก localStorage
             items.forEach(function (it) {
@@ -1626,11 +1635,12 @@
             S.internData.forEach(function (i) { if (i.position) posSet.add(i.position); });
             S.positions = Array.from(posSet).sort(function (a, b) { return String(a).localeCompare(String(b), "th"); });
 
+            console.log("[Intern] positions found:", S.positions);
             window.updatePositionDropdown();
             updateAddInternPositionDatalist();
             renderInternTable();
           } catch (err) {
-            console.error("โหลด interns ไม่สำเร็จ:", err);
+            console.error("[Intern] fetchInternMain error:", err);
             S.internData = [];
             S.internFiltered = [];
             S.positions = [];
@@ -1779,9 +1789,31 @@
           }
         };
 
-        document.addEventListener("DOMContentLoaded", function () {
-          window.loadInternTab();
-        });
+        window.initIntern = function () {
+          console.log("[Intern] initIntern called");
+          if (typeof window.loadInternTab === "function") {
+            window.loadInternTab();
+          }
+        };
+
+        // อัพเดทโปรแกรมตรวจสอบการเตรียมการ init
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", function () {
+            console.log("[Intern] DOMContentLoaded fired");
+            window.initIntern();
+          });
+        } else {
+          console.log("[Intern] Page already loaded, initializing...");
+          setTimeout(window.initIntern, 100);
+        }
+
+        // Fallback: ตรวจสอบ custom tab:loaded event จาก Index.html
+        window.addEventListener("tab:loaded", function (e) {
+          console.log("[Intern] tab:loaded event received:", e.detail);
+          if (e.detail?.tabName === "intern") {
+            window.initIntern();
+          }
+        }, false);
       })();
 
       /* Scroll sync */

@@ -1041,47 +1041,47 @@
       }
     }
 
-// ✅ เพิ่มฟังก์ชันนี้:
-function scopeCssForTabWithRootVars(cssText, scopeSel) {
-  let css = String(cssText || "")
-    .replace(/(^|[,{]\s*):root(\s*[,{])/g, `$1${scopeSel}$2`)
-    .replace(/(^|[,{]\s*)body(\s*[,{])/g, `$1${scopeSel}$2`)
-    .replace(/(^|[,{]\s*)html(\s*[,{])/g, `$1${scopeSel}$2`);
+    // ===== ฟังก์ชัน scopeCssForTab() เดิม (เก็บไว้ยังไง) =====
+    function scopeCssForTab(cssText, scopeSel) {
+      let css = String(cssText || "")
+        .replace(/(^|[,{]\s*):root(\s*[,{])/g, `$1${scopeSel}$2`)
+        .replace(/(^|[,{]\s*)body(\s*[,{])/g, `$1${scopeSel}$2`)
+        .replace(/(^|[,{]\s*)html(\s*[,{])/g, `$1${scopeSel}$2`);
 
-  const out = [];
-  const blocks = css.split("}");
+      const out = [];
+      const blocks = css.split("}");
 
-  for (let b of blocks) {
-    b = b.trim();
-    if (!b) continue;
-    const parts = b.split("{");
-    if (parts.length < 2) continue;
+      for (let b of blocks) {
+        b = b.trim();
+        if (!b) continue;
+        const parts = b.split("{");
+        if (parts.length < 2) continue;
 
-    const sel = parts[0].trim();
-    const body = parts.slice(1).join("{");
+        const sel = parts[0].trim();
+        const body = parts.slice(1).join("{");
 
-    if (sel.startsWith("@")) {
-      out.push(sel + "{" + body + "}");
-      continue;
-    }
-
-    const scopedSel = sel.split(",")
-      .map(s => s.trim())
-      .map(s => {
-        if (!s) return s;
-        if (s.startsWith(scopeSel)) return s;
-        if (/^(table|button|input|select|textarea|form|div|span|p|h\d|ul|ol|li|a)(\s|$|:|\[)/.test(s)) {
-          return `${scopeSel} ${s}`;
+        if (sel.startsWith("@")) {
+          out.push(sel + "{" + body + "}");
+          continue;
         }
-        return `${scopeSel} ${s}`;
-      })
-      .join(", ");
 
-    out.push(scopedSel + "{" + body + "}");
-  }
+        const scopedSel = sel.split(",")
+          .map(s => s.trim())
+          .map(s => {
+            if (!s) return s;
+            if (s.startsWith(scopeSel)) return s;
+            if (/^(table|button|input|select|textarea|form|div|span|p|h\d|ul|ol|li|a)(\s|$|:|\[)/.test(s)) {
+              return `${scopeSel} ${s}`;
+            }
+            return `${scopeSel} ${s}`;
+          })
+          .join(", ");
 
-  return out.join("\n");
-}
+        out.push(scopedSel + "{" + body + "}");
+      }
+
+      return out.join("\n");
+    }
 
 // ✅ ฟังก์ชันใหม่สำหรับ Intern - ไม่ต้อง scope css เลย เพราะใช้ .intern-wrapper class แล้ว
 function setTabHTMLIntern(tabElement, html) {
@@ -1264,7 +1264,7 @@ function loadTabContent(tabName) {
 
   const fileMap = {
     dashboard: "Dashboard",
-  projects: "Projects",
+    projects: "Projects",
     todos: "Todos",
     intern: "Intern",
     notes: "Note",
@@ -1360,11 +1360,10 @@ function loadTabContent(tabName) {
           if (typeof window.initDashboard === "function") window.initDashboard();
           break;
 
-case "projects":
-      if (typeof window.loadProjects === "function") {
-        window.loadProjects();  // เรียก function จาก Projects.html
-      }
-      break;
+        case "projects":
+          if (typeof window.loadProjects === "function") window.loadProjects();
+          else if (typeof window.initProjects === "function") window.initProjects();
+          break;
 
         case "todos":
           if (typeof window.initTodos === "function") window.initTodos();

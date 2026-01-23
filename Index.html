@@ -1581,6 +1581,7 @@ function initializeTab(tabName) {
       break;
 
     case "intern":
+      // ✅ เพิ่มการเรียก Intern backend
       if (typeof window.loadInternTab === "function") {
         window.loadInternTab();
       }
@@ -1597,19 +1598,12 @@ function initializeTab(tabName) {
       if (typeof window.initAboutPM === "function") window.initAboutPM();
       break;
 
-    // ✅ เพิ่มส่วนนี้
     case "meeting":
-      // รอให้ Meeting.html inject script เสร็จ
-      initWhenReady("meetingTabAPI", () => {
-        if (window.meetingTabAPI?.init) {
-          window.meetingTabAPI.init();
-        } else if (typeof window.loadMeeting === "function") {
-          window.loadMeeting();
-        }
-      }, "meeting", 160);
+      if (typeof window.loadMeeting === "function") window.loadMeeting();
+      else if (typeof window.initMeeting === "function") window.initMeeting();
       break;
   }
-}
+    }
 
     document.addEventListener("DOMContentLoaded", function () {
       const savedTab = localStorage.getItem("activeTab") || "dashboard";

@@ -1056,7 +1056,7 @@
       justify-content: flex-start
     }
 
-    /* ===== Dropdown inside Modal ===== */
+/* ===== Dropdown inside Modal ===== */
 .modal-box .ctrl-items {
   position: absolute;
   z-index: 10000;
@@ -1065,6 +1065,32 @@
 
 .modal-box .ctrl {
   position: relative;
+}
+
+/* ✅ Member autocomplete inside modal */
+.modal-box .member-autocomplete {
+  position: relative;
+  width: 100%;
+}
+
+.modal-box .member-suggest {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 4px);
+  background: #f1f5f9;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 10px;
+  max-height: 280px;
+  overflow-y: auto;
+  display: none;
+  z-index: 10001;
+}
+
+.modal-box .member-suggest.open {
+  display: block;
 }
 
     .preview-actions-bar {
@@ -1853,13 +1879,11 @@
     </div>
   </div>
 
-<!-- ✅ Member Modal (โครงสร้างที่ถูกต้อง) -->
-<div id="memberModal" class="modal-overlay">
-  <div class="modal-box">
-    <div class="modal-title" id="memberModalTitle">Add Member</div>
+  <!-- ✅ Member Modal -->
+  <div id="memberModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-title" id="memberModalTitle">Add Member</div>
 
-    <!-- ✅ Fields อยู่ใน modal-content -->
-    <div class="modal-content">
       <div class="field">
         <div class="label">ชื่อ</div>
         <div class="member-autocomplete" style="position:relative;">
@@ -1873,19 +1897,18 @@
         <div class="label">ตำแหน่ง</div>
         <input id="m_pos" class="input" placeholder="จะถูกเติมอัตโนมัติ" readonly>
       </div>
-    </div> <!-- ✅ ปิด modal-content -->
 
-    <!-- ✅ Actions อยู่นอก modal-content -->
-    <div class="modal-actions">
-      <button class="btn primary" id="btnMemberSave" onclick="submitMemberModal()">
-        <img src="https://img.icons8.com/?size=100&id=IoxdKD291KHp&format=png&color=000000"
-             style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" alt="Save">
-        Save
-      </button>
-      <button class="btn cancel" onclick="closeMemberModal()">Cancel</button>
+      <div class="modal-actions">
+        <button class="btn primary" id="btnMemberSave" onclick="submitMemberModal()">
+          <img src="https://img.icons8.com/?size=100&id=IoxdKD291KHp&format=png&color=000000"
+               style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" alt="Save">
+          Save
+        </button>
+        <button class="btn cancel" onclick="closeMemberModal()">Cancel</button>
+
+      </div>
     </div>
   </div>
-</div>
 
     <script>
     function byId(id){ return document.getElementById(id); }

@@ -614,21 +614,22 @@
       box-shadow: 0 0 0 3px rgba(17, 17, 17, .08);
     }
 
-    #startingAddForm button,
-    #endingAddForm button,
-    #addInternForm button {
-      height: 44px;
-      padding: 0 14px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: #fff;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 900;
-      box-shadow: var(--shadow2);
-      transition: 0.2s;
-      white-space: nowrap;
-    }
+#startingAddForm button,
+#endingAddForm button,
+#addInternForm button {
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 900;
+  color: #000000;        /* เพิ่มบรรทัดนี้ */
+  box-shadow: var(--shadow2);
+  transition: 0.2s;
+  white-space: nowrap;
+}
 
     #startingAddForm button:hover,
     #endingAddForm button:hover,
@@ -1235,18 +1236,6 @@
           style="width:20px;height:20px;">
         นักศึกษาฝึกงานที่กำลังเริ่มงาน
       </span>
-      <div class="h3-actions">
-        <button onclick="toggleStartingAdd()">
-          <img src="https://img.icons8.com/?size=100&id=XpyLr4ervzGM&format=png&color=000000" alt="add"
-            style="width:14px;height:14px;">
-          เพิ่มชื่อ
-        </button>
-        <button id="editStartingBtn" onclick="toggleEditStarting()">
-          <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" alt="edit"
-            style="width:14px;height:14px;">
-          แก้ไข
-        </button>
-      </div>
     </div>
 
     <div class="table-wrap">
@@ -1301,18 +1290,6 @@
           style="width:20px;height:20px;">
         นักศึกษาฝึกงานใกล้จบการฝึกงาน
       </span>
-      <div class="h3-actions">
-        <button onclick="toggleEndingAdd()">
-          <img src="https://img.icons8.com/?size=100&id=XpyLr4ervzGM&format=png&color=000000" alt="add"
-            style="width:14px;height:14px;">
-          เพิ่มชื่อ
-        </button>
-        <button id="editEndingBtn" onclick="toggleEditEnding()">
-          <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" alt="edit"
-            style="width:14px;height:14px;">
-          แก้ไข
-        </button>
-      </div>
     </div>
 
     <div class="table-wrap">

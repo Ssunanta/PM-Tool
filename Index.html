@@ -1304,145 +1304,155 @@
       localStorage.setItem("activeTab", tabName);
     }
 
-    function loadTabContent(tabName) {
-      const tabElement = document.getElementById(tabName + "Tab");
-      if (!tabElement) { hideGlobalLoading(); return; }
+/* ====================================================
+   ✅ Function loadTabContent() - พร้อมวางทับ
+   ==================================================== */
 
-      tabElement.innerHTML = `<div class="loading">⏳ กำลังโหลด...</div>`;
+function loadTabContent(tabName) {
+  const tabElement = document.getElementById(tabName + "Tab");
+  if (!tabElement) { 
+    hideGlobalLoading(); 
+    return; 
+  }
 
-      // แมปชื่อไฟล์
-      const fileMap = {
-        dashboard: "Dashboard",
-        projects: "Projects",
-        todos: "Todos",
-        intern: "Intern",
-        notes: "Note",
-        meeting: "Meeting",
-        aboutPM: "AboutPM",
-      };
+  tabElement.innerHTML = `<div class="loading">⏳ กำลังโหลด...</div>`;
 
-      function loadTabContent(tabName) {
-        const fileBase = fileMap[tabName];
-        // โหลดไฟล์ HTML ของแต่ละแท็บ
-        fetch(fileBase + ".html")
-          .then(r => r.text())
-          .then(html => {
-            setTabHTML(tabElement, html, tabName);
-          });
-      }
+  const fileMap = {
+    dashboard: "Dashboard",
+    projects: "Projects",
+    todos: "Todos",
+    intern: "Intern",
+    notes: "Note",
+    meeting: "Meeting",
+    aboutPM: "AboutPM",
+  };
 
-      const fileBase = fileMap[tabName];
-      if (!fileBase) {
-        tabElement.innerHTML = `<div class="container" style="padding:24px;color:#dc3545;">ไม่รู้ไฟล์ของแท็บ ${escapeHtml(tabName)}</div>`;
-        hideGlobalLoading();
-        return;
-      }
+  const fileBase = fileMap[tabName];
+  if (!fileBase) {
+    tabElement.innerHTML = `<div class="container" style="padding:24px;color:#dc3545;">ไม่รู้ไฟล์ของแท็บ ${escapeHtml(tabName)}</div>`;
+    hideGlobalLoading();
+    return;
+  }
 
-      // GAS
-      if (hasGAS()) {
-        google.script.run
-          .withSuccessHandler((html) => {
-            setTabHTML(tabElement, html, tabName);
-            loadedTabs[tabName] = true;
+  // GAS Path
+  if (hasGAS()) {
+    google.script.run
+      .withSuccessHandler((html) => {
+        setTabHTML(tabElement, html, tabName);
+        loadedTabs[tabName] = true;
 
-            // ✅ แจ้งว่าแท็บถูก inject เสร็จแล้ว
-            window.dispatchEvent(new CustomEvent("tab:loaded", { detail: { tabName } }));
+        // ✅ Event สำหรับบอกว่า HTML ถูก inject เสร็จแล้ว
+        window.dispatchEvent(new CustomEvent("tab:loaded", { detail: { tabName } }));
 
-            if (tabName === "intern") {
-              initWhenReady("initIntern", () => {
-                if (typeof window.initIntern === "function") {
-                  window.initIntern();
-                }
-              }, "intern", 160);
+        // ✅ สำหรับ Intern: รอให้ HTML inject เสร็จก่อน เรียก loadInternTab()
+        if (tabName === "intern") {
+          initWhenReady("loadInternTab", () => {
+            if (typeof window.loadInternTab === "function") {
+              window.loadInternTab();
             }
+          }, "intern", 160);
+        }
 
-            // ✅ สำคัญ: todos ให้รอ init หลัง inject
-            if (tabName === "todos") {
-              initWhenReady("initTodos", () => window.initTodos(), "todos", 160);
-            }
+        // ✅ สำหรับ Todos
+        if (tabName === "todos") {
+          initWhenReady("initTodos", () => window.initTodos(), "todos", 160);
+        }
 
-            setTimeout(() => {
-              initializeTab(tabName);
-              hideGlobalLoading();
-            }, 50);
-          })
-          .withFailureHandler((err) => {
-            console.error(err);
-            tabElement.innerHTML = `<div class="container" style="padding:24px;color:#dc3545;">โหลด ${fileBase}.html ไม่สำเร็จ</div>`;
-            hideGlobalLoading();
-          })
-          .getHtml(fileBase);
-        return;
-      }
-
-      // Fetch (non-GAS)
-      fetch(fileBase + ".html", { cache: "no-store" })
-        .then(r => {
-          if (!r.ok) throw new Error("HTTP " + r.status);
-          return r.text();
-        })
-        .then(html => {
-          setTabHTML(tabElement, html, tabName);
-          loadedTabs[tabName] = true;
-
-          window.dispatchEvent(new CustomEvent("tab:loaded", { detail: { tabName } }));
-
-          if (tabName === "todos") {
-            initWhenReady("initTodos", () => window.initTodos(), "todos", 160);
-          }
-
-          setTimeout(() => {
-            initializeTab(tabName);
-            hideGlobalLoading();
-          }, 50);
-        })
-        .catch(err => {
-          console.error(err);
-          tabElement.innerHTML = `<div class="container" style="padding:24px;color:#dc3545;">โหลด ${fileBase}.html ไม่ได้ (${escapeHtml(err.message)})</div>`;
+        setTimeout(() => {
+          initializeTab(tabName);
           hideGlobalLoading();
-        });
-    }
+        }, 50);
+      })
+      .withFailureHandler((err) => {
+        console.error(err);
+        tabElement.innerHTML = `<div class="container" style="padding:24px;color:#dc3545;">โหลด ${fileBase}.html ไม่สำเร็จ</div>`;
+        hideGlobalLoading();
+      })
+      .getHtml(fileBase);
+    return;
+  }
 
-    function initializeTab(tabName) {
-      switch (tabName) {
-        case "dashboard":
-          if (typeof window.initDashboard === "function") window.initDashboard();
-          break;
+  // Fetch Path (Non-GAS)
+  fetch(fileBase + ".html", { cache: "no-store" })
+    .then(r => {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.text();
+    })
+    .then(html => {
+      setTabHTML(tabElement, html, tabName);
+      loadedTabs[tabName] = true;
 
-        case "projects":
-          if (typeof window.loadProjects === "function") window.loadProjects();
-          else if (typeof window.initProjects === "function") window.initProjects();
-          break;
+      // ✅ Event สำหรับบอกว่า HTML ถูก inject เสร็จแล้ว
+      window.dispatchEvent(new CustomEvent("tab:loaded", { detail: { tabName } }));
 
-        case "todos":
-          if (typeof window.initTodos === "function") window.initTodos();
-          else {
-            console.warn("[todos] initTodos not found. Waiting for tab:loaded hook...");
-            // fallback เบื้องต้น เผื่อชื่อฟังก์ชันใน Todos.html เป็น loadTodos
-            if (typeof window.loadTodos === "function") window.loadTodos();
+      // ✅ สำหรับ Intern: รอให้ HTML inject เสร็จก่อน เรียก loadInternTab()
+      if (tabName === "intern") {
+        initWhenReady("loadInternTab", () => {
+          if (typeof window.loadInternTab === "function") {
+            window.loadInternTab();
           }
-          break;
-
-        case "intern":
-          if (typeof window.initIntern === "function") window.initIntern();
-          break;
-
-        case "notes":
-          setTimeout(() => {
-            if (typeof window.loadNotesData === "function") window.loadNotesData();
-            else if (typeof window.initNotes === "function") window.initNotes();
-          }, 50);
-          break;
-
-        case "aboutPM":
-          if (typeof window.initAboutPM === "function") window.initAboutPM();
-          break;
-
-        case "meeting":
-          if (typeof window.loadMeeting === "function") window.loadMeeting();
-          else if (typeof window.initMeeting === "function") window.initMeeting();
-          break;
+        }, "intern", 160);
       }
+
+      // ✅ สำหรับ Todos
+      if (tabName === "todos") {
+        initWhenReady("initTodos", () => window.initTodos(), "todos", 160);
+      }
+
+      setTimeout(() => {
+        initializeTab(tabName);
+        hideGlobalLoading();
+      }, 50);
+    })
+    .catch(err => {
+      console.error(err);
+      tabElement.innerHTML = `<div class="container" style="padding:24px;color:#dc3545;">โหลด ${fileBase}.html ไม่ได้ (${escapeHtml(err.message)})</div>`;
+      hideGlobalLoading();
+    });
+}
+
+function initializeTab(tabName) {
+  switch (tabName) {
+    case "dashboard":
+      if (typeof window.initDashboard === "function") window.initDashboard();
+      break;
+
+    case "projects":
+      if (typeof window.loadProjects === "function") window.loadProjects();
+      else if (typeof window.initProjects === "function") window.initProjects();
+      break;
+
+    case "todos":
+      if (typeof window.initTodos === "function") window.initTodos();
+      else {
+        console.warn("[todos] initTodos not found. Waiting for tab:loaded hook...");
+        if (typeof window.loadTodos === "function") window.loadTodos();
+      }
+      break;
+
+    case "intern":
+      // ✅ เพิ่มการเรียก Intern backend
+      if (typeof window.loadInternTab === "function") {
+        window.loadInternTab();
+      }
+      break;
+
+    case "notes":
+      setTimeout(() => {
+        if (typeof window.loadNotesData === "function") window.loadNotesData();
+        else if (typeof window.initNotes === "function") window.initNotes();
+      }, 50);
+      break;
+
+    case "aboutPM":
+      if (typeof window.initAboutPM === "function") window.initAboutPM();
+      break;
+
+    case "meeting":
+      if (typeof window.loadMeeting === "function") window.loadMeeting();
+      else if (typeof window.initMeeting === "function") window.initMeeting();
+      break;
+  }
     }
 
     document.addEventListener("DOMContentLoaded", function () {

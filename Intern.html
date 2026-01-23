@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Intern Management</title>
 
   <style>
-:root {
+    :root {
       --bg: #f3f3f3;
       --card: #ffffff;
       --text: #111827;
@@ -66,808 +67,1035 @@
      ✅ CONTROLS ROW - ปรับให้ flex items เท่ากัน
      ========================================================= */
 
-.intern-controls {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-  padding: 14px;
-  background: #f8fafc;
-  border: 1px solid rgba(15, 23, 42, .08);
-  border-radius: 16px;
-  box-shadow: var(--shadow2);
-}
+    .intern-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      padding: 14px;
+      background: #f8fafc;
+      border: 1px solid rgba(15, 23, 42, .08);
+      border-radius: 16px;
+      box-shadow: var(--shadow2);
+    }
 
-.intern-controls input {
-  height: 44px;
-  padding: 0 14px;
-  border-radius: 14px;
-  border: 1px solid var(--border);
-  background: #fff;
-  font-size: 14px;
-  font-weight: 900;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, .06);
-  flex: 1 1 200px;
-  min-width: 200px;
-}
+    .intern-controls input {
+      height: 44px;
+      padding: 0 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 14px;
+      font-weight: 900;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, .06);
+      flex: 1 1 200px;
+      min-width: 200px;
+    }
 
-.intern-controls input::placeholder {
-  color: #94a3b8;
-  font-weight: 900;
-}
+    .intern-controls input::placeholder {
+      color: #94a3b8;
+      font-weight: 900;
+    }
 
-.intern-controls input:focus {
-  outline: none;
-  border-color: #111;
-  box-shadow: 0 10px 22px rgba(15, 23, 42, .10);
-}
+    .intern-controls input:focus {
+      outline: none;
+      border-color: #111;
+      box-shadow: 0 10px 22px rgba(15, 23, 42, .10);
+    }
 
-.intern-controls button {
-  height: 44px;
-  padding: 0 14px;
-  border-radius: 14px;
-  border: 1px solid var(--border);
-  background: #fff;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 900;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, .06);
-  transition: 0.2s;
-  white-space: nowrap;
-  flex: 0 1 auto;
-  min-width: fit-content;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
+    .intern-controls button {
+      height: 44px;
+      padding: 0 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: #fff;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 900;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, .06);
+      transition: 0.2s;
+      white-space: nowrap;
+      flex: 0 1 auto;
+      min-width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
 
-.intern-controls button:hover {
-  border-color: #cbd5e1;
-  background: #fafafa;
-}
+    .intern-controls button:hover {
+      border-color: #cbd5e1;
+      background: #fafafa;
+    }
 
-/* ปุ่ม เพิ่ม/ลดงาน */
-.manage-btn {
-  height: 44px;
-  padding: 0 18px;
-  border-radius: 14px;
-  border: none;
-  background: var(--btn);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 900;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  box-shadow: var(--shadow2);
-  white-space: nowrap;
-  opacity: 1;
-  flex: 0 1 auto;
-  min-width: fit-content;
-}
+    /* ปุ่ม เพิ่ม/ลดงาน */
+    .manage-btn {
+      height: 44px;
+      padding: 0 18px;
+      border-radius: 14px;
+      border: none;
+      background: var(--btn);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: var(--shadow2);
+      white-space: nowrap;
+      opacity: 1;
+      flex: 0 1 auto;
+      min-width: fit-content;
+    }
 
-button.manage-btn {
-  -webkit-appearance: none;
-  appearance: none;
-  border: none;
-  outline: none;
-  -webkit-text-fill-color: #fff;
-  text-rendering: geometricPrecision;
-  background-color: var(--btn);
-  color: #fff;
-}
+    button.manage-btn {
+      -webkit-appearance: none;
+      appearance: none;
+      border: none;
+      outline: none;
+      -webkit-text-fill-color: #fff;
+      text-rendering: geometricPrecision;
+      background-color: var(--btn);
+      color: #fff;
+    }
 
-button.manage-btn span {
-  color: #fff;
-  -webkit-text-fill-color: #fff;
-  font-weight: inherit;
-}
+    button.manage-btn span {
+      color: #fff;
+      -webkit-text-fill-color: #fff;
+      font-weight: inherit;
+    }
 
-.manage-btn:hover {
-  background: var(--btnHover);
-}
+    .manage-btn:hover {
+      background: var(--btnHover);
+    }
 
-.manage-btn.active {
-  background: #10b981;
-}
+    .manage-btn.active {
+      background: #10b981;
+    }
 
-.intern-controls .manage-btn {
-  background: var(--btn);
-  color: #fff;
-  border: none;
-}
+    .intern-controls .manage-btn {
+      background: var(--btn);
+      color: #fff;
+      border: none;
+    }
 
-.intern-controls .manage-btn:hover {
-  background: var(--btnHover);
-  color: #fff;
-  border: none;
-}
+    .intern-controls .manage-btn:hover {
+      background: var(--btnHover);
+      color: #fff;
+      border: none;
+    }
 
-.intern-controls .manage-btn.active {
-  background: #10b981;
-  color: #fff;
-}
+    .intern-controls .manage-btn.active {
+      background: #10b981;
+      color: #fff;
+    }
 
-.intern-controls button:last-child {
-  background: #fff;
-  border: 1px solid rgba(15, 23, 42, .16);
-}
+    .intern-controls button:last-child {
+      background: #fff;
+      border: 1px solid rgba(15, 23, 42, .16);
+    }
 
-.intern-controls button:last-child:hover {
-  background: #f1f5f9;
-  border-color: rgba(15, 23, 42, .22);
-}
+    .intern-controls button:last-child:hover {
+      background: #f1f5f9;
+      border-color: rgba(15, 23, 42, .22);
+    }
 
-/* =========================================================
+    /* =========================================================
  ✅ CUSTOM DROPDOWN (ตำแหน่ง)
  ========================================================= */
 
-.intern-controls select {
-  display: none !important;
-}
+    .intern-controls select {
+      display: none !important;
+    }
 
-.custom-dropdown-intern {
-  position: relative;
-  flex: 0 1 auto;
-  width: 260px;
-  min-width: 180px;
-  max-width: 260px;
-}
+    .custom-dropdown-intern {
+      position: relative;
+      flex: 0 1 auto;
+      width: 260px;
+      min-width: 180px;
+      max-width: 260px;
+    }
 
-.dropdown-selected-intern {
-  padding: 12px 14px;
-  border-radius: 14px;
-  background: #fff;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  border: 1px solid var(--border);
-  font-size: 14px;
-  font-weight: 900;
-  box-shadow: var(--shadow2);
-  width: 100%;
-  height: 44px;
-  gap: 10px;
-}
+    .dropdown-selected-intern {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      font-size: 14px;
+      font-weight: 900;
+      box-shadow: var(--shadow2);
+      width: 100%;
+      height: 44px;
+      gap: 10px;
+    }
 
-#selectedPositionText {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: calc(100% - 24px);
-}
+    #selectedPositionText {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: calc(100% - 24px);
+    }
 
-.dropdown-selected-intern:hover {
-  border-color: #cbd5e1;
-}
+    .dropdown-selected-intern:hover {
+      border-color: #cbd5e1;
+    }
 
-.dropdown-items-intern {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  background: #f1f5f9;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  margin-top: 8px;
-  max-height: 360px;
-  overflow-y: auto;
-  display: none;
-  z-index: 100;
-  padding: 10px;
-  box-shadow: var(--shadow);
-}
+    .dropdown-items-intern {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-top: 8px;
+      max-height: 360px;
+      overflow-y: auto;
+      display: none;
+      z-index: 100;
+      padding: 10px;
+      box-shadow: var(--shadow);
+    }
 
-.dropdown-items-intern.open {
-  display: block;
-}
+    .dropdown-items-intern.open {
+      display: block;
+    }
 
-.dd-item-intern {
-  display: block;
-  padding: 12px 12px;
-  border-radius: 14px;
-  cursor: pointer;
-  font-size: 15px;
-  color: #111;
-  border: 1px solid rgba(15, 23, 42, .06);
-  background: #fff;
-  font-weight: 900;
-  white-space: normal;
-  word-break: normal;
-  overflow-wrap: anywhere;
-  line-height: 1.25;
-}
+    .dd-item-intern {
+      display: block;
+      padding: 12px 12px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-size: 15px;
+      color: #111;
+      border: 1px solid rgba(15, 23, 42, .06);
+      background: #fff;
+      font-weight: 900;
+      white-space: normal;
+      word-break: normal;
+      overflow-wrap: anywhere;
+      line-height: 1.25;
+    }
 
-.dd-item-intern+.dd-item-intern {
-  margin-top: 8px;
-}
+    .dd-item-intern+.dd-item-intern {
+      margin-top: 8px;
+    }
 
-.dd-item-intern:hover {
-  background: #fafafa;
-  border-color: rgba(15, 23, 42, .12);
-}
+    .dd-item-intern:hover {
+      background: #fafafa;
+      border-color: rgba(15, 23, 42, .12);
+    }
 
-/* =========================================================
+    /* =========================================================
  ✅ STATUS DROPDOWN (custom)
  ========================================================= */
-.status-dd {
-  position: relative;
-  display: inline-block;
-  width: 140px;
-}
+    .status-dd {
+      position: relative;
+      display: inline-block;
+      width: 140px;
+    }
 
-.status-selected {
-  height: 36px;
-  padding: 0 12px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  cursor: pointer;
-  box-shadow: var(--shadow2);
-  font-size: 13px;
-  font-weight: 900;
-  user-select: none;
-}
+    .status-selected {
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+      box-shadow: var(--shadow2);
+      font-size: 13px;
+      font-weight: 900;
+      user-select: none;
+    }
 
-.status-selected:hover {
-  border-color: #cbd5e1;
-  background: #fafafa;
-}
+    .status-selected:hover {
+      border-color: #cbd5e1;
+      background: #fafafa;
+    }
 
-.status-items {
-  position: fixed;
-  margin-top: 6px;
-  background: #f1f5f9;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 8px;
-  display: none;
-  z-index: 250;
-  box-shadow: var(--shadow);
-  min-width: 140px;
-}
+    .status-items {
+      position: fixed;
+      margin-top: 6px;
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 8px;
+      display: none;
+      z-index: 250;
+      box-shadow: var(--shadow);
+      min-width: 140px;
+    }
 
-.status-items.open {
-  display: block;
-}
+    .status-items.open {
+      display: block;
+    }
 
-.status-item {
-  padding: 10px 10px;
-  border-radius: 12px;
-  background: #fff;
-  cursor: pointer;
-  text-align: center;
-  border: 1px solid rgba(15, 23, 42, .06);
-  font-size: 13px;
-  font-weight: 900;
-}
+    .status-item {
+      padding: 10px 10px;
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+      text-align: center;
+      border: 1px solid rgba(15, 23, 42, .06);
+      font-size: 13px;
+      font-weight: 900;
+    }
 
-.status-item+.status-item {
-  margin-top: 8px;
-}
+    .status-item+.status-item {
+      margin-top: 8px;
+    }
 
-.status-item:hover {
-  background: #fafafa;
-  border-color: rgba(15, 23, 42, .12);
-}
+    .status-item:hover {
+      background: #fafafa;
+      border-color: rgba(15, 23, 42, .12);
+    }
 
-/* =========================================================
+    /* =========================================================
  TABLE WRAPPER
  ========================================================= */
-.table-wrap {
-  margin-top: 8px;
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: var(--shadow2);
-  background: #fff;
-  display: flex;
-  flex-direction: column;
-  max-height: 100vh;
-}
+    .table-wrap {
+      margin-top: 8px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: var(--shadow2);
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      max-height: 100vh;
+    }
 
-.table-header-wrapper {
-  overflow-x: auto;
-  overflow-y: hidden;
-  flex-shrink: 0;
-  scrollbar-width: none;
-}
+    .table-header-wrapper {
+      overflow-x: auto;
+      overflow-y: hidden;
+      flex-shrink: 0;
+      scrollbar-width: none;
+    }
 
-.table-header-wrapper::-webkit-scrollbar {
-  height: 0;
-}
+    .table-header-wrapper::-webkit-scrollbar {
+      height: 0;
+    }
 
-.table-body-wrapper {
-  overflow-y: auto;
-  overflow-x: auto;
-  flex: 1;
-  -webkit-overflow-scrolling: touch;
-}
+    .table-body-wrapper {
+      overflow-y: auto;
+      overflow-x: auto;
+      flex: 1;
+      -webkit-overflow-scrolling: touch;
+    }
 
-body {
-  overflow-x: hidden;
-}
+    body {
+      overflow-x: hidden;
+    }
 
-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  table-layout: fixed;
-  min-width: 1020px;
-}
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      table-layout: fixed;
+      min-width: 1020px;
+    }
 
-table thead th {
-  background: #f8fafc;
-  font-weight: 900;
-  color: #111827;
-  border-bottom: 1px solid var(--border);
-  padding: 14px;
-  font-size: 14px;
-  text-align: center;
-  vertical-align: middle;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
+    table thead th {
+      background: #f8fafc;
+      font-weight: 900;
+      color: #111827;
+      border-bottom: 1px solid var(--border);
+      padding: 14px;
+      font-size: 14px;
+      text-align: center;
+      vertical-align: middle;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
 
-table tbody td {
-  padding: 14px;
-  font-size: 14px;
-  border-bottom: 1px solid rgba(15, 23, 42, .06);
-  text-align: center;
-  vertical-align: middle;
-  color: #333;
-}
+    table tbody td {
+      padding: 14px;
+      font-size: 14px;
+      border-bottom: 1px solid rgba(15, 23, 42, .06);
+      text-align: center;
+      vertical-align: middle;
+      color: #333;
+    }
 
-table tbody tr:nth-child(odd) {
-  background: #fff;
-}
+    table tbody tr:nth-child(odd) {
+      background: #fff;
+    }
 
-table tbody tr:nth-child(even) {
-  background: #fcfcfd;
-}
+    table tbody tr:nth-child(even) {
+      background: #fcfcfd;
+    }
 
-table tbody tr:hover {
-  background: #f7fafc;
-}
+    table tbody tr:hover {
+      background: #f7fafc;
+    }
 
-table input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-  accent-color: var(--btn);
-}
+    table input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: var(--btn);
+    }
 
-table select {
-  padding: 6px 10px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 900;
-  cursor: pointer;
-  background: #fff;
-  box-shadow: var(--shadow2);
-}
+    table select {
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+      background: #fff;
+      box-shadow: var(--shadow2);
+    }
 
-table select:focus {
-  outline: none;
-  border-color: var(--btn);
-  box-shadow: 0 10px 22px rgba(15, 23, 42, .10);
-}
+    table select:focus {
+      outline: none;
+      border-color: var(--btn);
+      box-shadow: 0 10px 22px rgba(15, 23, 42, .10);
+    }
 
-.delete-btn {
-  padding: 6px 10px;
-  border-radius: 10px;
-  border: 1px solid rgba(239, 68, 68, .35);
-  background: #fff1f2;
-  color: #b91c1c;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 900;
-  transition: 0.2s;
-}
+    .delete-btn {
+      padding: 6px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(239, 68, 68, .35);
+      background: #fff1f2;
+      color: #b91c1c;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 900;
+      transition: 0.2s;
+    }
 
-.delete-btn:hover {
-  filter: brightness(.95);
-}
+    .delete-btn:hover {
+      filter: brightness(.95);
+    }
 
-a {
-  color: #1a73e8;
-  text-decoration: none;
-}
+    a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
 
-a:hover {
-  text-decoration: underline;
-}
+    a:hover {
+      text-decoration: underline;
+    }
 
-.loading {
-  text-align: center;
-  padding: 50px;
-  color: #999;
-  font-weight: 900;
-}
+    .loading {
+      text-align: center;
+      padding: 50px;
+      color: #999;
+      font-weight: 900;
+    }
 
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 18px;
-  font-weight: 900;
-  margin: 20px 0 16px 0;
-  color: #111827;
-  letter-spacing: .2px;
-  gap: 12px;
-  flex-wrap: wrap;
-}
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 18px;
+      font-weight: 900;
+      margin: 20px 0 16px 0;
+      color: #111827;
+      letter-spacing: .2px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
 
-.h3-actions {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
+    .h3-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
 
-.section-header button {
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: #fff;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 900;
-  box-shadow: var(--shadow2);
-  transition: 0.2s;
-  white-space: nowrap;
-}
+    .section-header button {
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fff;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 900;
+      box-shadow: var(--shadow2);
+      transition: 0.2s;
+      white-space: nowrap;
+    }
 
-.section-header button:hover {
-  border-color: #cbd5e1;
-  background: #fafafa;
-}
+    .section-header button:hover {
+      border-color: #cbd5e1;
+      background: #fafafa;
+    }
 
-#startingAddForm,
-#endingAddForm,
-#addInternForm {
-  display: none;
-  gap: 10px;
-  align-items: center;
-  margin-top: 14px;
-  padding: 14px;
-  background: #f8fafc;
-  border-radius: 12px;
-  flex-wrap: wrap;
-  border: 1px solid rgba(15, 23, 42, .08);
-}
+    #startingAddForm,
+    #endingAddForm,
+    #addInternForm {
+      display: none;
+      gap: 10px;
+      align-items: center;
+      margin-top: 14px;
+      padding: 14px;
+      background: #f8fafc;
+      border-radius: 12px;
+      flex-wrap: wrap;
+      border: 1px solid rgba(15, 23, 42, .08);
+    }
 
-#startingAddForm.show,
-#endingAddForm.show,
-#addInternForm.show {
-  display: flex;
-}
+    #startingAddForm.show,
+    #endingAddForm.show,
+    #addInternForm.show {
+      display: flex;
+    }
 
-#startingAddForm input,
-#endingAddForm input,
-#addInternForm input {
-  height: 44px;
-  padding: 0 12px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 900;
-  box-shadow: var(--shadow2);
-  flex: 1;
-  min-width: 160px;
-  background: #fff;
+    #startingAddForm input,
+    #endingAddForm input,
+    #addInternForm input {
+      height: 44px;
+      padding: 0 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 900;
+      box-shadow: var(--shadow2);
+      flex: 1;
+      min-width: 160px;
+      background: #fff;
 
-    appearance: none;
-    -webkit-appearance: none;
-    cursor: pointer;
-}
-
-
-
-/* ✅ ให้ select สวยเหมือน input */
-#startingAddForm select,
-#endingAddForm select,
-#addInternForm select {
-  height: 44px;
-  padding: 0 12px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 900;
-  box-shadow: var(--shadow2);
-  flex: 1;
-  min-width: 160px;
-  background: #fff;
-  appearance: none;
-  -webkit-appearance: none;
-  cursor: pointer;
-}
-#startingAddForm input:focus,
-#endingAddForm input:focus,
-#addInternForm input:focus {
-  outline: none;
-  border-color: var(--btn);
-  box-shadow: 0 10px 22px rgba(15, 23, 42, .10);
-}
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
 
 
-#startingAddForm select:focus,
-#endingAddForm select:focus,
-#addInternForm select:focus {
-  outline: none;
-  border-color: var(--btn);
-  box-shadow: 0 0 0 3px rgba(17,17,17,.08);
-}
-#startingAddForm button,
-#endingAddForm button,
-#addInternForm button {
-  height: 44px;
-  padding: 0 14px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: #fff;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 900;
-  box-shadow: var(--shadow2);
-  transition: 0.2s;
-  white-space: nowrap;
-}
 
-#startingAddForm button:hover,
-#endingAddForm button:hover,
-#addInternForm button:hover {
-  background: #f7f7f7;
-  border-color: #cbd5e1;
-}
+    /* ✅ ให้ select สวยเหมือน input */
+    #startingAddForm select,
+    #endingAddForm select,
+    #addInternForm select {
+      height: 44px;
+      padding: 0 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 900;
+      box-shadow: var(--shadow2);
+      flex: 1;
+      min-width: 160px;
+      background: #fff;
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
 
-/* =========================================================
+    #startingAddForm input:focus,
+    #endingAddForm input:focus,
+    #addInternForm input:focus {
+      outline: none;
+      border-color: var(--btn);
+      box-shadow: 0 10px 22px rgba(15, 23, 42, .10);
+    }
+
+
+    #startingAddForm select:focus,
+    #endingAddForm select:focus,
+    #addInternForm select:focus {
+      outline: none;
+      border-color: var(--btn);
+      box-shadow: 0 0 0 3px rgba(17, 17, 17, .08);
+    }
+
+    #startingAddForm button,
+    #endingAddForm button,
+    #addInternForm button {
+      height: 44px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fff;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 900;
+      box-shadow: var(--shadow2);
+      transition: 0.2s;
+      white-space: nowrap;
+    }
+
+    #startingAddForm button:hover,
+    #endingAddForm button:hover,
+    #addInternForm button:hover {
+      background: #f7f7f7;
+      border-color: #cbd5e1;
+    }
+
+    /* =========================================================
  RESPONSIVE - ปรับให้ input search มีความกว้างเท่ากับปุ่ม
  ========================================================= */
 
-@media (max-width: 1200px) {
-  .container {
-    padding: 20px;
-  }
+    @media (max-width: 1200px) {
+      .container {
+        padding: 20px;
+      }
 
-  .intern-controls {
-    flex-wrap: wrap;
-  }
+      .intern-controls {
+        flex-wrap: wrap;
+      }
 
-  .intern-controls input {
-    flex: 1 1 auto;
-    min-width: 160px;
-  }
+      .intern-controls input {
+        flex: 1 1 auto;
+        min-width: 160px;
+      }
 
-  .custom-dropdown-intern {
-    width: 220px;
-    min-width: 220px;
-    max-width: 220px;
-  }
+      .custom-dropdown-intern {
+        width: 220px;
+        min-width: 220px;
+        max-width: 220px;
+      }
 
-  #internManageBtn,
-  .intern-controls button:last-child {
-    flex: 0 0 auto;
-  }
+      #internManageBtn,
+      .intern-controls button:last-child {
+        flex: 0 0 auto;
+      }
 
-  table {
-    min-width: 1000px;
+      table {
+        min-width: 1000px;
+      }
+    }
+
+    @media (max-width: 920px) {
+      .container {
+        padding: 18px;
+        margin: 0 auto 18px;
+      }
+
+      .title {
+        font-size: 22px;
+      }
+
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .h3-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .intern-controls {
+        padding: 12px;
+        flex-direction: column;
+      }
+
+      .intern-controls input {
+        width: 100%;
+        order: 1;
+      }
+
+      .custom-dropdown-intern {
+        width: 100%;
+        max-width: none;
+        order: 2;
+      }
+
+      #internManageBtn {
+        width: 100%;
+        order: 3;
+      }
+
+      .intern-controls button:last-child {
+        width: 100%;
+        order: 4;
+      }
+
+      table th,
+      table td {
+        padding: 12px 10px;
+        font-size: 13px;
+      }
+
+      .table-wrap {
+        max-height: 500px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 16px;
+        border-radius: 14px;
+      }
+
+      .title {
+        font-size: 20px;
+        margin-bottom: 12px;
+      }
+
+      .intern-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px;
+      }
+
+      .intern-controls input {
+        width: 100%;
+        height: 48px;
+        font-size: 15px;
+        order: 1;
+      }
+
+      .custom-dropdown-intern {
+        width: 100%;
+        order: 2;
+      }
+
+      .dropdown-selected-intern {
+        height: 48px;
+        font-size: 15px;
+      }
+
+      #internManageBtn {
+        width: 100%;
+        height: 48px;
+        font-size: 15px;
+        order: 3;
+      }
+
+      .intern-controls button:last-child {
+        width: 100%;
+        height: 48px;
+        font-size: 15px;
+        order: 4;
+      }
+
+      .status-dd {
+        width: 130px;
+      }
+
+      .table-wrap {
+        max-height: 450px;
+      }
+
+      #startingAddForm,
+      #endingAddForm,
+      #addInternForm {
+        padding: 12px;
+        gap: 8px;
+      }
+
+      #startingAddForm input,
+      #endingAddForm input,
+      #addInternForm input {
+        min-width: 140px;
+        height: 48px;
+        font-size: 15px;
+      }
+
+      #startingAddForm button,
+      #endingAddForm button,
+      #addInternForm button {
+        height: 48px;
+        font-size: 15px;
+      }
+
+      .section-header button {
+        height: 44px;
+        font-size: 14px;
+        padding: 0 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 14px;
+        margin: 0 auto 16px;
+      }
+
+      .title {
+        font-size: 20px;
+        margin-bottom: 14px;
+      }
+
+      .intern-controls {
+        padding: 12px;
+        gap: 10px;
+      }
+
+      .intern-controls input {
+        height: 52px;
+        font-size: 17px;
+      }
+
+      .intern-controls button,
+      .manage-btn {
+        height: 52px;
+        font-size: 17px;
+      }
+
+      .section-header {
+        font-size: 17px;
+        margin: 18px 0 12px 0;
+      }
+
+      table {
+        min-width: 880px;
+      }
+
+      table thead th {
+        font-size: 12px;
+        padding: 10px 6px;
+      }
+
+      table tbody td {
+        padding: 10px 6px;
+        font-size: 12px;
+      }
+    }
+
+
+
+    /* =========================
+   ✅ Start/End Date labels in Add form
+   ========================= */
+    #addInternForm .date-wrap,
+    #startingAddForm .date-wrap,
+    #endingAddForm .date-wrap {
+      flex: 1;
+      min-width: 160px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    #addInternForm .mini-cap,
+    #startingAddForm .mini-cap,
+    #endingAddForm .mini-cap {
+      font-size: 11px;
+      font-weight: 900;
+      color: var(--text-muted, #64748b);
+      padding-left: 2px;
+      letter-spacing: .2px;
+    }
+
+
+
+    .date-wrap .date-input {
+      width: 100%;
+      height: 44px;
+      padding: 0 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 900;
+      box-shadow: var(--shadow2);
+      background: #fff;
+      box-sizing: border-box;
+    }
+
+    .date-wrap .date-ph {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 13px;
+      font-weight: 900;
+      color: rgba(100, 116, 139, .85);
+      pointer-events: none;
+      user-select: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      right: 34px;
+      /* เผื่อไอคอนปฏิทิน */
+    }
+
+    .date-wrap .date-input:not(.empty)+.date-ph {
+      display: none;
+    }
+
+    /* ซ่อนตัวอักษร date ของ browser ตอนยังว่าง เพื่อไม่ให้ mm/dd/yyyy มากินที่ */
+    .date-wrap .date-input.empty {
+      color: transparent;
+    }
+
+    .date-wrap .date-input.empty::-webkit-datetime-edit {
+      color: transparent;
+    }
+
+    .date-wrap .date-input.empty::-webkit-datetime-edit-text {
+      color: transparent;
+    }
+
+    .date-wrap .date-input.empty::-webkit-datetime-edit-month-field {
+      color: transparent;
+    }
+
+    .date-wrap .date-input.empty::-webkit-datetime-edit-day-field {
+      color: transparent;
+    }
+
+    .date-wrap .date-input.empty::-webkit-datetime-edit-year-field {
+      color: transparent;
+    }
+
+    .date-wrap .date-input.empty::-webkit-datetime-edit-fields-wrapper {
+      color: transparent;
+    }
+
+    .date-wrap .date-input:focus {
+      outline: none;
+      border-color: rgba(59, 130, 246, .55);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, .12), var(--shadow2);
+    }
+
+
+
+    /* =========================
+   ✅ Date toggle input (text -> date) sizing
+   ========================= */
+    #addInternForm #newInternStartDate,
+    #addInternForm #newInternEndDate {
+      height: 44px !important;
+      padding: 0 12px !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 12px !important;
+      font-size: 13px !important;
+      font-weight: 900 !important;
+      box-shadow: var(--shadow2) !important;
+      background: #fff !important;
+      flex: 1;
+      min-width: 160px;
+      box-sizing: border-box;
+      min-height: 44px;
+    }
+    
+  
+/* =========================
+   ✅ ADD INTERN FORM - PRETTY LAYOUT (override)
+   วางท้ายสุดของ <style>
+   ========================= */
+
+#addInternForm.add-intern-form.show{
+  display: block !important; /* override display:flex ของเดิม */
+  width: 100%;
+}
+
+#addInternForm.add-intern-form{
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, .08);
+  border-radius: 16px;
+  box-shadow: var(--shadow2);
+  padding: 16px;
+}
+
+/* spacing ระหว่างกลุ่ม */
+#addInternForm .form-main,
+#addInternForm .form-dates{
+  margin-bottom: 12px;
+}
+
+/* MAIN INPUTS: grid 2 คอลัมน์ */
+#addInternForm .form-main{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+/* URL กินเต็มแถว */
+#addInternForm #newInternDocsUpdateWorks{
+  grid-column: 1 / -1;
+}
+
+/* DATES: 2 ช่องเท่ากัน */
+#addInternForm .form-dates{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 10px;
+  align-items: start;
+}
+
+#addInternForm .date-wrap{
+  min-width: 0;
+}
+
+/* ให้ input/select เต็มความกว้าง */
+#addInternForm input,
+#addInternForm select{
+  width: 100%;
+}
+
+/* ACTIONS: ปุ่มชิดขวา */
+#addInternForm .form-actions{
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(15, 23, 42, .12);
+  flex-wrap: wrap;
+}
+
+/* ปรับปุ่มใน actions ให้ดูเป็นกลุ่มเดียวกัน */
+#addInternForm .form-actions button{
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ปุ่ม "เพิ่ม" เด่นขึ้น */
+#addInternForm .form-actions button:first-child{
+  background: #111;
+  border-color: #111;
+  color: #fff;
+}
+
+#addInternForm .form-actions button:first-child:hover{
+  filter: brightness(0.92);
+}
+
+/* ปุ่มยกเลิก */
+#addInternForm .form-actions button:last-child{
+  background: #fff;
+}
+
+/* Responsive: มือถือให้เป็น 1 คอลัมน์ */
+@media (max-width: 768px){
+  #addInternForm .form-main,
+  #addInternForm .form-dates{
+    grid-template-columns: 1fr;
+  }
+  #addInternForm .form-actions{
+    justify-content: stretch;
+  }
+  #addInternForm .form-actions button{
+    flex: 1;
+    justify-content: center;
   }
 }
 
-@media (max-width: 920px) {
-  .container {
-    padding: 18px;
-    margin: 0 auto 18px;
-  }
-
-  .title {
-    font-size: 22px;
-  }
-
-  .section-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .h3-actions {
-    width: 100%;
-    justify-content: flex-start;
-  }
-
-  .intern-controls {
-    padding: 12px;
-    flex-direction: column;
-  }
-
-  .intern-controls input {
-    width: 100%;
-    order: 1;
-  }
-
-  .custom-dropdown-intern {
-    width: 100%;
-    max-width: none;
-    order: 2;
-  }
-
-  #internManageBtn {
-    width: 100%;
-    order: 3;
-  }
-
-  .intern-controls button:last-child {
-    width: 100%;
-    order: 4;
-  }
-
-  table th,
-  table td {
-    padding: 12px 10px;
-    font-size: 13px;
-  }
-
-  .table-wrap {
-    max-height: 500px;
-  }
-}
-
-@media (max-width: 768px) {
-  .container {
-    padding: 16px;
-    border-radius: 14px;
-  }
-
-  .title {
-    font-size: 20px;
-    margin-bottom: 12px;
-  }
-
-  .intern-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 12px;
-  }
-
-  .intern-controls input {
-    width: 100%;
-    height: 48px;
-    font-size: 15px;
-    order: 1;
-  }
-
-  .custom-dropdown-intern {
-    width: 100%;
-    order: 2;
-  }
-
-  .dropdown-selected-intern {
-    height: 48px;
-    font-size: 15px;
-  }
-
-  #internManageBtn {
-    width: 100%;
-    height: 48px;
-    font-size: 15px;
-    order: 3;
-  }
-
-  .intern-controls button:last-child {
-    width: 100%;
-    height: 48px;
-    font-size: 15px;
-    order: 4;
-  }
-
-  .status-dd {
-    width: 130px;
-  }
-
-  .table-wrap {
-    max-height: 450px;
-  }
-
-  #startingAddForm,
-  #endingAddForm,
-  #addInternForm {
-    padding: 12px;
-    gap: 8px;
-  }
-
-  #startingAddForm input,
-  #endingAddForm input,
-  #addInternForm input {
-    min-width: 140px;
-    height: 48px;
-    font-size: 15px;
-  }
-
-  #startingAddForm button,
-  #endingAddForm button,
-  #addInternForm button {
-    height: 48px;
-    font-size: 15px;
-  }
-
-  .section-header button {
-    height: 44px;
-    font-size: 14px;
-    padding: 0 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .container {
-    padding: 14px;
-    margin: 0 auto 16px;
-  }
-
-  .title {
-    font-size: 20px;
-    margin-bottom: 14px;
-  }
-
-  .intern-controls {
-    padding: 12px;
-    gap: 10px;
-  }
-
-  .intern-controls input {
-    height: 52px;
-    font-size: 17px;
-  }
-
-  .intern-controls button,
-  .manage-btn {
-    height: 52px;
-    font-size: 17px;
-  }
-
-  .section-header {
-    font-size: 17px;
-    margin: 18px 0 12px 0;
-  }
-
-  table {
-    min-width: 880px;
-  }
-
-  table thead th {
-    font-size: 12px;
-    padding: 10px 6px;
-  }
-
-  table tbody td {
-    padding: 10px 6px;
-    font-size: 12px;
-  }
-}
-  </style>
+</style>
 
 </head>
 
 <body>
 
-<!-- MAIN INTERN DATA -->
+  <!-- MAIN INTERN DATA -->
   <div class="container">
     <div class="title">
-      <img src="https://img.icons8.com/?size=100&id=wNJfNKpLXXlt&format=png&color=000000" alt="users" style="width:24px;height:24px;">
+      <img src="https://img.icons8.com/?size=100&id=wNJfNKpLXXlt&format=png&color=000000" alt="users"
+        style="width:24px;height:24px;">
       รายชื่อเด็กฝึกงาน
     </div>
 
@@ -875,7 +1103,8 @@ a:hover {
       <input type="text" id="internSearch" placeholder="ค้นหาชื่อ" oninput="filterInterns()" />
 
       <button id="internManageBtn" class="manage-btn" onclick="toggleInternManageMode()">
-        <img src="https://img.icons8.com/?size=100&id=bDKqvw7V0ANQ&format=png&color=000000" alt="plus" style="width:16px;height:16px;">
+        <img src="https://img.icons8.com/?size=100&id=bDKqvw7V0ANQ&format=png&color=000000" alt="plus"
+          style="width:16px;height:16px;">
         <span>เพิ่ม/ลดรายชื่อ</span>
       </button>
 
@@ -890,51 +1119,51 @@ a:hover {
       </div>
 
       <button onclick="clearInternFilters()">
-  ล้างตัวกรอง
-</button>
+        ล้างตัวกรอง
+      </button>
     </div>
 
     <div class="table-wrap">
-<div class="table-header-wrapper">
-  <table>
-<!-- Table Header -->
-<colgroup>
-  <col style="width:120px;">   <!-- ชื่อ -->
-  <col style="width:150px;">   <!-- ตำแหน่ง -->
-  <col style="width:70px;">    <!-- เช้า -->
-  <col style="width:70px;">    <!-- บ่าย -->
-  <col style="width:140px;">   <!-- สถานะ -->
-  <col style="width:200px;">   <!-- หมายเหตุ -->
-  <col style="width:180px;">   <!-- ไฟล์อัปเดตงาน -->
-  <col id="internActionsHeaderCol" style="width:100px; display:none;">   <!-- ลบ -->
-</colgroup>
-    <thead>
-      <tr>
-        <th>ชื่อ</th>
-        <th>ตำแหน่ง</th>
-        <th>เช้า</th>
-        <th>บ่าย</th>
-        <th>สถานะ</th>
-        <th>หมายเหตุ</th>
-        <th>ไฟล์อัปเดตงาน</th>
-        <th id="internActionsHeader" style="display:none;">ลบ</th>
-      </tr>
-    </thead>
-  </table>
-</div>
+      <div class="table-header-wrapper">
+        <table>
+          <!-- Table Header -->
+          <colgroup>
+            <col style="width:120px;"> <!-- ชื่อ -->
+            <col style="width:150px;"> <!-- ตำแหน่ง -->
+            <col style="width:70px;"> <!-- เช้า -->
+            <col style="width:70px;"> <!-- บ่าย -->
+            <col style="width:140px;"> <!-- สถานะ -->
+            <col style="width:200px;"> <!-- หมายเหตุ -->
+            <col style="width:180px;"> <!-- ไฟล์อัปเดตงาน -->
+            <col id="internActionsHeaderCol" style="width:100px; display:none;"> <!-- ลบ -->
+          </colgroup>
+          <thead>
+            <tr>
+              <th>ชื่อ</th>
+              <th>ตำแหน่ง</th>
+              <th>เช้า</th>
+              <th>บ่าย</th>
+              <th>สถานะ</th>
+              <th>หมายเหตุ</th>
+              <th>ไฟล์อัปเดตงาน</th>
+              <th id="internActionsHeader" style="display:none;">ลบ</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
 
-<div class="table-body-wrapper">
-  <table>
-<colgroup>
-  <col style="width:120px;">   <!-- ชื่อ -->
-  <col style="width:150px;">   <!-- ตำแหน่ง -->
-  <col style="width:70px;">    <!-- เช้า -->
-  <col style="width:70px;">    <!-- บ่าย -->
-  <col style="width:140px;">   <!-- สถานะ -->
-  <col style="width:200px;">   <!-- หมายเหตุ -->
-  <col style="width:180px;">   <!-- ไฟล์อัปเดตงาน -->
-  <col id="internActionsBodyCol" style="width:100px; display:none;">   <!-- ลบ -->
-</colgroup>
+      <div class="table-body-wrapper">
+        <table>
+          <colgroup>
+            <col style="width:120px;"> <!-- ชื่อ -->
+            <col style="width:150px;"> <!-- ตำแหน่ง -->
+            <col style="width:70px;"> <!-- เช้า -->
+            <col style="width:70px;"> <!-- บ่าย -->
+            <col style="width:140px;"> <!-- สถานะ -->
+            <col style="width:200px;"> <!-- หมายเหตุ -->
+            <col style="width:180px;"> <!-- ไฟล์อัปเดตงาน -->
+            <col id="internActionsBodyCol" style="width:100px; display:none;"> <!-- ลบ -->
+          </colgroup>
 
           <tbody id="internTableBody">
             <tr>
@@ -946,28 +1175,55 @@ a:hover {
     </div>
 
     <!-- ✅ เพิ่มฟอร์ม inline สำหรับเพิ่มเด็กฝึกงาน -->
-    <div id="addInternForm">
-      <input type="text" id="newInternName" placeholder="ชื่อเด็กฝึกงาน">
-      <input type="text" id="newInternPosition" placeholder="ตำแหน่ง" list="addInternPositionDatalist">
-      <datalist id="addInternPositionDatalist"></datalist>
-      <input type="text" id="newInternNote" placeholder="หมายเหตุ (ไม่บังคับ)">
-      <input type="text" id="newInternNickname" placeholder="ชื่อเล่น (ไม่บังคับ)">
-      <select id="newInternRole" title="Role">
-        <option value="intern" selected="">INTERN</option>
-        <option value="fulltime">FULLTIME</option>
-        <option value="mentor">MENTOR</option>
-        <option value="admin">ADMIN</option>
-      </select>
-      <input type="url" id="newInternDocsUpdateWorks" placeholder="docsUpdateWorks (URL) (ไม่บังคับ)">
-      <button onclick="addNewInternSubmit()">
-        <img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" alt="check" style="width:16px;height:16px;">
-        เพิ่ม
-      </button>
-      <button onclick="hideAddInternForm()">
-        <img src="https://img.icons8.com/?size=100&id=QlMnqMXDMws3&format=png&color=000000" alt="close" style="width:16px;height:16px;">
-        ยกเลิก
-      </button>
+    <div id="addInternForm" class="add-intern-form">
+  <!-- กลุ่ม input ปกติ -->
+  <div class="form-main">
+    <input type="text" id="newInternName" placeholder="ชื่อเด็กฝึกงาน">
+    <input type="text" id="newInternPosition" placeholder="ตำแหน่ง" list="addInternPositionDatalist">
+    <datalist id="addInternPositionDatalist"></datalist>
+    <input type="text" id="newInternNote" placeholder="หมายเหตุ (ไม่บังคับ)">
+    <input type="text" id="newInternNickname" placeholder="ชื่อเล่น (ไม่บังคับ)">
+    <select id="newInternRole" title="Role">
+      <option value="intern" selected="">INTERN</option>
+      <option value="fulltime">FULLTIME</option>
+      <option value="mentor">MENTOR</option>
+      <option value="admin">ADMIN</option>
+    </select>
+    <input type="url" id="newInternDocsUpdateWorks" placeholder="docsUpdateWorks (URL) (ไม่บังคับ)">
+  </div>
+
+  <!-- กลุ่ม date -->
+  <div class="form-dates">
+    <div class="date-wrap">
+      <input type="text" id="newInternStartDate" placeholder="วันเริ่มงาน (startDate)"
+        aria-label="วันเริ่มงาน (startDate)"
+        onfocus="this.type='date'; this.showPicker && this.showPicker();"
+        onblur="if(!this.value) this.type='text';">
     </div>
+    <div class="date-wrap">
+      <input type="text" id="newInternEndDate" placeholder="วันจบงาน (endDate)"
+        aria-label="วันจบงาน (endDate)"
+        onfocus="this.type='date'; this.showPicker && this.showPicker();"
+        onblur="if(!this.value) this.type='text';">
+    </div>
+  </div>
+
+  <!-- กลุ่มปุ่ม -->
+  <div class="form-actions">
+    <button type="button" onclick="addNewInternSubmit()">
+      <img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" alt="check"
+        style="width:16px;height:16px;">
+      เพิ่ม
+    </button>
+
+    <button type="button" onclick="hideAddInternForm()">
+      <img src="https://img.icons8.com/?size=100&id=QlMnqMXDMws3&format=png&color=000000" alt="close"
+        style="width:16px;height:16px;">
+      ยกเลิก
+    </button>
+  </div>
+</div>
+
 
   </div>
 
@@ -975,16 +1231,19 @@ a:hover {
   <div class="container">
     <div class="section-header">
       <span>
-        <img src="https://img.icons8.com/?size=100&id=WO3eRAu5RSGP&format=png&color=000000" alt="sprout" style="width:20px;height:20px;">
+        <img src="https://img.icons8.com/?size=100&id=WO3eRAu5RSGP&format=png&color=000000" alt="sprout"
+          style="width:20px;height:20px;">
         นักศึกษาฝึกงานที่กำลังเริ่มงาน
       </span>
       <div class="h3-actions">
         <button onclick="toggleStartingAdd()">
-          <img src="https://img.icons8.com/?size=100&id=XpyLr4ervzGM&format=png&color=000000" alt="add" style="width:14px;height:14px;">
+          <img src="https://img.icons8.com/?size=100&id=XpyLr4ervzGM&format=png&color=000000" alt="add"
+            style="width:14px;height:14px;">
           เพิ่มชื่อ
         </button>
         <button id="editStartingBtn" onclick="toggleEditStarting()">
-          <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" alt="edit" style="width:14px;height:14px;">
+          <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" alt="edit"
+            style="width:14px;height:14px;">
           แก้ไข
         </button>
       </div>
@@ -1022,11 +1281,13 @@ a:hover {
       <input type="text" id="startingPosition" placeholder="ตำแหน่ง">
       <input type="text" id="startingDate" placeholder="วันที่/ช่วงเวลา (เช่น 01/01/2026)">
       <button onclick="addStartingIntern()">
-        <img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" alt="check" style="width:16px;height:16px;">
+        <img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" alt="check"
+          style="width:16px;height:16px;">
         เพิ่ม
       </button>
       <button onclick="toggleStartingAdd()">
-        <img src="https://img.icons8.com/?size=100&id=QlMnqMXDMws3&format=png&color=000000" alt="close" style="width:16px;height:16px;">
+        <img src="https://img.icons8.com/?size=100&id=QlMnqMXDMws3&format=png&color=000000" alt="close"
+          style="width:16px;height:16px;">
         ยกเลิก
       </button>
     </div>
@@ -1036,16 +1297,19 @@ a:hover {
   <div class="container">
     <div class="section-header">
       <span>
-        <img src="https://img.icons8.com/?size=100&id=XVGCqo0GC6fq&format=png&color=000000" alt="hourglass" style="width:20px;height:20px;">
+        <img src="https://img.icons8.com/?size=100&id=XVGCqo0GC6fq&format=png&color=000000" alt="hourglass"
+          style="width:20px;height:20px;">
         นักศึกษาฝึกงานใกล้จบการฝึกงาน
       </span>
       <div class="h3-actions">
         <button onclick="toggleEndingAdd()">
-          <img src="https://img.icons8.com/?size=100&id=XpyLr4ervzGM&format=png&color=000000" alt="add" style="width:14px;height:14px;">
+          <img src="https://img.icons8.com/?size=100&id=XpyLr4ervzGM&format=png&color=000000" alt="add"
+            style="width:14px;height:14px;">
           เพิ่มชื่อ
         </button>
         <button id="editEndingBtn" onclick="toggleEditEnding()">
-          <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" alt="edit" style="width:14px;height:14px;">
+          <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" alt="edit"
+            style="width:14px;height:14px;">
           แก้ไข
         </button>
       </div>
@@ -1083,812 +1347,1044 @@ a:hover {
       <input type="text" id="endingPosition" placeholder="ตำแหน่ง">
       <input type="text" id="endingDate" placeholder="วันที่/ช่วงเวลา">
       <button onclick="addEndingIntern()">
-        <img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" alt="check" style="width:16px;height:16px;">
+        <img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" alt="check"
+          style="width:16px;height:16px;">
         เพิ่ม
       </button>
       <button onclick="toggleEndingAdd()">
-        <img src="https://img.icons8.com/?size=100&id=QlMnqMXDMws3&format=png&color=000000" alt="close" style="width:16px;height:16px;">
+        <img src="https://img.icons8.com/?size=100&id=QlMnqMXDMws3&format=png&color=000000" alt="close"
+          style="width:16px;height:16px;">
         ยกเลิก
       </button>
     </div>
   </div>
 
   <script>
-/* API Adapter - PM Project API */
-(function initBackendAdapter() {
-  const API_BASE = "http://localhost:3000";
+    /* API Adapter - PM Project API */
+    (function initBackendAdapter() {
+      const API_BASE = "http://localhost:3000";
 
-  window.BACKEND = {
-    async getInternData(page = 1, limit = 100, search = "", role = "") {
-      try {
-        // ✅ ดึงทุกหน้า (pagination) จนหมด
-        const all = [];
-        let p = Number(page || 1);
-        const lim = Number(limit || 100);
+      window.BACKEND = {
+        async getInternData(page = 1, limit = 100, search = "", role = "") {
+          try {
+            // ✅ ดึงทุกหน้า (pagination) จนหมด
+            const all = [];
+            let p = Number(page || 1);
+            const lim = Number(limit || 100);
 
-        while (true) {
-          const params = new URLSearchParams();
-          params.set("page", String(p));
-          params.set("limit", String(lim));
-          if (search && String(search).trim()) params.set("search", String(search).trim());
-          if (role && String(role).trim()) params.set("role", String(role).trim());
+            while (true) {
+              const params = new URLSearchParams();
+              params.set("page", String(p));
+              params.set("limit", String(lim));
+              if (search && String(search).trim()) params.set("search", String(search).trim());
+              if (role && String(role).trim()) params.set("role", String(role).trim());
 
-          const url = `${API_BASE}/members?${params.toString()}`;
+              const url = `${API_BASE}/members?${params.toString()}`;
 
-          const res = await fetch(url, { method: "GET", headers: { "Accept": "application/json" } });
+              const res = await fetch(url, { method: "GET", headers: { "Accept": "application/json" } });
 
-          if (!res.ok) {
-            const txt = await res.text().catch(() => "");
-            console.error("GET /members failed:", res.status, txt);
-            // ❌ อย่าวนลูปต่อเมื่อ backend ตอบ 400/500
-            break;
-          }
+              if (!res.ok) {
+                const txt = await res.text().catch(() => "");
+                console.error("GET /members failed:", res.status, txt);
+                // ❌ อย่าวนลูปต่อเมื่อ backend ตอบ 400/500
+                break;
+              }
 
-          const data = await res.json().catch(() => ({}));
+              const data = await res.json().catch(() => ({}));
 
-          const items = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
-          all.push(...items);
+              const items = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
+              all.push(...items);
 
-          const totalPages = Number(data?.pagination?.totalPages || 1);
-          if (p >= totalPages) break;
-          p += 1;
-        }
-
-        return { items: all, pagination: { loadedAll: true } };
-      } catch (err) {
-        console.error("โหลด interns ไม่สำเร็จ:", err);
-        return { items: [], pagination: {} };
-      }
-    },
-
-    async getInternStarting() {
-      try {
-        const res = await fetch(`${API_BASE}/events?search=starting&limit=100`, { method: "GET" });
-        if (!res.ok) return [];
-        const data = await res.json();
-        return (data.data || []).filter(e => e.tags && e.tags.includes("starting"));
-      } catch (err) {
-        return [];
-      }
-    },
-
-    async getInternEnding() {
-      try {
-        const res = await fetch(`${API_BASE}/events?search=ending&limit=100`, { method: "GET" });
-        if (!res.ok) return [];
-        const data = await res.json();
-        return (data.data || []).filter(e => e.tags && e.tags.includes("ending"));
-      } catch (err) {
-        return [];
-      }
-    },
-
-    async saveInternStarting(payload) {
-      try {
-        for (const item of payload) {
-          const eventData = {
-            title: `${item.fullName} เริ่มงาน`,
-            description: `ตำแหน่ง: ${item.position}, วันที่: ${item.dateRange}`,
-            tags: ["starting", item.position],
-            start: new Date().toISOString(),
-            status: item.notifyStatus ? "COMPLETED" : "NOT_STARTED"
-          };
-
-          await fetch(`${API_BASE}/events`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(eventData)
-          });
-        }
-        return { success: true };
-      } catch (err) {
-        console.error("saveInternStarting error:", err);
-        return { success: false, message: err.message };
-      }
-    },
-
-    async saveInternEnding(payload) {
-      try {
-        for (const item of payload) {
-          const eventData = {
-            title: `${item.fullName} จบงาน`,
-            description: `ตำแหน่ง: ${item.position}, วันที่: ${item.dateRange}`,
-            tags: ["ending", item.position],
-            start: new Date().toISOString(),
-            status: item.notifyStatus ? "COMPLETED" : "NOT_STARTED"
-          };
-
-          await fetch(`${API_BASE}/events`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(eventData)
-          });
-        }
-        return { success: true };
-      } catch (err) {
-        console.error("saveInternEnding error:", err);
-        return { success: false, message: err.message };
-      }
-    },
-
-    async addNewIntern(member) {
-      try {
-        // ✅ Backend หลายตัว "ต้องการ role" และอาจไม่รู้จัก field docsUpdateWorks
-        // เราเลยส่งเฉพาะ field มาตรฐาน + role intern
-        const basePayload = {
-          displayName: (member?.displayName || "").toString().trim(),
-          nickname: (member?.nickname || "").toString().trim() || undefined,
-          position: (member?.position || "").toString().trim() || undefined,
-          note: (member?.note || "").toString().trim() || undefined,
-          docsUpdateWorks: (member?.docsUpdateWorks || "").toString().trim() || undefined,
-          role: (member?.role || "intern").toString().trim().toLowerCase()
-        };
-
-        const attempts = [ basePayload ];
-
-        let lastTxt = "";
-
-        for (const payload of attempts) {
-          const res = await fetch(`${API_BASE}/members`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "Accept": "application/json" },
-            body: JSON.stringify(payload)
-          });
-
-          if (res.ok) {
-            const created = await res.json().catch(() => ({}));
-
-            // ✅ เก็บ docsUpdateWorks ไว้ local ต่อ memberId (ไม่พัง DTO ฝั่ง backend)
-            const id = String(created?._id || created?.id || "");
-            const duw = String(payload?.docsUpdateWorks || "").trim();
-            if (id && duw) {
-              writeMeta(id, { docsUpdateWorks: duw });
+              const totalPages = Number(data?.pagination?.totalPages || 1);
+              if (p >= totalPages) break;
+              p += 1;
             }
-            return { success: true, created };
+
+            return { items: all, pagination: { loadedAll: true } };
+          } catch (err) {
+            console.error("โหลด interns ไม่สำเร็จ:", err);
+            return { items: [], pagination: {} };
           }
+        },
 
-          lastTxt = await res.text().catch(() => "");
-          console.error("POST /members failed:", res.status, lastTxt);
+        async getInternStarting() {
+          try {
+            const res = await fetch(`${API_BASE}/events?search=starting&limit=100`, { method: "GET" });
+            if (!res.ok) return [];
+            const data = await res.json();
+            return (data.data || []).filter(e => e.tags && e.tags.includes("starting"));
+          } catch (err) {
+            return [];
+          }
+        },
+
+        async getInternEnding() {
+          try {
+            const res = await fetch(`${API_BASE}/events?search=ending&limit=100`, { method: "GET" });
+            if (!res.ok) return [];
+            const data = await res.json();
+            return (data.data || []).filter(e => e.tags && e.tags.includes("ending"));
+          } catch (err) {
+            return [];
+          }
+        },
+
+        async saveInternStarting(payload) {
+          try {
+            for (const item of payload) {
+              const eventData = {
+                title: `${item.fullName} เริ่มงาน`,
+                description: `ตำแหน่ง: ${item.position}, วันที่: ${item.dateRange}`,
+                tags: ["starting", item.position],
+                start: new Date().toISOString(),
+                status: item.notifyStatus ? "COMPLETED" : "NOT_STARTED"
+              };
+
+              await fetch(`${API_BASE}/events`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(eventData)
+              });
+            }
+            return { success: true };
+          } catch (err) {
+            console.error("saveInternStarting error:", err);
+            return { success: false, message: err.message };
+          }
+        },
+
+        async saveInternEnding(payload) {
+          try {
+            for (const item of payload) {
+              const eventData = {
+                title: `${item.fullName} จบงาน`,
+                description: `ตำแหน่ง: ${item.position}, วันที่: ${item.dateRange}`,
+                tags: ["ending", item.position],
+                start: new Date().toISOString(),
+                status: item.notifyStatus ? "COMPLETED" : "NOT_STARTED"
+              };
+
+              await fetch(`${API_BASE}/events`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(eventData)
+              });
+            }
+            return { success: true };
+          } catch (err) {
+            console.error("saveInternEnding error:", err);
+            return { success: false, message: err.message };
+          }
+        },
+
+        async addNewIntern(member) {
+          try {
+            // ✅ Backend หลายตัว "ต้องการ role" และอาจไม่รู้จัก field docsUpdateWorks
+            // เราเลยส่งเฉพาะ field มาตรฐาน + role intern
+            const basePayload = {
+              displayName: (member?.displayName || "").toString().trim(),
+              nickname: (member?.nickname || "").toString().trim() || undefined,
+              position: (member?.position || "").toString().trim() || undefined,
+              note: (member?.note || "").toString().trim() || undefined,
+              docsUpdateWorks: (member?.docsUpdateWorks || "").toString().trim() || undefined,
+              startDate: (member?.startDate || "").toString().trim() || undefined,
+              endDate: (member?.endDate || "").toString().trim() || undefined,
+              role: (member?.role || "intern").toString().trim().toLowerCase()
+            };
+
+            const attempts = [basePayload];
+
+            let lastTxt = "";
+
+            for (const payload of attempts) {
+              const res = await fetch(`${API_BASE}/members`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                body: JSON.stringify(payload)
+              });
+
+              if (res.ok) {
+                const created = await res.json().catch(() => ({}));
+
+                // ✅ เก็บ docsUpdateWorks ไว้ local ต่อ memberId (ไม่พัง DTO ฝั่ง backend)
+                const id = String(created?._id || created?.id || "");
+                const duw = String(payload?.docsUpdateWorks || "").trim();
+                if (id && duw) {
+                  writeMeta(id, { docsUpdateWorks: duw });
+                }
+                return { success: true, created };
+              }
+
+              lastTxt = await res.text().catch(() => "");
+              console.error("POST /members failed:", res.status, lastTxt);
+            }
+
+            return { success: false, message: lastTxt || "เพิ่มไม่สำเร็จ" };
+          } catch (err) {
+            return { success: false, message: err.message };
+          }
+        },
+
+        async updateIntern(memberId, name, position, note, docsUpdateWorks) {
+          try {
+            const memberData = {
+              displayName: name,
+              position: position,
+              note: note,
+              docsUpdateWorks: (docsUpdateWorks || "").toString().trim() || undefined
+            };
+
+            const res = await fetch(`${API_BASE}/members/${memberId}`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json", "Accept": "application/json" },
+              body: JSON.stringify(memberData)
+            });
+
+            if (!res.ok) {
+              const txt = await res.text().catch(() => "");
+              console.error("PATCH /members/:id failed:", res.status, txt);
+              return { success: false, message: txt || "อัปเดตไม่สำเร็จ" };
+            }
+
+            // ✅ docsUpdateWorks เก็บ local
+            if (docsUpdateWorks && String(docsUpdateWorks).trim()) {
+              writeMeta(String(memberId), { docsUpdateWorks: String(docsUpdateWorks).trim() });
+            } else {
+              writeMeta(String(memberId), { docsUpdateWorks: "" });
+            }
+
+            return { success: true };
+          } catch (err) {
+            return { success: false, message: err.message };
+          }
+        },
+
+        async deleteIntern(memberId) {
+          try {
+            const res = await fetch(`${API_BASE}/members/${memberId}`, {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" }
+            });
+
+            if (!res.ok) {
+              const err = await res.json();
+              return { success: false, message: err.message || "ลบไม่สำเร็จ" };
+            }
+
+            return { success: true };
+          } catch (err) {
+            return { success: false, message: err.message };
+          }
+        },
+
+        async updateInternCheckbox(memberId, col, checked) {
+          // ✅ เก็บสถานะเช้า/บ่ายไว้ใน localStorage (ไม่พึ่ง backend)
+          const id = String(memberId || "");
+          if (id) {
+            if (col === "D") writeMeta(id, { morning: !!checked });
+            if (col === "E") writeMeta(id, { noon: !!checked });
+          }
+          return { success: true };
+        },
+
+        async updateInternStatus(memberId, status) {
+          // ✅ เก็บสถานะงานไว้ใน localStorage (ไม่พึ่ง backend)
+          const id = String(memberId || "");
+          if (id) writeMeta(id, { status: String(status || "") });
+          return { success: true };
         }
+      };
+    })();
 
-        return { success: false, message: lastTxt || "เพิ่มไม่สำเร็จ" };
-      } catch (err) {
-        return { success: false, message: err.message };
+    /* Intern Module */
+    (function initInternTabOnce() {
+      if (window.__internTabInited) return;
+      window.__internTabInited = true;
+
+      const S = window.__internState = {
+        internData: [],
+        internFiltered: [],
+        internStartingData: [],
+        internEndingData: [],
+        editingStarting: false,
+        editingEnding: false,
+        positions: [],
+        internManageMode: false,
+        selectedPosition: "",
+        editingMemberId: null
+      };
+
+      // ✅ Local meta (เช้า/บ่าย/สถานะ) เก็บใน localStorage ต่อ memberId
+      function metaKey(memberId) { return `pm_intern_meta:${memberId}`; }
+
+      function readMeta(memberId) {
+        try { return JSON.parse(localStorage.getItem(metaKey(memberId)) || "{}") || {}; }
+        catch { return {}; }
       }
-    },
 
-    async updateIntern(memberId, name, position, note, docsUpdateWorks) {
-      try {
-        const memberData = {
-          displayName: name,
-          position: position,
-          note: note
-        };
+      function writeMeta(memberId, patch) {
+        const cur = readMeta(memberId);
+        const next = { ...cur, ...patch };
+        try { localStorage.setItem(metaKey(memberId), JSON.stringify(next)); } catch { }
+        return next;
+      }
 
-        const res = await fetch(`${API_BASE}/members/${memberId}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify(memberData)
+      // ✅ expose meta helpers (กัน ReferenceError จาก handler ที่เป็น global)
+      window.readMeta = readMeta;
+      window.writeMeta = writeMeta;
+
+
+
+      function escapeHtml(str) {
+        return String(str ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+      }
+
+      /* =========================
+         ✅ Start/End Date helpers
+         ========================= */
+      function parseDateAny(v) {
+        if (!v) return null;
+        // accepts "YYYY-MM-DD" or ISO
+        const d = new Date(v);
+        if (Number.isNaN(d.getTime())) return null;
+        return d;
+      }
+      function startOfToday() {
+        const n = new Date();
+        return new Date(n.getFullYear(), n.getMonth(), n.getDate());
+      }
+      function diffDaysFromToday(dateLike) {
+        const d = parseDateAny(dateLike);
+        if (!d) return null;
+        const a = startOfToday().getTime();
+        const b = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+        return Math.round((b - a) / 86400000);
+      }
+      function fmtDMY(dateLike) {
+        const d = parseDateAny(dateLike);
+        if (!d) return "";
+        const dd = String(d.getDate()).padStart(2, "0");
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        const yy = d.getFullYear();
+        return `${dd}/${mm}/${yy}`;
+      }
+
+      // แจ้งแล้ว: เก็บใน localStorage แบบ key ต่อ memberId
+      function notifyKey(kind, id) { return `pm_intern_notify_${kind}_${id}`; }
+      function isNotified(kind, id) { try { return localStorage.getItem(notifyKey(kind, id)) === "1"; } catch (e) { return false; } }
+      function setNotified(kind, id, val) { try { localStorage.setItem(notifyKey(kind, id), val ? "1" : "0"); } catch (e) { } }
+
+
+
+      function escapeAttr(str) {
+        return String(str ?? "").replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("'", "&#039;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+      }
+
+      window.reloadInternTab = function () {
+        S.internData = [];
+        S.internFiltered = [];
+        S.internStartingData = [];
+        S.internEndingData = [];
+        window.loadInternTab(true);
+      };
+
+      window.clearInternFilters = function () {
+        const searchInput = document.getElementById("internSearch");
+        if (searchInput) searchInput.value = "";
+        S.selectedPosition = "";
+        const selectedText = document.getElementById("selectedPositionText");
+        if (selectedText) selectedText.textContent = "ตำแหน่งทั้งหมด";
+        const dropdownItems = document.getElementById("positionDropdownItems");
+        if (dropdownItems) dropdownItems.classList.remove("open");
+        window.filterInterns();
+      };
+
+      window.togglePositionDropdown = function () {
+        const items = document.getElementById("positionDropdownItems");
+        if (items) items.classList.toggle("open");
+      };
+
+      window.selectPosition = function (value, label) {
+        S.selectedPosition = value || "";
+        const t = document.getElementById("selectedPositionText");
+        if (t) t.textContent = label || "ตำแหน่งทั้งหมด";
+        const items = document.getElementById("positionDropdownItems");
+        if (items) items.classList.remove("open");
+        window.filterInterns();
+      };
+
+      window.updatePositionDropdown = function () {
+        const items = document.getElementById("positionDropdownItems");
+        if (!items) return;
+        let html = '<div class="dd-item-intern" onclick="selectPosition(\'\', \'ตำแหน่งทั้งหมด\')">ตำแหน่งทั้งหมด</div>';
+        (S.positions || []).forEach(function (pos) {
+          const escaped = escapeAttr(pos);
+          html += '<div class="dd-item-intern" onclick="selectPosition(\'' + escaped + '\', \'' + escaped + '\')">' + escapeHtml(pos) + '</div>';
         });
+        items.innerHTML = html;
+      };
 
-        if (!res.ok) {
-          const txt = await res.text().catch(() => "");
-          console.error("PATCH /members/:id failed:", res.status, txt);
-          return { success: false, message: txt || "อัปเดตไม่สำเร็จ" };
-        }
+      document.addEventListener("click", function (e) {
+        const dd = document.getElementById("positionDropdownToggle");
+        const items = document.getElementById("positionDropdownItems");
+        if (!dd || !items) return;
+        if (e.target && e.target.closest && e.target.closest("#positionDropdownToggle")) return;
+        const container = dd.closest(".custom-dropdown-intern");
+        if (container && !container.contains(e.target)) items.classList.remove("open");
+      }, true);
 
-        // ✅ docsUpdateWorks เก็บ local
-        if (docsUpdateWorks && String(docsUpdateWorks).trim()) {
-          writeMeta(String(memberId), { docsUpdateWorks: String(docsUpdateWorks).trim() });
-        } else {
-          writeMeta(String(memberId), { docsUpdateWorks: "" });
-        }
-
-        return { success: true };
-      } catch (err) {
-        return { success: false, message: err.message };
-      }
-    },
-
-    async deleteIntern(memberId) {
-      try {
-        const res = await fetch(`${API_BASE}/members/${memberId}`, {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" }
+      window.filterInterns = function () {
+        const input = document.getElementById("internSearch");
+        const kw = (input ? input.value : "").toLowerCase().trim();
+        const selectedPos = S.selectedPosition || "";
+        S.internFiltered = (S.internData || []).filter(function (i) {
+          const matchName = !kw || String(i.displayName || "").toLowerCase().includes(kw) || String(i.position || "").toLowerCase().includes(kw);
+          const matchPos = !selectedPos || String(i.position || "") === selectedPos;
+          return matchName && matchPos;
         });
+        renderInternTable();
+      };
 
-        if (!res.ok) {
-          const err = await res.json();
-          return { success: false, message: err.message || "ลบไม่สำเร็จ" };
+      window.loadInternTab = function () {
+        fetchInternMain();
+        fetchStarting();
+        fetchEnding();
+      };
+
+      window.toggleStartingAdd = function () {
+        const form = document.getElementById("startingAddForm");
+        if (!form) return;
+        form.classList.toggle("show");
+      };
+
+      window.toggleEndingAdd = function () {
+        const form = document.getElementById("endingAddForm");
+        if (!form) return;
+        form.classList.toggle("show");
+      };
+
+      window.toggleEditStarting = function () {
+        S.editingStarting = !S.editingStarting;
+        const btn = document.getElementById("editStartingBtn");
+        const col = document.getElementById("startingActionCol");
+        if (btn) {
+          btn.innerHTML = S.editingStarting ? '<img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" alt="check" style="width:14px;height:14px;"> เสร็จ' : '<img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" alt="edit" style="width:14px;height:14px;"> แก้ไข';
         }
+        if (col) col.style.display = S.editingStarting ? "table-cell" : "none";
+        renderInternStartingTable();
+      };
 
-        return { success: true };
-      } catch (err) {
-        return { success: false, message: err.message };
+      window.toggleEditEnding = function () {
+        S.editingEnding = !S.editingEnding;
+        const btn = document.getElementById("editEndingBtn");
+        const col = document.getElementById("endingActionCol");
+        if (btn) {
+          btn.innerHTML = S.editingEnding ? '<img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" alt="check" style="width:14px;height:14px;"> เสร็จ' : '<img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" alt="edit" style="width:14px;height:14px;"> แก้ไข';
+        }
+        if (col) col.style.display = S.editingEnding ? "table-cell" : "none";
+        renderInternEndingTable();
+      };
+
+      window.toggleInternManageMode = function () {
+        S.internManageMode = !S.internManageMode;
+        const btn = document.getElementById("internManageBtn");
+        const actionsHeader = document.getElementById("internActionsHeader");
+        const actionsHeaderCol = document.getElementById("internActionsHeaderCol");
+        const actionsBodyCol = document.getElementById("internActionsBodyCol");
+        const addForm = document.getElementById("addInternForm");
+        if (btn) btn.classList.toggle("active", S.internManageMode);
+        const displayValue = S.internManageMode ? "" : "none";
+        if (actionsHeader) actionsHeader.style.display = displayValue;
+        if (actionsHeaderCol) actionsHeaderCol.style.display = displayValue;
+        if (actionsBodyCol) actionsBodyCol.style.display = displayValue;
+        if (addForm) {
+          if (S.internManageMode) { addForm.classList.add("show"); updateAddInternPositionDatalist(); }
+          else { addForm.classList.remove("show"); }
+        }
+        renderInternTable();
+      };
+
+      window.addStartingIntern = function () {
+        const fullName = (document.getElementById("startingFullName")?.value || "").trim();
+        const nickName = (document.getElementById("startingNickName")?.value || "").trim();
+        const position = (document.getElementById("startingPosition")?.value || "").trim();
+        const dateRange = (document.getElementById("startingDate")?.value || "").trim();
+        if (!fullName || !position || !dateRange) { alert("กรุณากรอกข้อมูลให้ครบ"); return; }
+        S.internStartingData.push({ fullName: fullName, nickname: nickName, position: position, dateRange: dateRange, notifyStatus: "" });
+        document.getElementById("startingFullName").value = "";
+        document.getElementById("startingNickName").value = "";
+        document.getElementById("startingPosition").value = "";
+        document.getElementById("startingDate").value = "";
+        renderInternStartingTable();
+        saveStartingToStore();
+      };
+
+      window.deleteStartingIntern = function (idx) {
+        if (!confirm("ลบข้อมูลนี้ใช่หรือไม่?")) return;
+        S.internStartingData.splice(idx, 1);
+        renderInternStartingTable();
+        saveStartingToStore();
+      };
+
+      window.toggleStartingNotified = function (idx) {
+        const row = S.internStartingData[idx];
+        if (!row) return;
+        row.notifyStatus = row.notifyStatus ? "" : "แจ้งแล้ว";
+        renderInternStartingTable();
+        const id = String(row?._id || row?.tag || "");
+        if (id) setNotified("starting", id, !!row.notifyStatus);
+      };
+
+      window.addEndingIntern = function () {
+        const fullName = (document.getElementById("endingFullName")?.value || "").trim();
+        const nickName = (document.getElementById("endingNickName")?.value || "").trim();
+        const position = (document.getElementById("endingPosition")?.value || "").trim();
+        const dateRange = (document.getElementById("endingDate")?.value || "").trim();
+        if (!fullName || !position || !dateRange) { alert("กรุณากรอกข้อมูลให้ครบ"); return; }
+        S.internEndingData.push({ fullName: fullName, nickname: nickName, position: position, dateRange: dateRange, notifyStatus: "" });
+        document.getElementById("endingFullName").value = "";
+        document.getElementById("endingNickName").value = "";
+        document.getElementById("endingPosition").value = "";
+        document.getElementById("endingDate").value = "";
+        renderInternEndingTable();
+        saveEndingToStore();
+      };
+
+      window.deleteEndingIntern = function (idx) {
+        if (!confirm("ลบข้อมูลนี้ใช่หรือไม่?")) return;
+        S.internEndingData.splice(idx, 1);
+        renderInternEndingTable();
+        saveEndingToStore();
+      };
+
+      window.toggleEndingNotified = function (idx) {
+        const row = S.internEndingData[idx];
+        if (!row) return;
+        row.notifyStatus = row.notifyStatus ? "" : "แจ้งแล้ว";
+        renderInternEndingTable();
+        const id = String(row?._id || row?.tag || "");
+        if (id) setNotified("ending", id, !!row.notifyStatus);
+      };
+
+      function renderInternTable() {
+        const tbody = document.getElementById("internTableBody");
+        if (!tbody) return;
+        const colSpan = S.internManageMode ? 8 : 7;
+        if (!S.internFiltered || !S.internFiltered.length) { tbody.innerHTML = '<tr><td colspan="' + colSpan + '" style="text-align:center;color:#999;">ไม่มีข้อมูล</td></tr>'; return; }
+        let html = "";
+        S.internFiltered.forEach(function (i) { html += rowInternHtml(i); });
+        tbody.innerHTML = html;
       }
-    },
 
-    async updateInternCheckbox(memberId, col, checked) {
-      // ✅ เก็บสถานะเช้า/บ่ายไว้ใน localStorage (ไม่พึ่ง backend)
-      const id = String(memberId || "");
-      if (id) {
-        if (col === "D") writeMeta(id, { morning: !!checked });
-        if (col === "E") writeMeta(id, { noon: !!checked });
-      }
-      return { success: true };
-    },
+      function rowInternHtml(i) {
+        const rawName = String(i.displayName || "");
+        const rawPos = String(i.position || "");
+        const memberId = String(i._id || "");
+        const meta = i._meta || {};
 
-    async updateInternStatus(memberId, status) {
-      // ✅ เก็บสถานะงานไว้ใน localStorage (ไม่พึ่ง backend)
-      const id = String(memberId || "");
-      if (id) writeMeta(id, { status: String(status || "") });
-      return { success: true };
-    }
-  };
-})();
+        const rawStatus = String(meta.status || i.status || "ทำงาน");
+        const rawNote = String(i.note || "");
+        const rawFileLink = String(meta.docsUpdateWorks || i.docsUpdateWorks || "");
 
-/* Intern Module */
-(function initInternTabOnce() {
-  if (window.__internTabInited) return;
-  window.__internTabInited = true;
+        const name = escapeHtml(rawName);
+        const position = escapeHtml(rawPos);
+        const note = escapeHtml(rawNote);
 
-  const S = window.__internState = {
-    internData: [],
-    internFiltered: [],
-    internStartingData: [],
-    internEndingData: [],
-    editingStarting: false,
-    editingEnding: false,
-    positions: [],
-    internManageMode: false,
-    selectedPosition: ""
-  };
+        const morningChecked = meta.morning ? "checked" : "";
+        const noonChecked = meta.noon ? "checked" : "";
 
-  // ✅ Local meta (เช้า/บ่าย/สถานะ) เก็บใน localStorage ต่อ memberId
-  function metaKey(memberId){ return `pm_intern_meta:${memberId}`; }
+        const morning = '<input type="checkbox" ' + morningChecked +
+          ' onchange="onInternCheckChange(\'' + escapeAttr(memberId) + '\', \'D\', this.checked)">';
+        const noon = '<input type="checkbox" ' + noonChecked +
+          ' onchange="onInternCheckChange(\'' + escapeAttr(memberId) + '\', \'E\', this.checked)">';
 
-  function readMeta(memberId){
-    try { return JSON.parse(localStorage.getItem(metaKey(memberId)) || "{}") || {}; }
-    catch { return {}; }
-  }
-
-  function writeMeta(memberId, patch){
-    const cur = readMeta(memberId);
-    const next = { ...cur, ...patch };
-    try { localStorage.setItem(metaKey(memberId), JSON.stringify(next)); } catch {}
-    return next;
-  }
-
-  // ✅ expose meta helpers (กัน ReferenceError จาก handler ที่เป็น global)
-  window.readMeta = readMeta;
-  window.writeMeta = writeMeta;
-
-
-
-  function escapeHtml(str) {
-    return String(str ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
-  }
-
-  function escapeAttr(str) {
-    return String(str ?? "").replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("'", "&#039;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-  }
-
-  window.reloadInternTab = function () {
-    S.internData = [];
-    S.internFiltered = [];
-    S.internStartingData = [];
-    S.internEndingData = [];
-    window.loadInternTab(true);
-  };
-
-  window.clearInternFilters = function () {
-    const searchInput = document.getElementById("internSearch");
-    if (searchInput) searchInput.value = "";
-    S.selectedPosition = "";
-    const selectedText = document.getElementById("selectedPositionText");
-    if (selectedText) selectedText.textContent = "ตำแหน่งทั้งหมด";
-    const dropdownItems = document.getElementById("positionDropdownItems");
-    if (dropdownItems) dropdownItems.classList.remove("open");
-    window.filterInterns();
-  };
-
-  window.togglePositionDropdown = function () {
-    const items = document.getElementById("positionDropdownItems");
-    if (items) items.classList.toggle("open");
-  };
-
-  window.selectPosition = function (value, label) {
-    S.selectedPosition = value || "";
-    const t = document.getElementById("selectedPositionText");
-    if (t) t.textContent = label || "ตำแหน่งทั้งหมด";
-    const items = document.getElementById("positionDropdownItems");
-    if (items) items.classList.remove("open");
-    window.filterInterns();
-  };
-
-  window.updatePositionDropdown = function () {
-    const items = document.getElementById("positionDropdownItems");
-    if (!items) return;
-    let html = '<div class="dd-item-intern" onclick="selectPosition(\'\', \'ตำแหน่งทั้งหมด\')">ตำแหน่งทั้งหมด</div>';
-    (S.positions || []).forEach(function (pos) {
-      const escaped = escapeAttr(pos);
-      html += '<div class="dd-item-intern" onclick="selectPosition(\'' + escaped + '\', \'' + escaped + '\')">' + escapeHtml(pos) + '</div>';
-    });
-    items.innerHTML = html;
-  };
-
-  document.addEventListener("click", function (e) {
-    const dd = document.getElementById("positionDropdownToggle");
-    const items = document.getElementById("positionDropdownItems");
-    if (!dd || !items) return;
-    if (e.target && e.target.closest && e.target.closest("#positionDropdownToggle")) return;
-    const container = dd.closest(".custom-dropdown-intern");
-    if (container && !container.contains(e.target)) items.classList.remove("open");
-  }, true);
-
-  window.filterInterns = function () {
-    const input = document.getElementById("internSearch");
-    const kw = (input ? input.value : "").toLowerCase().trim();
-    const selectedPos = S.selectedPosition || "";
-    S.internFiltered = (S.internData || []).filter(function (i) {
-      const matchName = !kw || String(i.displayName || "").toLowerCase().includes(kw) || String(i.position || "").toLowerCase().includes(kw);
-      const matchPos = !selectedPos || String(i.position || "") === selectedPos;
-      return matchName && matchPos;
-    });
-    renderInternTable();
-  };
-
-  window.loadInternTab = function () {
-    fetchInternMain();
-    fetchStarting();
-    fetchEnding();
-  };
-
-  window.toggleStartingAdd = function () {
-    const form = document.getElementById("startingAddForm");
-    if (!form) return;
-    form.classList.toggle("show");
-  };
-
-  window.toggleEndingAdd = function () {
-    const form = document.getElementById("endingAddForm");
-    if (!form) return;
-    form.classList.toggle("show");
-  };
-
-  window.toggleEditStarting = function () {
-    S.editingStarting = !S.editingStarting;
-    const btn = document.getElementById("editStartingBtn");
-    const col = document.getElementById("startingActionCol");
-    if (btn) {
-      btn.innerHTML = S.editingStarting ? '<img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" alt="check" style="width:14px;height:14px;"> เสร็จ' : '<img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" alt="edit" style="width:14px;height:14px;"> แก้ไข';
-    }
-    if (col) col.style.display = S.editingStarting ? "table-cell" : "none";
-    renderInternStartingTable();
-  };
-
-  window.toggleEditEnding = function () {
-    S.editingEnding = !S.editingEnding;
-    const btn = document.getElementById("editEndingBtn");
-    const col = document.getElementById("endingActionCol");
-    if (btn) {
-      btn.innerHTML = S.editingEnding ? '<img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" alt="check" style="width:14px;height:14px;"> เสร็จ' : '<img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" alt="edit" style="width:14px;height:14px;"> แก้ไข';
-    }
-    if (col) col.style.display = S.editingEnding ? "table-cell" : "none";
-    renderInternEndingTable();
-  };
-
-  window.toggleInternManageMode = function () {
-    S.internManageMode = !S.internManageMode;
-    const btn = document.getElementById("internManageBtn");
-    const actionsHeader = document.getElementById("internActionsHeader");
-    const actionsHeaderCol = document.getElementById("internActionsHeaderCol");
-    const actionsBodyCol = document.getElementById("internActionsBodyCol");
-    const addForm = document.getElementById("addInternForm");
-    if (btn) btn.classList.toggle("active", S.internManageMode);
-    const displayValue = S.internManageMode ? "" : "none";
-    if (actionsHeader) actionsHeader.style.display = displayValue;
-    if (actionsHeaderCol) actionsHeaderCol.style.display = displayValue;
-    if (actionsBodyCol) actionsBodyCol.style.display = displayValue;
-    if (addForm) {
-      if (S.internManageMode) { addForm.classList.add("show"); updateAddInternPositionDatalist(); }
-      else { addForm.classList.remove("show"); }
-    }
-    renderInternTable();
-  };
-
-  window.addStartingIntern = function () {
-    const fullName = (document.getElementById("startingFullName")?.value || "").trim();
-    const nickName = (document.getElementById("startingNickName")?.value || "").trim();
-    const position = (document.getElementById("startingPosition")?.value || "").trim();
-    const dateRange = (document.getElementById("startingDate")?.value || "").trim();
-    if (!fullName || !position || !dateRange) { alert("กรุณากรอกข้อมูลให้ครบ"); return; }
-    S.internStartingData.push({ fullName: fullName, nickname: nickName, position: position, dateRange: dateRange, notifyStatus: "" });
-    document.getElementById("startingFullName").value = "";
-    document.getElementById("startingNickName").value = "";
-    document.getElementById("startingPosition").value = "";
-    document.getElementById("startingDate").value = "";
-    renderInternStartingTable();
-    saveStartingToStore();
-  };
-
-  window.deleteStartingIntern = function (idx) {
-    if (!confirm("ลบข้อมูลนี้ใช่หรือไม่?")) return;
-    S.internStartingData.splice(idx, 1);
-    renderInternStartingTable();
-    saveStartingToStore();
-  };
-
-  window.toggleStartingNotified = function (idx) {
-    const row = S.internStartingData[idx];
-    if (!row) return;
-    row.notifyStatus = row.notifyStatus ? "" : "แจ้งแล้ว";
-    renderInternStartingTable();
-    saveStartingToStore();
-  };
-
-  window.addEndingIntern = function () {
-    const fullName = (document.getElementById("endingFullName")?.value || "").trim();
-    const nickName = (document.getElementById("endingNickName")?.value || "").trim();
-    const position = (document.getElementById("endingPosition")?.value || "").trim();
-    const dateRange = (document.getElementById("endingDate")?.value || "").trim();
-    if (!fullName || !position || !dateRange) { alert("กรุณากรอกข้อมูลให้ครบ"); return; }
-    S.internEndingData.push({ fullName: fullName, nickname: nickName, position: position, dateRange: dateRange, notifyStatus: "" });
-    document.getElementById("endingFullName").value = "";
-    document.getElementById("endingNickName").value = "";
-    document.getElementById("endingPosition").value = "";
-    document.getElementById("endingDate").value = "";
-    renderInternEndingTable();
-    saveEndingToStore();
-  };
-
-  window.deleteEndingIntern = function (idx) {
-    if (!confirm("ลบข้อมูลนี้ใช่หรือไม่?")) return;
-    S.internEndingData.splice(idx, 1);
-    renderInternEndingTable();
-    saveEndingToStore();
-  };
-
-  window.toggleEndingNotified = function (idx) {
-    const row = S.internEndingData[idx];
-    if (!row) return;
-    row.notifyStatus = row.notifyStatus ? "" : "แจ้งแล้ว";
-    renderInternEndingTable();
-    saveEndingToStore();
-  };
-
-  function renderInternTable() {
-    const tbody = document.getElementById("internTableBody");
-    if (!tbody) return;
-    const colSpan = S.internManageMode ? 8 : 7;
-    if (!S.internFiltered || !S.internFiltered.length) { tbody.innerHTML = '<tr><td colspan="' + colSpan + '" style="text-align:center;color:#999;">ไม่มีข้อมูล</td></tr>'; return; }
-    let html = "";
-    S.internFiltered.forEach(function (i) { html += rowInternHtml(i); });
-    tbody.innerHTML = html;
-  }
-
-  function rowInternHtml(i) {
-    const rawName = String(i.displayName || "");
-    const rawPos = String(i.position || "");
-    const memberId = String(i._id || "");
-    const meta = i._meta || {};
-
-    const rawStatus = String(meta.status || i.status || "ทำงาน");
-    const rawNote = String(i.note || "");
-    const rawFileLink = String(meta.docsUpdateWorks || i.docsUpdateWorks || "");
-
-    const name = escapeHtml(rawName);
-    const position = escapeHtml(rawPos);
-    const note = escapeHtml(rawNote);
-
-    const morningChecked = meta.morning ? "checked" : "";
-    const noonChecked = meta.noon ? "checked" : "";
-
-    const morning = '<input type="checkbox" ' + morningChecked +
-      ' onchange="onInternCheckChange(\'' + escapeAttr(memberId) + '\', \'D\', this.checked)">';
-    const noon = '<input type="checkbox" ' + noonChecked +
-      ' onchange="onInternCheckChange(\'' + escapeAttr(memberId) + '\', \'E\', this.checked)">';
-
-    const status =
-      '<div class="status-dd" data-id="' + escapeAttr(memberId) + '" data-value="' + escapeAttr(rawStatus) + '">' +
-        '<div class="status-selected" onclick="toggleStatusDD(this)">' +
+        const status =
+          '<div class="status-dd" data-id="' + escapeAttr(memberId) + '" data-value="' + escapeAttr(rawStatus) + '">' +
+          '<div class="status-selected" onclick="toggleStatusDD(this)">' +
           '<span class="status-text">' + escapeHtml(rawStatus) + '</span><span>▾</span>' +
-        '</div>' +
-        '<div class="status-items">' +
+          '</div>' +
+          '<div class="status-items">' +
           '<div class="status-item" onclick="selectStatusDD(this, \'ทำงาน\')">ทำงาน</div>' +
           '<div class="status-item" onclick="selectStatusDD(this, \'ลา\')">ลา</div>' +
           '<div class="status-item" onclick="selectStatusDD(this, \'ไม่มาทำงาน\')">ไม่มาทำงาน</div>' +
           '<div class="status-item" onclick="selectStatusDD(this, \'จบแล้ว\')">จบแล้ว</div>' +
-        '</div>' +
-      '</div>';
+          '</div>' +
+          '</div>';
 
-    let fileCell = '<span style="color:#999;">-</span>';
-    if (rawFileLink.trim()) {
-      const url = escapeAttr(rawFileLink.trim());
-      fileCell = '<a href="' + url + '" target="_blank" rel="noopener">📄 อัปเดตงาน</a>';
-    }
+        let fileCell = '<span style="color:#999;">-</span>';
+        if (rawFileLink.trim()) {
+          const url = escapeAttr(rawFileLink.trim());
+          fileCell = '<a href="' + url + '" target="_blank" rel="noopener">📄 อัปเดตงาน</a>';
+        }
 
-    let actionCell = "";
-    if (S.internManageMode) {
-      actionCell =
-        '<td style="text-align: center;">' +
-          '<button onclick="deleteIntern(\'' + escapeAttr(memberId) + '\', \'' + escapeAttr(rawName) + '\')" ' +
-            'style="background: none; border: none; cursor: pointer; color: #ef4444;">' +
-            '<img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000" alt="Delete" style="width: 20px; height: 20px;">' +
-          '</button>' +
-        '</td>';
-    }
+        // ====== ✅ Inline edit (คอลัมน์ "ลบ": แก้ไข + ลบ) ======
+        const isEditing = (S.editingMemberId && String(S.editingMemberId) === String(memberId));
 
-    return '<tr>' +
-      '<td><b>' + name + '</b></td>' +
-      '<td>' + position + '</td>' +
-      '<td>' + morning + '</td>' +
-      '<td>' + noon + '</td>' +
-      '<td>' + status + '</td>' +
-      '<td>' + note + '</td>' +
-      '<td>' + fileCell + '</td>' +
-      actionCell +
-    '</tr>';
-  }
+        let actionCell = "";
+        if (S.internManageMode) {
+          const btnEditOrSave = isEditing
+            ? ('<button onclick="saveMemberInline(\'' + escapeAttr(memberId) + '\')" ' +
+              'style="background:none;border:none;cursor:pointer;padding:6px 8px;border-radius:10px;">' +
+              '<img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" alt="Save" style="width:20px;height:20px;">' +
+              '</button>')
+            : ('<button onclick="toggleMemberInlineEdit(\'' + escapeAttr(memberId) + '\')" ' +
+              'style="background:none;border:none;cursor:pointer;padding:6px 8px;border-radius:10px;">' +
+              '<img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" alt="Edit" style="width:20px;height:20px;">' +
+              '</button>');
 
-  function renderInternStartingTable() {
-    const tbody = document.getElementById("internStartingBody");
-    if (!tbody) return;
-    const colSpan = S.editingStarting ? 6 : 5;
-    if (!S.internStartingData || !S.internStartingData.length) { tbody.innerHTML = '<tr><td colspan="' + colSpan + '" style="text-align:center;color:#999;">ไม่มีข้อมูล</td></tr>'; return; }
-    let html = "";
-    S.internStartingData.forEach(function (i, idx) {
-      const nick = (i.nickName ?? i.nickname ?? "");
-      const date = (i.date ?? i.dateRange ?? "");
-      const notified = !!(i.notified || i.notifyStatus);
-      html += '<tr><td>' + escapeHtml(i.fullName || "") + '</td><td>' + escapeHtml(nick) + '</td><td>' + escapeHtml(i.position || "") + '</td><td style="text-align:center;">' + (escapeHtml(date) || "-") + '</td><td style="text-align:center;"><input type="checkbox" ' + (notified ? "checked" : "") + ' onchange="toggleStartingNotified(' + idx + ')"></td>';
-      if (S.editingStarting) { html += '<td style="text-align:center;"><button class="delete-btn" onclick="deleteStartingIntern(' + idx + ')"><img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000" alt="trash" style="width:14px;height:14px;"></button></td>'; }
-      html += '</tr>';
-    });
-    tbody.innerHTML = html;
-  }
+          const btnTrash =
+            '<button onclick="deleteIntern(\'' + escapeAttr(memberId) + '\')" ' +
+            'style="background:none;border:none;cursor:pointer;padding:6px 8px;border-radius:10px;">' +
+            '<img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000" alt="Delete" style="width:20px;height:20px;">' +
+            '</button>';
 
-  function renderInternEndingTable() {
-    const tbody = document.getElementById("internEndingBody");
-    if (!tbody) return;
-    const colSpan = S.editingEnding ? 6 : 5;
-    if (!S.internEndingData || !S.internEndingData.length) { tbody.innerHTML = '<tr><td colspan="' + colSpan + '" style="text-align:center;color:#999;">ไม่มีข้อมูล</td></tr>'; return; }
-    let html = "";
-    S.internEndingData.forEach(function (i, idx) {
-      const nick = (i.nickName ?? i.nickname ?? "");
-      const date = (i.date ?? i.dateRange ?? "");
-      const notified = !!(i.notified || i.notifyStatus);
-      html += '<tr><td>' + escapeHtml(i.fullName || "") + '</td><td>' + escapeHtml(nick) + '</td><td>' + escapeHtml(i.position || "") + '</td><td style="text-align:center;">' + (escapeHtml(date) || "-") + '</td><td style="text-align:center;"><input type="checkbox" ' + (notified ? "checked" : "") + ' onchange="toggleEndingNotified(' + idx + ')"></td>';
-      if (S.editingEnding) { html += '<td style="text-align:center;"><button class="delete-btn" onclick="deleteEndingIntern(' + idx + ')"><img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000" alt="trash" style="width:14px;height:14px;"></button></td>'; }
-      html += '</tr>';
-    });
-    tbody.innerHTML = html;
-  }
+          actionCell =
+            '<td style="text-align:center; padding:8px;">' +
+            '<div style="display:flex; justify-content:center; gap:8px; align-items:center;">' +
+            btnEditOrSave + btnTrash +
+            '</div>' +
+            '</td>';
+        }
 
-  async function fetchInternMain() {
-    try {
-      const result = await window.BACKEND.getInternData(1, 100);
-      const items = Array.isArray(result.items) ? result.items : [];
+        // cells: ถ้าแก้ไข ให้เปลี่ยนเป็น input เฉพาะ row นั้น
+        const nameCell = isEditing
+          ? '<input type="text" id="editName_' + escapeAttr(memberId) + '" value="' + escapeAttr(rawName) + '" ' +
+          'style="width:100%; padding:10px 12px; border:1px solid #cbd5e1; border-radius:10px; font-weight:900; font-size:14px; box-sizing:border-box;">'
+          : '<b>' + name + '</b>';
 
-      // ✅ ผสาน meta (เช้า/บ่าย/สถานะ) จาก localStorage
-      items.forEach(function (it) {
-        const id = String(it?._id || "");
-        it._meta = id ? readMeta(id) : {};
-      });
+        const posCell = isEditing
+          ? '<input type="text" id="editPosition_' + escapeAttr(memberId) + '" value="' + escapeAttr(rawPos) + '" list="editPositionList_' + escapeAttr(memberId) + '" ' +
+          'style="width:100%; padding:10px 12px; border:1px solid #cbd5e1; border-radius:10px; font-weight:900; font-size:14px; box-sizing:border-box;">' +
+          '<datalist id="editPositionList_' + escapeAttr(memberId) + '">' +
+          (document.getElementById("addInternPositionDatalist")?.innerHTML || "") +
+          '</datalist>'
+          : position;
 
-      S.internData = items;
-      S.internFiltered = S.internData.slice();
+        const noteCell = isEditing
+          ? '<input type="text" id="editNote_' + escapeAttr(memberId) + '" value="' + escapeAttr(rawNote) + '" ' +
+          'style="width:100%; padding:10px 12px; border:1px solid #cbd5e1; border-radius:10px; font-weight:900; font-size:14px; box-sizing:border-box;">'
+          : note;
 
-      const posSet = new Set();
-      S.internData.forEach(function (i) { if (i.position) posSet.add(i.position); });
-      S.positions = Array.from(posSet).sort(function (a, b) { return String(a).localeCompare(String(b), "th"); });
+        const fileCellHtml = (function () {
+          if (isEditing) {
+            return '<input type="text" id="editDocs_' + escapeAttr(memberId) + '" value="' + escapeAttr(rawFileLink) + '" ' +
+              'style="width:100%; padding:10px 12px; border:1px solid #cbd5e1; border-radius:10px; font-weight:900; font-size:14px; box-sizing:border-box;">';
+          }
+          return fileCell;
+        })();
 
-      window.updatePositionDropdown();
-      updateAddInternPositionDatalist();
-      renderInternTable();
-    } catch (err) {
-      console.error("โหลด interns ไม่สำเร็จ:", err);
-      S.internData = [];
-      S.internFiltered = [];
-      S.positions = [];
-      window.updatePositionDropdown();
-      renderInternTable();
-    }
-  }
-
-  async function fetchStarting() {
-    try {
-      S.internStartingData = await window.BACKEND.getInternStarting();
-      renderInternStartingTable();
-    } catch (e) {
-      S.internStartingData = [];
-      renderInternStartingTable();
-    }
-  }
-
-  async function fetchEnding() {
-    try {
-      S.internEndingData = await window.BACKEND.getInternEnding();
-      renderInternEndingTable();
-    } catch (e) {
-      S.internEndingData = [];
-      renderInternEndingTable();
-    }
-  }
-
-  async function saveStartingToStore() {
-    const res = await window.BACKEND.saveInternStarting(S.internStartingData);
-    if (!res?.success) console.warn("บันทึก starting ไม่สำเร็จ");
-  }
-
-  async function saveEndingToStore() {
-    const res = await window.BACKEND.saveInternEnding(S.internEndingData);
-    if (!res?.success) console.warn("บันทึก ending ไม่สำเร็จ");
-  }
-
-  function updateAddInternPositionDatalist() {
-    const dl = document.getElementById("addInternPositionDatalist");
-    if (!dl) return;
-    dl.innerHTML = "";
-    (S.positions || []).forEach(function (pos) {
-      const opt = document.createElement("option");
-      opt.value = pos;
-      dl.appendChild(opt);
-    });
-  }
-
-  window.addNewInternSubmit = async function () {
-    const displayName = (document.getElementById("newInternName")?.value || "").trim();
-    const position = (document.getElementById("newInternPosition")?.value || "").trim();
-    const note = (document.getElementById("newInternNote")?.value || "").trim();
-    const nickname = (document.getElementById("newInternNickname")?.value || "").trim();
-    const role = (document.getElementById("newInternRole")?.value || "intern").toString().trim(); // ✅ backend ต้องการตัวเล็ก
-    const docsUpdateWorks = (document.getElementById("newInternDocsUpdateWorks")?.value || "").trim();
-
-    if (!displayName) { alert("กรุณากรอกชื่อ (displayName)"); return; }
-
-    try {
-      const res = await window.BACKEND.addNewIntern({
-        displayName,
-        nickname: nickname || undefined,
-        position: position || undefined,
-        role,
-        note: note || undefined,
-        docsUpdateWorks: docsUpdateWorks || undefined
-      });
-
-      if (res?.success) {
-        document.getElementById("newInternName").value = "";
-        document.getElementById("newInternPosition").value = "";
-        document.getElementById("newInternNote").value = "";
-
-        const nn = document.getElementById("newInternNickname"); if (nn) nn.value = "";
-        const rr = document.getElementById("newInternRole"); if (rr) rr.value = "intern";
-        const duw = document.getElementById("newInternDocsUpdateWorks"); if (duw) duw.value = "";
-
-        if (typeof window.reloadInternTab === "function") window.reloadInternTab();
-      } else {
-        alert(res?.message || "เพิ่มไม่สำเร็จ");
+        return '<tr>' +
+          '<td>' + nameCell + '</td>' +
+          '<td>' + posCell + '</td>' +
+          '<td>' + morning + '</td>' +
+          '<td>' + noon + '</td>' +
+          '<td>' + status + '</td>' +
+          '<td>' + noteCell + '</td>' +
+          '<td>' + fileCellHtml + '</td>' +
+          actionCell +
+          '</tr>';
       }
-    } catch (err) {
-      alert("เกิดข้อผิดพลาด: " + (err?.message || err));
-    }
-  };
 
-  window.hideAddInternForm = function () {
-    S.internManageMode = false;
-    const btn = document.getElementById("internManageBtn");
-    const actionsHeader = document.getElementById("internActionsHeader");
-    const actionsHeaderCol = document.getElementById("internActionsHeaderCol");
-    const actionsBodyCol = document.getElementById("internActionsBodyCol");
-    const addForm = document.getElementById("addInternForm");
-    if (btn) btn.classList.remove("active");
-    if (actionsHeader) actionsHeader.style.display = "none";
-    if (actionsHeaderCol) actionsHeaderCol.style.display = "none";
-    if (actionsBodyCol) actionsBodyCol.style.display = "none";
-    if (addForm) addForm.classList.remove("show");
-    renderInternTable();
-  };
+      function renderInternStartingTable() {
+        const tbody = document.getElementById("internStartingBody");
+        if (!tbody) return;
+        const colSpan = S.editingStarting ? 6 : 5;
+        if (!S.internStartingData || !S.internStartingData.length) { tbody.innerHTML = '<tr><td colspan="' + colSpan + '" style="text-align:center;color:#999;">ไม่มีข้อมูล</td></tr>'; return; }
+        let html = "";
+        S.internStartingData.forEach(function (i, idx) {
+          const nick = (i.nickName ?? i.nickname ?? "");
+          const date = (i.date ?? i.dateRange ?? "");
+          const notified = !!(i.notified || i.notifyStatus);
+          html += '<tr><td>' + escapeHtml(i.fullName || "") + '</td><td>' + escapeHtml(nick) + '</td><td>' + escapeHtml(i.position || "") + '</td><td style="text-align:center;">' + (escapeHtml(date) || "-") + '</td><td style="text-align:center;"><input type="checkbox" ' + (notified ? "checked" : "") + ' onchange="toggleStartingNotified(' + idx + ')"></td>';
+          if (S.editingStarting) { html += '<td style="text-align:center;"><button class="delete-btn" onclick="deleteStartingIntern(' + idx + ')"><img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000" alt="trash" style="width:14px;height:14px;"></button></td>'; }
+          html += '</tr>';
+        });
+        tbody.innerHTML = html;
+      }
 
-  window.onInternCheckChange = async function (memberId, col, checked) {
-    try {
-      const res = await window.BACKEND.updateInternCheckbox(memberId, col, !!checked);
-      if (!res?.success) alert(res?.message || "บันทึกไม่สำเร็จ");
-    } catch (err) {
-      alert(err?.message || String(err));
-    }
-  };
+      function renderInternEndingTable() {
+        const tbody = document.getElementById("internEndingBody");
+        if (!tbody) return;
+        const colSpan = S.editingEnding ? 6 : 5;
+        if (!S.internEndingData || !S.internEndingData.length) { tbody.innerHTML = '<tr><td colspan="' + colSpan + '" style="text-align:center;color:#999;">ไม่มีข้อมูล</td></tr>'; return; }
+        let html = "";
+        S.internEndingData.forEach(function (i, idx) {
+          const nick = (i.nickName ?? i.nickname ?? "");
+          const date = (i.date ?? i.dateRange ?? "");
+          const notified = !!(i.notified || i.notifyStatus);
+          html += '<tr><td>' + escapeHtml(i.fullName || "") + '</td><td>' + escapeHtml(nick) + '</td><td>' + escapeHtml(i.position || "") + '</td><td style="text-align:center;">' + (escapeHtml(date) || "-") + '</td><td style="text-align:center;"><input type="checkbox" ' + (notified ? "checked" : "") + ' onchange="toggleEndingNotified(' + idx + ')"></td>';
+          if (S.editingEnding) { html += '<td style="text-align:center;"><button class="delete-btn" onclick="deleteEndingIntern(' + idx + ')"><img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000" alt="trash" style="width:14px;height:14px;"></button></td>'; }
+          html += '</tr>';
+        });
+        tbody.innerHTML = html;
+      }
 
-  async function onInternStatusChange(memberId, status) {
-    try {
-      const res = await window.BACKEND.updateInternStatus(memberId, status);
-      if (!res?.success) alert(res?.message || "บันทึกสถานะไม่สำเร็จ");
-    } catch (err) {
-      alert(err?.message || String(err));
-    }
-  }
+      async function fetchInternMain() {
+        try {
+          const result = await window.BACKEND.getInternData(1, 100);
+          const items = Array.isArray(result.items) ? result.items : [];
 
-  window.toggleStatusDD = function (el) {
-    const items = el ? el.nextElementSibling : null;
-    if (!items) return;
-    document.querySelectorAll(".status-items.open").forEach(function (other) {
-      if (other !== items) other.classList.remove("open");
-    });
-    const willOpen = !items.classList.contains("open");
-    items.classList.toggle("open");
-    if (willOpen) {
-      const rect = el.getBoundingClientRect();
-      items.style.top = (rect.bottom + 6) + "px";
-      items.style.left = rect.left + "px";
-    }
-  };
+          // ✅ ผสาน meta (เช้า/บ่าย/สถานะ) จาก localStorage
+          items.forEach(function (it) {
+            const id = String(it?._id || "");
+            it._meta = id ? readMeta(id) : {};
+          });
 
-  window.selectStatusDD = function (el, value) {
-    const wrap = el ? el.closest(".status-dd") : null;
-    if (!wrap) return;
-    const memberId = wrap.dataset.id;
-    wrap.dataset.value = value;
-    const textEl = wrap.querySelector(".status-text");
-    if (textEl) textEl.textContent = value;
-    const items = wrap.querySelector(".status-items");
-    if (items) items.classList.remove("open");
-    onInternStatusChange(memberId, value);
-  };
+          S.internData = items;
+          S.internFiltered = S.internData.slice();
 
-  document.addEventListener("click", function (e) {
-    document.querySelectorAll(".status-items.open").forEach(function (items) {
-      if (!items.parentElement.contains(e.target)) items.classList.remove("open");
-    });
-  }, true);
+          const posSet = new Set();
+          S.internData.forEach(function (i) { if (i.position) posSet.add(i.position); });
+          S.positions = Array.from(posSet).sort(function (a, b) { return String(a).localeCompare(String(b), "th"); });
 
-  window.deleteIntern = async function (memberId, name) {
-    if (!confirm('ยืนยันลบ "' + name + '" ?')) return;
-    try {
-      const res = await window.BACKEND.deleteIntern(memberId);
-      if (res?.success) window.reloadInternTab();
-      else alert(res?.message || "ลบไม่สำเร็จ");
-    } catch (err) {
-      alert("เกิดข้อผิดพลาด: " + (err?.message || err));
-    }
-  };
+          window.updatePositionDropdown();
+          updateAddInternPositionDatalist();
+          renderInternTable();
+        } catch (err) {
+          console.error("โหลด interns ไม่สำเร็จ:", err);
+          S.internData = [];
+          S.internFiltered = [];
+          S.positions = [];
+          window.updatePositionDropdown();
+          renderInternTable();
+        }
+      }
 
-  document.addEventListener("DOMContentLoaded", function () {
-    window.loadInternTab();
-  });
-})();
+      async function fetchStarting() {
+        try {
+          const result = await window.BACKEND.getInternData(1, 500);
+          const members = Array.isArray(result.items) ? result.items : [];
 
-/* Scroll sync */
-(function () {
-  function bindOneTableWrap(wrap) {
-    const head = wrap.querySelector(".table-header-wrapper");
-    const body = wrap.querySelector(".table-body-wrapper");
-    if (!head || !body) return;
-    if (body.__boundScrollSync) return;
-    body.__boundScrollSync = true;
-    const sync = () => { head.scrollLeft = body.scrollLeft; };
-    body.addEventListener("scroll", () => {
-      requestAnimationFrame(sync);
-      document.querySelectorAll(".status-items.open").forEach(function (items) {
-        items.classList.remove("open");
+          const rows = members
+            .filter(m => String(m?.role || "").toLowerCase() === "intern")
+            .map(m => ({ m, id: String(m?._id || ""), d: diffDaysFromToday(m?.startDate) }))
+            .filter(x => typeof x.d === "number" && x.d >= 0 && x.d <= 7)
+            .sort((a, b) => a.d - b.d)
+            .map(x => ({
+              _id: x.id,
+              fullName: x.m.displayName || "",
+              nickName: x.m.nickname || "",
+              position: x.m.position || "",
+              date: fmtDMY(x.m.startDate),
+              notifyStatus: isNotified("starting", x.id) ? "แจ้งแล้ว" : ""
+            }));
+
+          S.internStartingData = rows;
+          renderInternStartingTable();
+        } catch (e) {
+          S.internStartingData = [];
+          renderInternStartingTable();
+        }
+      }
+
+      async function fetchEnding() {
+        try {
+          const result = await window.BACKEND.getInternData(1, 500);
+          const members = Array.isArray(result.items) ? result.items : [];
+
+          const rows = members
+            .filter(m => String(m?.role || "").toLowerCase() === "intern")
+            .map(m => ({ m, id: String(m?._id || ""), d: diffDaysFromToday(m?.endDate) }))
+            .filter(x => typeof x.d === "number" && x.d >= 0 && x.d <= 30)
+            .sort((a, b) => a.d - b.d)
+            .map(x => ({
+              _id: x.id,
+              fullName: x.m.displayName || "",
+              nickName: x.m.nickname || "",
+              position: x.m.position || "",
+              date: fmtDMY(x.m.endDate),
+              notifyStatus: isNotified("ending", x.id) ? "แจ้งแล้ว" : ""
+            }));
+
+          S.internEndingData = rows;
+          renderInternEndingTable();
+        } catch (e) {
+          S.internEndingData = [];
+          renderInternEndingTable();
+        }
+      }
+
+      async function saveStartingToStore() {
+        const res = await window.BACKEND.saveInternStarting(S.internStartingData);
+        if (!res?.success) console.warn("บันทึก starting ไม่สำเร็จ");
+      }
+
+      async function saveEndingToStore() {
+        const res = await window.BACKEND.saveInternEnding(S.internEndingData);
+        if (!res?.success) console.warn("บันทึก ending ไม่สำเร็จ");
+      }
+
+      function updateAddInternPositionDatalist() {
+        const dl = document.getElementById("addInternPositionDatalist");
+        if (!dl) return;
+        dl.innerHTML = "";
+        (S.positions || []).forEach(function (pos) {
+          const opt = document.createElement("option");
+          opt.value = pos;
+          dl.appendChild(opt);
+        });
+      }
+
+      window.addNewInternSubmit = async function () {
+        const displayName = (document.getElementById("newInternName")?.value || "").trim();
+        const position = (document.getElementById("newInternPosition")?.value || "").trim();
+        const note = (document.getElementById("newInternNote")?.value || "").trim();
+        const nickname = (document.getElementById("newInternNickname")?.value || "").trim();
+        const role = (document.getElementById("newInternRole")?.value || "intern").toString().trim(); // ✅ backend ต้องการตัวเล็ก
+        const docsUpdateWorks = (document.getElementById("newInternDocsUpdateWorks")?.value || "").trim();
+
+
+
+        const startDate = (document.getElementById("newInternStartDate")?.value || "").trim();
+        const endDate = (document.getElementById("newInternEndDate")?.value || "").trim();
+        if (!displayName) { alert("กรุณากรอกชื่อ (displayName)"); return; }
+
+        try {
+          const payload = {
+            displayName,
+            nickname: nickname || undefined,
+            position: position || undefined,
+            role,
+            note: note || undefined,
+            docsUpdateWorks: docsUpdateWorks || undefined,
+            ...(startDate ? { startDate } : {}),
+            ...(endDate ? { endDate } : {})
+          };
+
+          // debug: ดู payload ที่ส่งจริง
+          // console.log("POST /members payload:", payload);
+
+          const res = await window.BACKEND.addNewIntern(payload);
+
+          if (res?.success) {
+            document.getElementById("newInternName").value = "";
+            document.getElementById("newInternPosition").value = "";
+            document.getElementById("newInternNote").value = "";
+
+            const nn = document.getElementById("newInternNickname"); if (nn) nn.value = "";
+            const rr = document.getElementById("newInternRole"); if (rr) rr.value = "intern";
+            const duw = document.getElementById("newInternDocsUpdateWorks"); if (duw) duw.value = "";
+
+
+
+            const sd = document.getElementById("newInternStartDate"); if (sd) sd.value = "";
+            const ed = document.getElementById("newInternEndDate"); if (ed) ed.value = "";
+            if (typeof window.reloadInternTab === "function") window.reloadInternTab();
+          } else {
+            alert(res?.message || "เพิ่มไม่สำเร็จ");
+          }
+        } catch (err) {
+          alert("เกิดข้อผิดพลาด: " + (err?.message || err));
+        }
+      };
+
+      window.hideAddInternForm = function () {
+        S.internManageMode = false;
+        const btn = document.getElementById("internManageBtn");
+        const actionsHeader = document.getElementById("internActionsHeader");
+        const actionsHeaderCol = document.getElementById("internActionsHeaderCol");
+        const actionsBodyCol = document.getElementById("internActionsBodyCol");
+        const addForm = document.getElementById("addInternForm");
+        if (btn) btn.classList.remove("active");
+        if (actionsHeader) actionsHeader.style.display = "none";
+        if (actionsHeaderCol) actionsHeaderCol.style.display = "none";
+        if (actionsBodyCol) actionsBodyCol.style.display = "none";
+        if (addForm) addForm.classList.remove("show");
+        renderInternTable();
+      };
+
+      window.onInternCheckChange = async function (memberId, col, checked) {
+        try {
+          const res = await window.BACKEND.updateInternCheckbox(memberId, col, !!checked);
+          if (!res?.success) alert(res?.message || "บันทึกไม่สำเร็จ");
+        } catch (err) {
+          alert(err?.message || String(err));
+        }
+      };
+
+      async function onInternStatusChange(memberId, status) {
+        try {
+          const res = await window.BACKEND.updateInternStatus(memberId, status);
+          if (!res?.success) alert(res?.message || "บันทึกสถานะไม่สำเร็จ");
+        } catch (err) {
+          alert(err?.message || String(err));
+        }
+      }
+
+      window.toggleStatusDD = function (el) {
+        const items = el ? el.nextElementSibling : null;
+        if (!items) return;
+        document.querySelectorAll(".status-items.open").forEach(function (other) {
+          if (other !== items) other.classList.remove("open");
+        });
+        const willOpen = !items.classList.contains("open");
+        items.classList.toggle("open");
+        if (willOpen) {
+          const rect = el.getBoundingClientRect();
+          items.style.top = (rect.bottom + 6) + "px";
+          items.style.left = rect.left + "px";
+        }
+      };
+
+      window.selectStatusDD = function (el, value) {
+        const wrap = el ? el.closest(".status-dd") : null;
+        if (!wrap) return;
+        const memberId = wrap.dataset.id;
+        wrap.dataset.value = value;
+        const textEl = wrap.querySelector(".status-text");
+        if (textEl) textEl.textContent = value;
+        const items = wrap.querySelector(".status-items");
+        if (items) items.classList.remove("open");
+        onInternStatusChange(memberId, value);
+      };
+
+      document.addEventListener("click", function (e) {
+        document.querySelectorAll(".status-items.open").forEach(function (items) {
+          if (!items.parentElement.contains(e.target)) items.classList.remove("open");
+        });
+      }, true);
+
+      window.deleteIntern = async function (memberId, name) {
+        if (!confirm('ยืนยันลบ "' + name + '" ?')) return;
+        try {
+          const res = await window.BACKEND.deleteIntern(memberId);
+          if (res?.success) window.reloadInternTab();
+          else alert(res?.message || "ลบไม่สำเร็จ");
+        } catch (err) {
+          alert("เกิดข้อผิดพลาด: " + (err?.message || err));
+        }
+      };
+
+
+      // =========================
+      // ✅ Expose render helpers globally (so inline onclick can rerender immediately)
+      // =========================
+      try {
+        if (typeof renderInternTable === "function") window.renderInternTable = renderInternTable;
+        if (typeof applyInternFilters === "function") window.applyInternFilters = applyInternFilters;
+      } catch (e) { }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        window.loadInternTab();
+
+
+
+        // =========================
+        // ✅ Date input: custom placeholder (hide mm/dd/yyyy)
+        // =========================
+        function bindFancyDateInput(id) {
+          const el = document.getElementById(id);
+          if (!el) return;
+          const sync = () => {
+            if (el.value) el.classList.remove("empty");
+            else el.classList.add("empty");
+          };
+          el.addEventListener("change", sync);
+          el.addEventListener("input", sync);
+          el.addEventListener("blur", sync);
+          // เปิด picker เร็วๆ (รองรับเฉพาะบาง browser)
+          el.addEventListener("click", () => { try { el.showPicker && el.showPicker(); } catch (e) { } });
+          sync();
+        }
+        bindFancyDateInput("newInternStartDate");
+        bindFancyDateInput("newInternEndDate");
       });
-    }, { passive: true });
-    head.addEventListener("scroll", () => {
-      if (body.scrollLeft !== head.scrollLeft) body.scrollLeft = head.scrollLeft;
-    }, { passive: true });
-    sync();
-  }
+    })();
 
-  function bindAll() {
-    document.querySelectorAll(".table-wrap").forEach(bindOneTableWrap);
-  }
+    /* Scroll sync */
+    (function () {
+      function bindOneTableWrap(wrap) {
+        const head = wrap.querySelector(".table-header-wrapper");
+        const body = wrap.querySelector(".table-body-wrapper");
+        if (!head || !body) return;
+        if (body.__boundScrollSync) return;
+        body.__boundScrollSync = true;
+        const sync = () => { head.scrollLeft = body.scrollLeft; };
+        body.addEventListener("scroll", () => {
+          requestAnimationFrame(sync);
+          document.querySelectorAll(".status-items.open").forEach(function (items) {
+            items.classList.remove("open");
+          });
+        }, { passive: true });
+        head.addEventListener("scroll", () => {
+          if (body.scrollLeft !== head.scrollLeft) body.scrollLeft = head.scrollLeft;
+        }, { passive: true });
+        sync();
+      }
 
-  document.addEventListener("DOMContentLoaded", bindAll);
-  window.addEventListener("load", bindAll);
-  window.addEventListener("resize", bindAll);
-  const mo = new MutationObserver(() => bindAll());
-  mo.observe(document.documentElement, { childList: true, subtree: true });
-})();
-  </script>
+      function bindAll() {
+        document.querySelectorAll(".table-wrap").forEach(bindOneTableWrap);
+      }
+
+      document.addEventListener("DOMContentLoaded", bindAll);
+      window.addEventListener("load", bindAll);
+      window.addEventListener("resize", bindAll);
+      const mo = new MutationObserver(() => bindAll());
+      mo.observe(document.documentElement, { childList: true, subtree: true });
+    })();
+
+
+
+    // =========================================================
+    // ✅ Force-expose inline edit helpers globally (for inline onclick)
+    // =========================================================
+    window.toggleMemberInlineEdit = function (memberId) {
+      const S = window.__internState;
+      if (!S) return;
+      const id = String(memberId || "");
+      if (!id) return;
+
+      // toggle editing row
+      S.editingMemberId = (S.editingMemberId && String(S.editingMemberId) === id) ? null : id;
+
+      // re-render table immediately
+      if (typeof window.renderInternTable === "function") window.renderInternTable();
+
+      // ✅ focus input right away (realtime)
+      if (S.editingMemberId) {
+        setTimeout(() => {
+          const el = document.getElementById("editName_" + id) || document.getElementById("editPosition_" + id);
+          if (el) {
+            el.focus();
+            if (typeof el.select === "function") el.select();
+          }
+        }, 0);
+      }
+    };
+
+    window.saveMemberInline = async function (memberId) {
+      const S = window.__internState;
+      const id = String(memberId || "");
+      if (!S || !id) return;
+
+      const name = (document.getElementById("editName_" + id)?.value || "").trim();
+      const position = (document.getElementById("editPosition_" + id)?.value || "").trim();
+      const note = (document.getElementById("editNote_" + id)?.value || "").trim();
+      const docsUpdateWorks = (document.getElementById("editDocs_" + id)?.value || "").trim();
+
+      if (!name) { alert("กรุณาใส่ชื่อ"); return; }
+
+      const resp = await window.BACKEND.updateIntern(id, name, position, note, docsUpdateWorks);
+      if (!resp || !resp.success) {
+        alert(resp?.message || "อัปเดตไม่สำเร็จ");
+        return;
+      }
+
+      // update state immediately
+      const idx = (S.internData || []).findIndex(m => String(m._id || m.id || "") === id);
+      if (idx >= 0) {
+        S.internData[idx].displayName = name;
+        S.internData[idx].position = position;
+        S.internData[idx].note = note;
+        S.internData[idx].docsUpdateWorks = docsUpdateWorks;
+        if (typeof writeMeta === "function") writeMeta(id, { docsUpdateWorks });
+      }
+
+      S.editingMemberId = null;
+      if (typeof window.applyInternFilters === "function") window.applyInternFilters();
+      if (typeof window.renderInternTable === "function") window.renderInternTable();
+    };</script>
 
 </body>
+
 </html>

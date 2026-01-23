@@ -1915,10 +1915,10 @@ async function initTodos() {
     window.__todoProjectBind = true;
     const pi = $("todoProjectInput");
     if (pi) {
-      pi.addEventListener("change", () => loadMentorOwnersForProjectName(pi.value));
+      pi.addEventListener("change", () => loadMentorOwnersForProjectName(pi.value).catch(console.error));
       pi.addEventListener("input", () => {
         // when using datalist, input fires; keep it responsive but cheap
-        loadMentorOwnersForProjectName(pi.value);
+        loadMentorOwnersForProjectName(pi.value).catch(console.error);
       });
     }
   }
@@ -2490,7 +2490,7 @@ async function fetchAllMembersForTodos() {
   if (window.__todosMembersCache.loaded) return window.__todosMembersCache.map;
 
   try {
-    const res = await fetchAPI(`${API_BASE_URL}/members?page=1&limit=2000`);
+    const res = await fetchAPI(`${API_MEMBERS}?page=1&limit=2000`);
     const items = (res?.data || res?.items || res || []);
     window.__todosMembersCache.map.clear();
     items.forEach(m => {
@@ -2554,7 +2554,16 @@ async function loadMentorOwnersForProjectName(projectName) {
       if (item && typeof item === "object" && (item._id || item.id)) {
         const memberId = String(item._id || item.id || "");
         const memberName = String(item.displayName || item.name || "").trim();
-        const mentor = isMentorRole(item);
+
+        let mentor = isMentorRole(item);
+
+        // ✅ fallback: ถ้า project detail ไม่มี role ให้ไปดู role จริงจาก /members
+        if (!mentor && memberId) {
+          const map = await fetchAllMembersForTodos();
+          const mm = map.get(memberId);
+          if (mm) mentor = isMentorRole(mm);
+        }
+
         if (mentor && memberId && memberName) owners.push({ id: memberId, name: memberName });
         continue;
       }
@@ -2571,6 +2580,43 @@ async function loadMentorOwnersForProjectName(projectName) {
     }
   }
 
+
+  // ✅ fallback 2: ถ้า project detail ไม่มี members/role (หรือ members ว่าง)
+  // ให้หา mentor จาก /members โดยเช็คว่า member.projects มี project นี้ไหม
+  if (owners.length === 0) {
+    const map = await fetchAllMembersForTodos();
+    for (const mm of map.values()) {
+      if (!mm || !isMentorRole(mm)) continue;
+
+      const projs = mm.projects;
+      let hit = false;
+
+      if (Array.isArray(projs)) {
+        for (const pr of projs) {
+          // projects อาจเป็น string id
+          if (typeof pr === "string") {
+            if (String(pr) === projectId) { hit = true; break; }
+            continue;
+          }
+
+          // หรือเป็น object ที่ populate มา { _id, name, ... }
+          if (pr && typeof pr === "object") {
+            const pid = String(pr._id || pr.id || "");
+            const pname = normalizeName(pr.name || pr.projectName || "");
+            if ((pid && pid === projectId) || (pname && pname === nameKey)) { hit = true; break; }
+          }
+        }
+      }
+
+      if (!hit) continue;
+
+      const mid = String(mm._id || mm.id || "");
+      const mname = String(mm.displayName || mm.name || "").trim();
+      if (mid && mname) owners.push({ id: mid, name: mname });
+    }
+  }
+
+
   // de-dupe
   const seen = new Set();
   todoOwnerList = owners.filter(o => {
@@ -2581,6 +2627,12 @@ async function loadMentorOwnersForProjectName(projectName) {
   }).sort((a,b)=>String(a.name).localeCompare(String(b.name), "th"));
 
   renderTodoOwnerDropdown();
+
+  // ✅ AUTO-SELECT: ถ้ามี mentor คนเดียว เลือกให้ทันที
+  if (Array.isArray(todoOwnerList) && todoOwnerList.length === 1) {
+    const m = todoOwnerList[0];
+    selectTodoOwner(String(m.id || ""), String(m.name || ""));
+  }
 }
 
 

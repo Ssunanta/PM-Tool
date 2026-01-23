@@ -968,138 +968,140 @@
       return (window.google && google.script && google.script.run);
     }
 
-    // ===== เพิ่มส่วนนี้ในฟังก์ชัน setTabHTML() ประมาณ line 177 =====
+// ✅ แก้ไขในส่วน setTabHTML() ของ Index.html
+// แทนที่ส่วนนี้:
 
-    function setTabHTML(tabElement, html, tabName) {
-      if (!tabElement) return;
+function setTabHTML(tabElement, html, tabName) {
+  if (!tabElement) return;
 
-      const scopeSel = `#${tabName}Tab`;
-      const styleId = `tab-style-${tabName}`;
+  const scopeSel = `#${tabName}Tab`;
+  const styleId = `tab-style-${tabName}`;
 
-      let doc;
-      try {
-        doc = new DOMParser().parseFromString(html, "text/html");
-      } catch (e) {
-        console.error("Parse error:", e);
-        tabElement.innerHTML = html;
-        return;
-      }
+  let doc;
+  try {
+    doc = new DOMParser().parseFromString(html, "text/html");
+  } catch (e) {
+    console.error("Parse error:", e);
+    tabElement.innerHTML = html;
+    return;
+  }
 
-      const bodyHtml = (doc.body && doc.body.innerHTML) ? doc.body.innerHTML : html;
-      const styleTags = Array.from(doc.querySelectorAll("style"));
-      const rawCss = styleTags.map(s => s.textContent || "").join("\n").trim();
+  const bodyHtml = (doc.body && doc.body.innerHTML) ? doc.body.innerHTML : html;
+  const styleTags = Array.from(doc.querySelectorAll("style"));
+  const rawCss = styleTags.map(s => s.textContent || "").join("\n").trim();
 
-      const oldStyle = document.getElementById(styleId);
-      if (oldStyle) {
-        console.log(`[${tabName}] Removing style: ${styleId}`);
-        oldStyle.remove();
-      }
+  const oldStyle = document.getElementById(styleId);
+  if (oldStyle) {
+    console.log(`[${tabName}] Removing style: ${styleId}`);
+    oldStyle.remove();
+  }
 
-      const oldExtra = document.getElementById(`${styleId}-extra`);
-      if (oldExtra) {
-        console.log(`[${tabName}] Removing extra: ${styleId}-extra`);
-        oldExtra.remove();
-      }
+  const oldExtra = document.getElementById(`${styleId}-extra`);
+  if (oldExtra) {
+    console.log(`[${tabName}] Removing extra: ${styleId}-extra`);
+    oldExtra.remove();
+  }
 
-      if (rawCss) {
-        const noScopeTabs = ["todos"];
-        const inheritRootVarsTabs = ["intern"]; // ✅ Intern ต้อง inherit :root vars
+  if (rawCss) {
+    // ✅ แก้ไขตรงนี้: ใช้ scopeCssForTabWithRootVars สำหรับทุก tab ที่ต้องการ root vars
+    const inheritRootVarsTabs = ["intern"];
+    const noScopeTabs = ["todos"];
 
-        let finalCss;
-        if (noScopeTabs.includes(tabName)) {
-          finalCss = rawCss;
-        } else if (inheritRootVarsTabs.includes(tabName)) {
-          // ✅ สำหรับ intern: scope แต่ keep :root variables ไว้ที่ #internTab
-          finalCss = scopeCssForTabWithRootVars(rawCss, scopeSel);
-        } else {
-          finalCss = scopeCssForTab(rawCss, scopeSel);
-        }
-
-        const styleEl = document.createElement("style");
-        styleEl.id = styleId;
-        styleEl.textContent = finalCss;
-        document.head.appendChild(styleEl);
-        console.log(`[${tabName}] Added style: ${styleId}`);
-      }
-
-      // Notes tab special style
-      if (tabName === "note") {
-        const extraStyle = document.createElement("style");
-        extraStyle.id = `${styleId}-extra`;
-        extraStyle.textContent = `#notesTab .notes-main-title { margin-top: 0 !important; }`;
-        document.head.appendChild(extraStyle);
-      }
-
-      tabElement.innerHTML = bodyHtml;
-
-      // ===== Script execution =====
-      if (!tabElement.dataset.scriptsExecuted) {
-        const scripts = Array.from(tabElement.querySelectorAll("script"));
-
-        const collected = scripts.map(s => ({
-          src: (s.getAttribute("src") || "").trim(),
-          type: (s.getAttribute("type") || "").trim(),
-          code: s.src ? "" : (s.textContent || "")
-        }));
-
-        scripts.forEach(s => s.remove());
-
-        const sanitizeCode = (code) => {
-          return String(code || "")
-            .replace(/\u00A0/g, " ")
-            .replace(/\uFEFF/g, "")
-            .replace(/[\u200B-\u200D\u2060]/g, "")
-            .replace(/\u2028|\u2029/g, "\n")
-            .replace(/\r\n/g, "\n");
-        };
-
-        const loadExternal = (src, type = "") => new Promise((resolve, reject) => {
-          const sc = document.createElement("script");
-          if (type) sc.type = type;
-          sc.src = src;
-          sc.onload = () => resolve();
-          sc.onerror = () => reject(new Error("Failed to load " + src));
-          document.head.appendChild(sc);
-        });
-
-        const injectInlineAsScriptTag = (code, type = "text/javascript", label = "") => {
-          const sc = document.createElement("script");
-          sc.type = type || "text/javascript";
-          sc.textContent = code;
-          if (label) sc.setAttribute("data-from", label);
-          document.head.appendChild(sc);
-        };
-
-        (async () => {
-          for (let i = 0; i < collected.length; i++) {
-            const s = collected[i];
-            if (!s.src) continue;
-            try { await loadExternal(s.src, s.type); }
-            catch (e) { console.error(`[${tabName}] external script #${i} failed`, e); }
-          }
-
-          for (let i = 0; i < collected.length; i++) {
-            const s = collected[i];
-            if (s.src) continue;
-
-            const safe = sanitizeCode(s.code);
-            const isModule =
-              (s.type && s.type.toLowerCase() === "module") ||
-              /\b(import|export)\b/.test(safe);
-
-            try {
-              injectInlineAsScriptTag(safe, isModule ? "module" : "text/javascript", `${tabName}#${i}`);
-            } catch (e) {
-              console.error(`[${tabName}] inline inject failed`, e);
-            }
-          }
-        })();
-
-        tabElement.dataset.scriptsExecuted = "1";
-      } else {
-        tabElement.querySelectorAll("script").forEach(s => s.remove());
-      }
+    let finalCss;
+    if (noScopeTabs.includes(tabName)) {
+      finalCss = rawCss;
+    } else if (inheritRootVarsTabs.includes(tabName)) {
+      // ✅ ใช้ scopeCssForTabWithRootVars แต่ต้องสกอป selectors ให้ถูกต้อง
+      finalCss = scopeCssForTabWithRootVars(rawCss, scopeSel);
+    } else {
+      finalCss = scopeCssForTab(rawCss, scopeSel);
     }
+
+    const styleEl = document.createElement("style");
+    styleEl.id = styleId;
+    styleEl.textContent = finalCss;
+    document.head.appendChild(styleEl);
+    console.log(`[${tabName}] Added style: ${styleId}`);
+  }
+
+  // Notes tab special style
+  if (tabName === "note") {
+    const extraStyle = document.createElement("style");
+    extraStyle.id = `${styleId}-extra`;
+    extraStyle.textContent = `#notesTab .notes-main-title { margin-top: 0 !important; }`;
+    document.head.appendChild(extraStyle);
+  }
+
+  tabElement.innerHTML = bodyHtml;
+
+  // ===== Script execution =====
+  if (!tabElement.dataset.scriptsExecuted) {
+    const scripts = Array.from(tabElement.querySelectorAll("script"));
+
+    const collected = scripts.map(s => ({
+      src: (s.getAttribute("src") || "").trim(),
+      type: (s.getAttribute("type") || "").trim(),
+      code: s.src ? "" : (s.textContent || "")
+    }));
+
+    scripts.forEach(s => s.remove());
+
+    const sanitizeCode = (code) => {
+      return String(code || "")
+        .replace(/\u00A0/g, " ")
+        .replace(/\uFEFF/g, "")
+        .replace(/[\u200B-\u200D\u2060]/g, "")
+        .replace(/\u2028|\u2029/g, "\n")
+        .replace(/\r\n/g, "\n");
+    };
+
+    const loadExternal = (src, type = "") => new Promise((resolve, reject) => {
+      const sc = document.createElement("script");
+      if (type) sc.type = type;
+      sc.src = src;
+      sc.onload = () => resolve();
+      sc.onerror = () => reject(new Error("Failed to load " + src));
+      document.head.appendChild(sc);
+    });
+
+    const injectInlineAsScriptTag = (code, type = "text/javascript", label = "") => {
+      const sc = document.createElement("script");
+      sc.type = type || "text/javascript";
+      sc.textContent = code;
+      if (label) sc.setAttribute("data-from", label);
+      document.head.appendChild(sc);
+    };
+
+    (async () => {
+      for (let i = 0; i < collected.length; i++) {
+        const s = collected[i];
+        if (!s.src) continue;
+        try { await loadExternal(s.src, s.type); }
+        catch (e) { console.error(`[${tabName}] external script #${i} failed`, e); }
+      }
+
+      for (let i = 0; i < collected.length; i++) {
+        const s = collected[i];
+        if (s.src) continue;
+
+        const safe = sanitizeCode(s.code);
+        const isModule =
+          (s.type && s.type.toLowerCase() === "module") ||
+          /\b(import|export)\b/.test(safe);
+
+        try {
+          injectInlineAsScriptTag(safe, isModule ? "module" : "text/javascript", `${tabName}#${i}`);
+        } catch (e) {
+          console.error(`[${tabName}] inline inject failed`, e);
+        }
+      }
+    })();
+
+    tabElement.dataset.scriptsExecuted = "1";
+  } else {
+    tabElement.querySelectorAll("script").forEach(s => s.remove());
+  }
+}
 
     // ===== ฟังก์ชัน scopeCssForTab() เดิม (เก็บไว้ยังไง) =====
     function scopeCssForTab(cssText, scopeSel) {
@@ -1143,95 +1145,91 @@
       return out.join("\n");
     }
 
-    // ✅ เพิ่มฟังก์ชันใหม่ตรงนี้ (หลัง scopeCssForTab)
-    function scopeCssForTabWithRootVars(cssText, scopeSel) {
-      let css = String(cssText || "");
+function scopeCssForTabWithRootVars(cssText, scopeSel) {
+  let css = String(cssText || "");
 
-      // Extract :root block
-      let rootBlock = "";
-      const rootRegex = /:root\s*\{([^}]*)\}/;
-      const rootMatch = css.match(rootRegex);
+  // Extract :root block
+  let rootBlock = "";
+  const rootRegex = /:root\s*\{([^}]*)\}/;
+  const rootMatch = css.match(rootRegex);
 
-      if (rootMatch) {
-        rootBlock = rootMatch[1].trim();
-        css = css.replace(rootRegex, "");
-      }
+  if (rootMatch) {
+    rootBlock = rootMatch[1].trim();
+    css = css.replace(rootRegex, "");
+  }
 
-      // Inject :root variables
-      let scopedRoot = "";
-      if (rootBlock) {
-        scopedRoot = `${scopeSel} { ${rootBlock} }\n`;
-      }
+  // Inject :root variables ไปที่ scopeSel
+  let scopedRoot = "";
+  if (rootBlock) {
+    scopedRoot = `${scopeSel} { ${rootBlock} }\n`;
+  }
 
-      // Replace body/html selectors
-      css = css
-        .replace(/(^|[,{]\s*)body(\s*[,{])/g, `$1${scopeSel}$2`)
-        .replace(/(^|[,{]\s*)html(\s*[,{])/g, `$1${scopeSel}$2`);
+  // Replace body/html selectors ด้วย scopeSel
+  css = css
+    .replace(/(^|[,{]\s*)body(\s*[,{])/g, `$1${scopeSel}$2`)
+    .replace(/(^|[,{]\s*)html(\s*[,{])/g, `$1${scopeSel}$2`);
 
-      const out = [];
-      const blocks = css.split("}");
+  const out = [];
+  const blocks = css.split("}");
 
-      for (let b of blocks) {
-        b = b.trim();
-        if (!b) continue;
-        const parts = b.split("{");
-        if (parts.length < 2) continue;
+  for (let b of blocks) {
+    b = b.trim();
+    if (!b) continue;
+    const parts = b.split("{");
+    if (parts.length < 2) continue;
 
-        const sel = parts[0].trim();
-        const body = parts.slice(1).join("{");
+    const sel = parts[0].trim();
+    const body = parts.slice(1).join("{");
 
-        if (sel.startsWith("@")) {
-          if (sel.startsWith("@media")) {
-            const mediaBody = body;
-            let mediaCss = "";
-            const mediaBlocks = mediaBody.split("}");
-            for (let mb of mediaBlocks) {
-              mb = mb.trim();
-              if (!mb) continue;
-              const mediaParts = mb.split("{");
-              if (mediaParts.length < 2) continue;
-              const mediaSel = mediaParts[0].trim();
-              const mediaBodyContent = mediaParts.slice(1).join("{");
-              const scopedMediaSel = mediaSel.split(",")
-                .map(s => s.trim())
-                .map(s => {
-                  if (!s || s.startsWith(scopeSel)) return s;
-                  if (s === "*") return `${scopeSel} *`;
-                  if (/^(table|button|input|select|textarea|form|div|span|p|h\d|ul|ol|li|a|label|section)(\s|$|:|\[|,)/.test(s)) {
-                    return `${scopeSel} ${s}`;
-                  }
-                  if (/^[\.#]/.test(s)) return `${scopeSel} ${s}`;
-                  return `${scopeSel} ${s}`;
-                })
-                .join(", ");
-              mediaCss += scopedMediaSel + "{" + mediaBodyContent + "}\n";
-            }
-            out.push(sel + "{" + mediaCss + "}");
-          } else {
-            out.push(sel + "{" + body + "}");
-          }
-          continue;
-        }
-
-        const scopedSel = sel.split(",")
-          .map(s => s.trim())
-          .map(s => {
-            if (!s) return s;
-            if (s.startsWith(scopeSel)) return s;
-            if (s === "*") return `${scopeSel} *`;
-            if (/^(table|button|input|select|textarea|form|div|span|p|h\d|ul|ol|li|a|label|section|header|footer|nav|body)(\s|$|:|\[|,)/.test(s)) {
+    if (sel.startsWith("@")) {
+      if (sel.startsWith("@media")) {
+        // ✅ Handle media queries: scope internal selectors
+        const mediaBody = body;
+        let mediaCss = "";
+        const mediaBlocks = mediaBody.split("}");
+        for (let mb of mediaBlocks) {
+          mb = mb.trim();
+          if (!mb) continue;
+          const mediaParts = mb.split("{");
+          if (mediaParts.length < 2) continue;
+          const mediaSel = mediaParts[0].trim();
+          const mediaBodyContent = mediaParts.slice(1).join("{");
+          const scopedMediaSel = mediaSel.split(",")
+            .map(s => s.trim())
+            .map(s => {
+              if (!s || s.startsWith(scopeSel)) return s;
+              if (s === "*") return `${scopeSel} *`;
+              // ✅ ครอบ selectors ทั้งหมด
               return `${scopeSel} ${s}`;
-            }
-            if (/^[\.#]/.test(s)) return `${scopeSel} ${s}`;
-            return `${scopeSel} ${s}`;
-          })
-          .join(", ");
-
-        out.push(scopedSel + "{" + body + "}");
+            })
+            .join(", ");
+          mediaCss += scopedMediaSel + "{" + mediaBodyContent + "}\n";
+        }
+        out.push(sel + "{" + mediaCss + "}");
+      } else {
+        // @font-face, @keyframes เป็นต้น ให้ผ่านไปได้
+        out.push(sel + "{" + body + "}");
       }
-
-      return scopedRoot + out.join("\n");
+      continue;
     }
+
+    // Regular selectors: ครอบด้วย scopeSel
+    const scopedSel = sel.split(",")
+      .map(s => s.trim())
+      .map(s => {
+        if (!s) return s;
+        if (s.startsWith(scopeSel)) return s;
+        if (s === "*") return `${scopeSel} *`;
+        // ✅ ครอบทุก selector ที่ไม่ได้เป็น pseudo-element เท่านั้น
+        return `${scopeSel} ${s}`;
+      })
+      .join(", ");
+
+    out.push(scopedSel + "{" + body + "}");
+  }
+
+  return scopedRoot + out.join("\n");
+}
 
     // ===== ฟังก์ชันต่อไปจะเป็น escapeHtml() หรือฟังก์ชันอื่น =====
 

@@ -1083,6 +1083,56 @@
       return out.join("\n");
     }
 
+// ✅ ฟังก์ชัน scope CSS แต่ keep :root variables
+function scopeCssForTabWithRootVars(cssText, scopeSel) {
+  let css = String(cssText || "");
+  
+  // ✅ Keep :root ไว้ที่ scopeSel (ไม่ลบ)
+  css = css.replace(/(^|[,{]\s*)body(\s*[,{])/g, `$1${scopeSel}$2`)
+           .replace(/(^|[,{]\s*)html(\s*[,{])/g, `$1${scopeSel}$2`);
+
+  const out = [];
+  const blocks = css.split("}");
+
+  for (let b of blocks) {
+    b = b.trim();
+    if (!b) continue;
+    const parts = b.split("{");
+    if (parts.length < 2) continue;
+
+    const sel = parts[0].trim();
+    const body = parts.slice(1).join("{");
+
+    // ✅ Keep @media, @keyframes อื่นๆ
+    if (sel.startsWith("@")) {
+      out.push(sel + "{" + body + "}");
+      continue;
+    }
+
+    // ✅ Keep :root ไว้ตามเดิม
+    if (sel === ":root") {
+      out.push(sel + "{" + body + "}");
+      continue;
+    }
+
+    const scopedSel = sel.split(",")
+      .map(s => s.trim())
+      .map(s => {
+        if (!s) return s;
+        if (s.startsWith(scopeSel)) return s;
+        if (/^(table|button|input|select|textarea|form|div|span|p|h\d|ul|ol|li|a)(\s|$|:|\[)/.test(s)) {
+          return `${scopeSel} ${s}`;
+        }
+        return `${scopeSel} ${s}`;
+      })
+      .join(", ");
+
+    out.push(scopedSel + "{" + body + "}");
+  }
+
+  return out.join("\n");
+}
+
 // ✅ ฟังก์ชันใหม่สำหรับ Intern - ไม่ต้อง scope css เลย เพราะใช้ .intern-wrapper class แล้ว
 function setTabHTMLIntern(tabElement, html) {
   if (!tabElement) return;

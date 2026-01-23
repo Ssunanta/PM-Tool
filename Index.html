@@ -962,6 +962,7 @@
         el.style.display = "none";
         el.style.pointerEvents = "none";
       }
+
     }
 
     function hasGAS() {
@@ -1090,7 +1091,9 @@ function setTabHTML(tabElement, html, tabName) {
           console.error(`[${tabName}] inline inject failed`, e);
         }
       }
-    })();
+    try { registerTabFns(tabName); activateTabFns(tabName); }
+    catch (e) { console.error(`[${tabName}] register/dispatch failed`, e); }
+})();
 
     tabElement.dataset.scriptsExecuted = "1";
   } else {
@@ -1098,8 +1101,46 @@ function setTabHTML(tabElement, html, tabName) {
   }
 }
 
-    // ===== ฟังก์ชัน scopeCssForTab() เดิม (เก็บไว้ยังไง) =====
-    function scopeCssForTab(cssText, scopeSel) {
+/* =========================================================
+   ✅ TAB FUNCTION SWAPPER (แก้ชนชื่อฟังก์ชันข้ามแท็บ)
+   - เก็บฟังก์ชันของแต่ละแท็บไว้ใน window.__tabFns[tabName]
+   - เวลาเปลี่ยนแท็บ ให้ "สลับ" ฟังก์ชันบน window ให้เป็นของแท็บนั้น
+   ✅ ทำให้ onclick เดิม (toggleCtrlDropdown / select...) ใช้ได้ทันที
+   ========================================================= */
+window.__tabFns = window.__tabFns || {};
+
+function registerTabFns(tabName){
+  try{
+    const keep = [
+      "toggleCtrlDropdown",
+      "selectSortDir",
+      "selectSortField",
+      "selectStatusFilter",
+      "clearTodoFilters",
+      "clearAllFilters"
+    ];
+    window.__tabFns[tabName] = window.__tabFns[tabName] || {};
+    keep.forEach((k) => {
+      if (typeof window[k] === "function") window.__tabFns[tabName][k] = window[k];
+    });
+  }catch(e){
+    console.error("[tabFns] registerTabFns failed", e);
+  }
+}
+
+function activateTabFns(tabName){
+  try{
+    const bag = window.__tabFns && window.__tabFns[tabName];
+    if (!bag) return;
+    Object.keys(bag).forEach((k)=>{
+      if (typeof bag[k] === "function") window[k] = bag[k];
+    });
+  }catch(e){
+    console.error("[tabFns] activateTabFns failed", e);
+  }
+}
+
+function scopeCssForTab(cssText, scopeSel) {
       let css = String(cssText || "")
         .replace(/(^|[,{]\s*):root(\s*[,{])/g, `$1${scopeSel}$2`)
         .replace(/(^|[,{]\s*)body(\s*[,{])/g, `$1${scopeSel}$2`)
@@ -1415,6 +1456,7 @@ function setTabHTML(tabElement, html, tabName) {
 
       tabName = map[key] || key;
       currentTab = tabName;
+      try { activateTabFns(tabName); } catch(e) {}
 
       showGlobalLoading("กำลังโหลด " + tabName + "...");
 

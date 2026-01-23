@@ -1719,10 +1719,10 @@
           </div>
           <div class="ctrl-items" id="statusFilterItems">
             <div class="ctrl-item" onclick="selectStatusFilter('all', 'ทั้งหมด')">ทั้งหมด</div>
-            <div class="ctrl-item" onclick="selectStatusFilter('Not scheduled', 'Not scheduled')">Not scheduled</div>
-            <div class="ctrl-item" onclick="selectStatusFilter('In Progress', 'In Progress')">In Progress</div>
-            <div class="ctrl-item" onclick="selectStatusFilter('Finished', 'Finished')">Finished</div>
-            <div class="ctrl-item" onclick="selectStatusFilter('Overdue', 'Overdue')">Overdue</div>
+            <div class="ctrl-item" onclick="selectStatusFilter('not_started', 'Not scheduled')">Not scheduled</div>
+            <div class="ctrl-item" onclick="selectStatusFilter('in_progress', 'In Progress')">In Progress</div>
+            <div class="ctrl-item" onclick="selectStatusFilter('done', 'Finished')">Finished</div>
+            <div class="ctrl-item" onclick="selectStatusFilter('overdue', 'Overdue')">Overdue</div>
           </div>
         </div>
 
@@ -1871,8 +1871,8 @@ function toISOOrUndef(v) {
 
 // ✅ Derive overdue (UI-only): in_progress + deadline passed + not finished
 function isOverdueTask(task) {
-  const status = String(task?.status || "").trim().toLowerCase();
-  if (status !== "in_progress") return false;
+  const st = normalizeStatus(task?.status);
+  if (st !== "in_progress") return false;
 
   const finishedAt = task?.finishedAt;
   if (finishedAt) return false;
@@ -2031,10 +2031,14 @@ function applyTodoView() {
 
   // Status filter
   if (statusFilter !== "all") {
-    list = list.filter((t) => normalizeStatus(t?.status) === statusFilter);
+    if (statusFilter === "overdue") {
+      list = list.filter((t) => isOverdueTask(t));
+    } else {
+      list = list.filter((t) => normalizeStatus(t?.status) === statusFilter);
+    }
   }
 
-  // Owner search
+// Owner search
   if (ownerSearchText) {
     const q = ownerSearchText.toLowerCase();
     list = list.filter((t) =>

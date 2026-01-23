@@ -252,28 +252,55 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    .metrics-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
+    
+    .metrics-list {
+      display: flex;
+      flex-direction: column;
     }
 
-    .metrics-table td {
+    .metrics-row {
+      display: flex;
+      justify-content: space-between; /* ✅ space-between */
+      align-items: center;
+      gap: 16px;
       padding: clamp(8px, 2vw, 15px);
+      border-bottom: 1px solid #f0f0f0;
+      flex-wrap: wrap; /* กันจอแคบ */
+    }
+
+    .metrics-row:last-child {
+      border-bottom: none;
+    }
+
+    .m-left {
       font-size: clamp(10px, 2.5vw, 14px);
       color: #444;
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-      border-bottom: 1px solid #f0f0f0;
+      min-width: 0;
     }
 
-    .metrics-table td:last-child {
-      text-align: right;
+    .m-right {
+      font-size: clamp(10px, 2.5vw, 14px);
       font-weight: 700;
       color: #1a1a1a;
+      white-space: nowrap;
+      text-align: right;
+      margin-left: auto;
     }
 
-    .section {
+    /* ✅ มือถือ: เรียงบน-ล่างให้อ่านง่าย */
+    @media (max-width: 480px) {
+      .metrics-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+      .m-right {
+        white-space: normal;
+        text-align: left;
+        margin-left: 0;
+      }
+    }
+.section {
       margin-bottom: 30px;
       padding: clamp(10px, 3vw, 25px);
       border-radius: 12px;
@@ -523,26 +550,28 @@
     <!-- PM Success Metrics -->
     <div class="metrics-section">
       <h3 class="section-title">PM Success Metrics</h3>
-      <table class="metrics-table">
-        <tbody>
-          <tr>
-            <td>Project delivered on time</td>
-            <td>Time Adherence</td>
-          </tr>
-          <tr>
-            <td>Within budget allocation</td>
-            <td>Budget Management</td>
-          </tr>
-          <tr>
-            <td>Meets quality standards</td>
-            <td>Quality Assurance</td>
-          </tr>
-          <tr>
-            <td>Team satisfaction</td>
-            <td>Team Morale</td>
-          </tr>
-        </tbody>
-      </table>
+
+      <div class="metrics-list">
+        <div class="metrics-row">
+          <span class="m-left">Project delivered on time</span>
+          <span class="m-right">Time Adherence</span>
+        </div>
+
+        <div class="metrics-row">
+          <span class="m-left">Within budget allocation</span>
+          <span class="m-right">Budget Management</span>
+        </div>
+
+        <div class="metrics-row">
+          <span class="m-left">Meets quality standards</span>
+          <span class="m-right">Quality Assurance</span>
+        </div>
+
+        <div class="metrics-row">
+          <span class="m-left">Team satisfaction</span>
+          <span class="m-right">Team Morale</span>
+        </div>
+      </div>
     </div>
   </div>
 </body>

@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Intern Management</title>
 
   <style>
-    .intern-wrapper {
+:root {
       --bg: #f3f3f3;
       --card: #ffffff;
       --text: #111827;
@@ -22,20 +21,20 @@
       --purple: #8b5cf6;
     }
 
-    .intern-wrapper * {
+    * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
-    .intern-wrapper {
+    body {
       font-family: 'Segoe UI', Arial, sans-serif;
       background-color: var(--bg);
       color: var(--text);
       -webkit-text-size-adjust: 100%;
     }
 
-    .intern-wrapper .container {
+    .container {
       max-width: 1280px;
       margin: 0 auto 20px;
       padding: 22px;
@@ -44,7 +43,7 @@
       box-shadow: var(--shadow);
     }
 
-    .intern-wrapper .title {
+    .title {
       display: flex;
       align-items: center;
       gap: 10px;
@@ -54,7 +53,7 @@
       margin-bottom: 14px;
     }
 
-    .intern-wrapper .title .dot {
+    .title .dot {
       width: 14px;
       height: 14px;
       border-radius: 5px;
@@ -865,38 +864,86 @@ a:hover {
 
 <body>
 
-  <!-- MAIN INTERN DATA -->
-  <div class="intern-wrapper">
-    <div class="container">
-      <div class="title">
-        <img src="https://img.icons8.com/?size=100&id=wNJfNKpLXXlt&format=png&color=000000" alt="users"
-          style="width:24px;height:24px;">
-        รายชื่อเด็กฝึกงาน
-      </div>
+<!-- MAIN INTERN DATA -->
+  <div class="container">
+    <div class="title">
+      <img src="https://img.icons8.com/?size=100&id=wNJfNKpLXXlt&format=png&color=000000" alt="users" style="width:24px;height:24px;">
+      รายชื่อเด็กฝึกงาน
+    </div>
 
-      <div class="intern-controls">
-        <input type="text" id="internSearch" placeholder="ค้นหาชื่อ" oninput="filterInterns()" />
+    <div class="intern-controls">
+      <input type="text" id="internSearch" placeholder="ค้นหาชื่อ" oninput="filterInterns()" />
 
-        <button id="internManageBtn" class="manage-btn" onclick="toggleInternManageMode()">
-          <img src="https://img.icons8.com/?size=100&id=bDKqvw7V0ANQ&format=png&color=000000" alt="plus"
-            style="width:16px;height:16px;">
-          <span>เพิ่ม/ลดรายชื่อ</span>
-        </button>
+      <button id="internManageBtn" class="manage-btn" onclick="toggleInternManageMode()">
+        <img src="https://img.icons8.com/?size=100&id=bDKqvw7V0ANQ&format=png&color=000000" alt="plus" style="width:16px;height:16px;">
+        <span>เพิ่ม/ลดรายชื่อ</span>
+      </button>
 
-        <div class="custom-dropdown-intern">
-          <div class="dropdown-selected-intern" id="positionDropdownToggle" onclick="togglePositionDropdown()">
-            <span id="selectedPositionText">ตำแหน่งทั้งหมด</span>
-            <span>▾</span>
-          </div>
-          <div class="dropdown-items-intern" id="positionDropdownItems">
-            <div class="dd-item-intern" onclick="selectPosition('', 'ตำแหน่งทั้งหมด')">ตำแหน่งทั้งหมด</div>
-          </div>
+      <div class="custom-dropdown-intern">
+        <div class="dropdown-selected-intern" id="positionDropdownToggle" onclick="togglePositionDropdown()">
+          <span id="selectedPositionText">ตำแหน่งทั้งหมด</span>
+          <span>▾</span>
         </div>
-
-        <button onclick="clearInternFilters()">
-          ล้างตัวกรอง
-        </button>
+        <div class="dropdown-items-intern" id="positionDropdownItems">
+          <div class="dd-item-intern" onclick="selectPosition('', 'ตำแหน่งทั้งหมด')">ตำแหน่งทั้งหมด</div>
+        </div>
       </div>
+
+      <button onclick="clearInternFilters()">
+  ล้างตัวกรอง
+</button>
+    </div>
+
+    <div class="table-wrap">
+<div class="table-header-wrapper">
+  <table>
+<!-- Table Header -->
+<colgroup>
+  <col style="width:120px;">   <!-- ชื่อ -->
+  <col style="width:150px;">   <!-- ตำแหน่ง -->
+  <col style="width:70px;">    <!-- เช้า -->
+  <col style="width:70px;">    <!-- บ่าย -->
+  <col style="width:140px;">   <!-- สถานะ -->
+  <col style="width:200px;">   <!-- หมายเหตุ -->
+  <col style="width:180px;">   <!-- ไฟล์อัปเดตงาน -->
+  <col id="internActionsHeaderCol" style="width:100px; display:none;">   <!-- ลบ -->
+</colgroup>
+    <thead>
+      <tr>
+        <th>ชื่อ</th>
+        <th>ตำแหน่ง</th>
+        <th>เช้า</th>
+        <th>บ่าย</th>
+        <th>สถานะ</th>
+        <th>หมายเหตุ</th>
+        <th>ไฟล์อัปเดตงาน</th>
+        <th id="internActionsHeader" style="display:none;">ลบ</th>
+      </tr>
+    </thead>
+  </table>
+</div>
+
+<div class="table-body-wrapper">
+  <table>
+<colgroup>
+  <col style="width:120px;">   <!-- ชื่อ -->
+  <col style="width:150px;">   <!-- ตำแหน่ง -->
+  <col style="width:70px;">    <!-- เช้า -->
+  <col style="width:70px;">    <!-- บ่าย -->
+  <col style="width:140px;">   <!-- สถานะ -->
+  <col style="width:200px;">   <!-- หมายเหตุ -->
+  <col style="width:180px;">   <!-- ไฟล์อัปเดตงาน -->
+  <col id="internActionsBodyCol" style="width:100px; display:none;">   <!-- ลบ -->
+</colgroup>
+
+          <tbody id="internTableBody">
+            <tr>
+              <td colspan="7" class="loading">กำลังโหลด...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
     <!-- ✅ เพิ่มฟอร์ม inline สำหรับเพิ่มเด็กฝึกงาน -->
     <div id="addInternForm">
@@ -922,460 +969,240 @@ a:hover {
       </button>
     </div>
 
-        <div class="table-body-wrapper">
-          <table>
-            <colgroup>
-              <col style="width:120px;"> <!-- ชื่อ -->
-              <col style="width:150px;"> <!-- ตำแหน่ง -->
-              <col style="width:70px;"> <!-- เช้า -->
-              <col style="width:70px;"> <!-- บ่าย -->
-              <col style="width:140px;"> <!-- สถานะ -->
-              <col style="width:200px;"> <!-- หมายเหตุ -->
-              <col style="width:180px;"> <!-- ไฟล์อัปเดตงาน -->
-              <col id="internActionsBodyCol" style="width:100px; display:none;"> <!-- ลบ -->
-            </colgroup>
+  </div>
 
-            <tbody id="internTableBody">
-              <tr>
-                <td colspan="7" class="loading">กำลังโหลด...</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- ✅ เพิ่มฟอร์ม inline สำหรับเพิ่มเด็กฝึกงาน -->
-      <div id="addInternForm">
-        <input type="text" id="newInternName" placeholder="ชื่อเด็กฝึกงาน">
-        <input type="text" id="newInternPosition" placeholder="ตำแหน่ง" list="addInternPositionDatalist">
-        <datalist id="addInternPositionDatalist"></datalist>
-        <input type="text" id="newInternNote" placeholder="หมายเหตุ (ไม่บังคับ)">
-        <input type="text" id="newInternFileLink" placeholder="ลิงก์ไฟล์อัปเดตงาน (ไม่บังคับ)">
-        <button onclick="addNewInternSubmit()">
-          <img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" alt="check"
-            style="width:16px;height:16px;">
-          เพิ่ม
-        </button>
-        <button onclick="hideAddInternForm()">
-          <img src="https://img.icons8.com/?size=100&id=QlMnqMXDMws3&format=png&color=000000" alt="close"
-            style="width:16px;height:16px;">
-          ยกเลิก
-        </button>
-      </div>
-
-    </div>
-
-    <!-- STARTING -->
-    <div class="container">
-      <div class="section-header">
-        <span>
-          <img src="https://img.icons8.com/?size=100&id=WO3eRAu5RSGP&format=png&color=000000" alt="sprout"
-            style="width:20px;height:20px;">
-          นักศึกษาฝึกงานที่กำลังเริ่มงาน
-        </span>
-        <div class="h3-actions">
-          <button onclick="toggleStartingAdd()">
-            <img src="https://img.icons8.com/?size=100&id=XpyLr4ervzGM&format=png&color=000000" alt="add"
-              style="width:14px;height:14px;">
-            เพิ่มชื่อ
-          </button>
-          <button id="editStartingBtn" onclick="toggleEditStarting()">
-            <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" alt="edit"
-              style="width:14px;height:14px;">
-            แก้ไข
-          </button>
-        </div>
-      </div>
-
-      <div class="table-wrap">
-        <div class="table-header-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>ชื่อจริง/นามสกุล</th>
-                <th>ชื่อเล่น</th>
-                <th>ตำแหน่ง</th>
-                <th>วันที่</th>
-                <th>แจ้ง</th>
-                <th id="startingActionCol" style="display:none;">ลบ</th>
-              </tr>
-            </thead>
-          </table>
-        </div>
-        <div class="table-body-wrapper">
-          <table>
-            <tbody id="internStartingBody">
-              <tr>
-                <td colspan="5" class="loading">กำลังโหลด...</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="startingAddForm">
-        <input type="text" id="startingFullName" placeholder="ชื่อจริง/นามสกุล">
-        <input type="text" id="startingNickName" placeholder="ชื่อเล่น">
-        <input type="text" id="startingPosition" placeholder="ตำแหน่ง">
-        <input type="text" id="startingDate" placeholder="วันที่/ช่วงเวลา (เช่น 01/01/2026)">
-        <button onclick="addStartingIntern()">
-          <img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" alt="check"
-            style="width:16px;height:16px;">
-          เพิ่ม
-        </button>
+  <!-- STARTING -->
+  <div class="container">
+    <div class="section-header">
+      <span>
+        <img src="https://img.icons8.com/?size=100&id=WO3eRAu5RSGP&format=png&color=000000" alt="sprout" style="width:20px;height:20px;">
+        นักศึกษาฝึกงานที่กำลังเริ่มงาน
+      </span>
+      <div class="h3-actions">
         <button onclick="toggleStartingAdd()">
-          <img src="https://img.icons8.com/?size=100&id=QlMnqMXDMws3&format=png&color=000000" alt="close"
-            style="width:16px;height:16px;">
-          ยกเลิก
+          <img src="https://img.icons8.com/?size=100&id=XpyLr4ervzGM&format=png&color=000000" alt="add" style="width:14px;height:14px;">
+          เพิ่มชื่อ
+        </button>
+        <button id="editStartingBtn" onclick="toggleEditStarting()">
+          <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" alt="edit" style="width:14px;height:14px;">
+          แก้ไข
         </button>
       </div>
     </div>
 
-    <!-- ENDING -->
-    <div class="container">
-      <div class="section-header">
-        <span>
-          <img src="https://img.icons8.com/?size=100&id=XVGCqo0GC6fq&format=png&color=000000" alt="hourglass"
-            style="width:20px;height:20px;">
-          นักศึกษาฝึกงานใกล้จบการฝึกงาน
-        </span>
-        <div class="h3-actions">
-          <button onclick="toggleEndingAdd()">
-            <img src="https://img.icons8.com/?size=100&id=XpyLr4ervzGM&format=png&color=000000" alt="add"
-              style="width:14px;height:14px;">
-            เพิ่มชื่อ
-          </button>
-          <button id="editEndingBtn" onclick="toggleEditEnding()">
-            <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" alt="edit"
-              style="width:14px;height:14px;">
-            แก้ไข
-          </button>
-        </div>
+    <div class="table-wrap">
+      <div class="table-header-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ชื่อจริง/นามสกุล</th>
+              <th>ชื่อเล่น</th>
+              <th>ตำแหน่ง</th>
+              <th>วันที่</th>
+              <th>แจ้ง</th>
+              <th id="startingActionCol" style="display:none;">ลบ</th>
+            </tr>
+          </thead>
+        </table>
       </div>
-
-      <div class="table-wrap">
-        <div class="table-header-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>ชื่อจริง/นามสกุล</th>
-                <th>ชื่อเล่น</th>
-                <th>ตำแหน่ง</th>
-                <th>วันที่</th>
-                <th>แจ้ง</th>
-                <th id="endingActionCol" style="display:none;">ลบ</th>
-              </tr>
-            </thead>
-          </table>
-        </div>
-        <div class="table-body-wrapper">
-          <table>
-            <tbody id="internEndingBody">
-              <tr>
-                <td colspan="5" class="loading">กำลังโหลด...</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <div class="table-body-wrapper">
+        <table>
+          <tbody id="internStartingBody">
+            <tr>
+              <td colspan="5" class="loading">กำลังโหลด...</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
+    </div>
 
-      <div id="endingAddForm">
-        <input type="text" id="endingFullName" placeholder="ชื่อจริง/นามสกุล">
-        <input type="text" id="endingNickName" placeholder="ชื่อเล่น">
-        <input type="text" id="endingPosition" placeholder="ตำแหน่ง">
-        <input type="text" id="endingDate" placeholder="วันที่/ช่วงเวลา">
-        <button onclick="addEndingIntern()">
-          <img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" alt="check"
-            style="width:16px;height:16px;">
-          เพิ่ม
-        </button>
+    <div id="startingAddForm">
+      <input type="text" id="startingFullName" placeholder="ชื่อจริง/นามสกุล">
+      <input type="text" id="startingNickName" placeholder="ชื่อเล่น">
+      <input type="text" id="startingPosition" placeholder="ตำแหน่ง">
+      <input type="text" id="startingDate" placeholder="วันที่/ช่วงเวลา (เช่น 01/01/2026)">
+      <button onclick="addStartingIntern()">
+        <img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" alt="check" style="width:16px;height:16px;">
+        เพิ่ม
+      </button>
+      <button onclick="toggleStartingAdd()">
+        <img src="https://img.icons8.com/?size=100&id=QlMnqMXDMws3&format=png&color=000000" alt="close" style="width:16px;height:16px;">
+        ยกเลิก
+      </button>
+    </div>
+  </div>
+
+  <!-- ENDING -->
+  <div class="container">
+    <div class="section-header">
+      <span>
+        <img src="https://img.icons8.com/?size=100&id=XVGCqo0GC6fq&format=png&color=000000" alt="hourglass" style="width:20px;height:20px;">
+        นักศึกษาฝึกงานใกล้จบการฝึกงาน
+      </span>
+      <div class="h3-actions">
         <button onclick="toggleEndingAdd()">
-          <img src="https://img.icons8.com/?size=100&id=QlMnqMXDMws3&format=png&color=000000" alt="close"
-            style="width:16px;height:16px;">
-          ยกเลิก
+          <img src="https://img.icons8.com/?size=100&id=XpyLr4ervzGM&format=png&color=000000" alt="add" style="width:14px;height:14px;">
+          เพิ่มชื่อ
+        </button>
+        <button id="editEndingBtn" onclick="toggleEditEnding()">
+          <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" alt="edit" style="width:14px;height:14px;">
+          แก้ไข
         </button>
       </div>
     </div>
 
-    <script>
-      /* API Adapter - PM Project API */
-      (function initBackendAdapter() {
-        const API_BASE = "http://localhost:3000";
+    <div class="table-wrap">
+      <div class="table-header-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ชื่อจริง/นามสกุล</th>
+              <th>ชื่อเล่น</th>
+              <th>ตำแหน่ง</th>
+              <th>วันที่</th>
+              <th>แจ้ง</th>
+              <th id="endingActionCol" style="display:none;">ลบ</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+      <div class="table-body-wrapper">
+        <table>
+          <tbody id="internEndingBody">
+            <tr>
+              <td colspan="5" class="loading">กำลังโหลด...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-        window.BACKEND = {
-          async getInternData(page = 1, limit = 100, search = "", role = "") {
-            try {
-              console.log("[API] getInternData called with:", { page, limit, search, role });
-              const all = [];
-              let p = Number(page || 1);
-              const lim = Number(limit || 100);
+    <div id="endingAddForm">
+      <input type="text" id="endingFullName" placeholder="ชื่อจริง/นามสกุล">
+      <input type="text" id="endingNickName" placeholder="ชื่อเล่น">
+      <input type="text" id="endingPosition" placeholder="ตำแหน่ง">
+      <input type="text" id="endingDate" placeholder="วันที่/ช่วงเวลา">
+      <button onclick="addEndingIntern()">
+        <img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" alt="check" style="width:16px;height:16px;">
+        เพิ่ม
+      </button>
+      <button onclick="toggleEndingAdd()">
+        <img src="https://img.icons8.com/?size=100&id=QlMnqMXDMws3&format=png&color=000000" alt="close" style="width:16px;height:16px;">
+        ยกเลิก
+      </button>
+    </div>
+  </div>
 
-              while (true) {
-                const params = new URLSearchParams();
-                params.set("page", String(p));
-                params.set("limit", String(lim));
-                if (search && String(search).trim()) params.set("search", String(search).trim());
-                if (role && String(role).trim()) params.set("role", String(role).trim());
+  <script>
+/* API Adapter - PM Project API */
+(function initBackendAdapter() {
+  const API_BASE = "http://localhost:3000";
 
-                const url = `${API_BASE}/members?${params.toString()}`;
-                console.log("[API] Fetching:", url);
+  window.BACKEND = {
+    async getInternData(page = 1, limit = 100, search = "", role = "") {
+      try {
+        // ✅ ดึงทุกหน้า (pagination) จนหมด
+        const all = [];
+        let p = Number(page || 1);
+        const lim = Number(limit || 100);
 
-                const res = await fetch(url, {
-                  method: "GET",
-                  headers: { "Accept": "application/json" },
-                  credentials: "same-origin"
-                });
+        while (true) {
+          const params = new URLSearchParams();
+          params.set("page", String(p));
+          params.set("limit", String(lim));
+          if (search && String(search).trim()) params.set("search", String(search).trim());
+          if (role && String(role).trim()) params.set("role", String(role).trim());
 
-                if (!res.ok) {
-                  const txt = await res.text().catch(() => "");
-                  console.error("[API] GET /members failed:", res.status, txt);
-                  // ❌ อย่าวนลูปต่อเมื่อ backend ตอบ 400/500
-                  break;
-                }
+          const url = `${API_BASE}/members?${params.toString()}`;
 
-                const data = await res.json().catch(() => ({}));
-                console.log("[API] Response data:", data);
+          const res = await fetch(url, { method: "GET", headers: { "Accept": "application/json" } });
 
-                const items = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
-                all.push(...items);
-
-                const totalPages = Number(data?.pagination?.totalPages || 1);
-                if (p >= totalPages) break;
-                p += 1;
-              }
-
-              console.log("[API] getInternData completed, total items:", all.length);
-              return { items: all, pagination: { loadedAll: true } };
-            } catch (err) {
-              console.error("[API] โหลด interns ไม่สำเร็จ:", err);
-              return { items: [], pagination: {} };
-            }
-          },
-
-          async getInternStarting() {
-            try {
-              const res = await fetch(`${API_BASE}/events?search=starting&limit=100`, { method: "GET" });
-              if (!res.ok) return [];
-              const data = await res.json();
-              return (data.data || []).filter(e => e.tags && e.tags.includes("starting"));
-            } catch (err) {
-              return [];
-            }
-          },
-
-          async getInternEnding() {
-            try {
-              const res = await fetch(`${API_BASE}/events?search=ending&limit=100`, { method: "GET" });
-              if (!res.ok) return [];
-              const data = await res.json();
-              return (data.data || []).filter(e => e.tags && e.tags.includes("ending"));
-            } catch (err) {
-              return [];
-            }
-          },
-
-          async saveInternStarting(payload) {
-            try {
-              for (const item of payload) {
-                const eventData = {
-                  title: `${item.fullName} เริ่มงาน`,
-                  description: `ตำแหน่ง: ${item.position}, วันที่: ${item.dateRange}`,
-                  tags: ["starting", item.position],
-                  start: new Date().toISOString(),
-                  status: item.notifyStatus ? "COMPLETED" : "NOT_STARTED"
-                };
-
-                await fetch(`${API_BASE}/events`, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(eventData)
-                });
-              }
-              return { success: true };
-            } catch (err) {
-              console.error("saveInternStarting error:", err);
-              return { success: false, message: err.message };
-            }
-          },
-
-          async saveInternEnding(payload) {
-            try {
-              for (const item of payload) {
-                const eventData = {
-                  title: `${item.fullName} จบงาน`,
-                  description: `ตำแหน่ง: ${item.position}, วันที่: ${item.dateRange}`,
-                  tags: ["ending", item.position],
-                  start: new Date().toISOString(),
-                  status: item.notifyStatus ? "COMPLETED" : "NOT_STARTED"
-                };
-
-                await fetch(`${API_BASE}/events`, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(eventData)
-                });
-              }
-              return { success: true };
-            } catch (err) {
-              console.error("saveInternEnding error:", err);
-              return { success: false, message: err.message };
-            }
-          },
-
-          async addNewIntern(name, position, note, fileLink) {
-            try {
-              // ✅ Backend หลายตัว "ต้องการ role" และอาจไม่รู้จัก field fileLink
-              // เราเลยส่งเฉพาะ field มาตรฐาน + role intern
-              const basePayload = {
-                displayName: name,
-                position: position,
-                note: note,
-                role: "intern"
-              };
-
-              const attempts = [
-                basePayload,
-                { ...basePayload, role: "INTERN" },
-                { ...basePayload, role: "Intern" }
-              ];
-
-              let lastTxt = "";
-
-              for (const payload of attempts) {
-                const res = await fetch(`${API_BASE}/members`, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json", "Accept": "application/json" },
-                  body: JSON.stringify(payload)
-                });
-
-                if (res.ok) {
-                  const created = await res.json().catch(() => ({}));
-
-                  // ✅ เก็บ fileLink ไว้ local ต่อ memberId (ไม่พัง DTO ฝั่ง backend)
-                  const id = String(created?._id || created?.id || "");
-                  if (id && fileLink && String(fileLink).trim()) {
-                    writeMeta(id, { fileLink: String(fileLink).trim() });
-                  }
-                  return { success: true, created };
-                }
-
-                lastTxt = await res.text().catch(() => "");
-                console.error("POST /members failed:", res.status, lastTxt);
-              }
-
-              return { success: false, message: lastTxt || "เพิ่มไม่สำเร็จ" };
-            } catch (err) {
-              return { success: false, message: err.message };
-            }
-          },
-
-          async updateIntern(memberId, name, position, note, fileLink) {
-            try {
-              const memberData = {
-                displayName: name,
-                position: position,
-                note: note
-              };
-
-              const res = await fetch(`${API_BASE}/members/${memberId}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json", "Accept": "application/json" },
-                body: JSON.stringify(memberData)
-              });
-
-              if (!res.ok) {
-                const txt = await res.text().catch(() => "");
-                console.error("PATCH /members/:id failed:", res.status, txt);
-                return { success: false, message: txt || "อัปเดตไม่สำเร็จ" };
-              }
-
-              // ✅ fileLink เก็บ local
-              if (fileLink && String(fileLink).trim()) {
-                writeMeta(String(memberId), { fileLink: String(fileLink).trim() });
-              } else {
-                writeMeta(String(memberId), { fileLink: "" });
-              }
-
-              return { success: true };
-            } catch (err) {
-              return { success: false, message: err.message };
-            }
-          },
-
-          async deleteIntern(memberId) {
-            try {
-              const res = await fetch(`${API_BASE}/members/${memberId}`, {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" }
-              });
-
-              if (!res.ok) {
-                const err = await res.json();
-                return { success: false, message: err.message || "ลบไม่สำเร็จ" };
-              }
-
-              return { success: true };
-            } catch (err) {
-              return { success: false, message: err.message };
-            }
-          },
-
-          async updateInternCheckbox(memberId, col, checked) {
-            // ✅ เก็บสถานะเช้า/บ่ายไว้ใน localStorage (ไม่พึ่ง backend)
-            const id = String(memberId || "");
-            if (id) {
-              if (col === "D") writeMeta(id, { morning: !!checked });
-              if (col === "E") writeMeta(id, { noon: !!checked });
-            }
-            return { success: true };
-          },
-
-          async updateInternStatus(memberId, status) {
-            // ✅ เก็บสถานะงานไว้ใน localStorage (ไม่พึ่ง backend)
-            const id = String(memberId || "");
-            if (id) writeMeta(id, { status: String(status || "") });
-            return { success: true };
+          if (!res.ok) {
+            const txt = await res.text().catch(() => "");
+            console.error("GET /members failed:", res.status, txt);
+            // ❌ อย่าวนลูปต่อเมื่อ backend ตอบ 400/500
+            break;
           }
-        };
-      })();
 
-      /* Intern Module */
-      (function initInternTabOnce() {
+          const data = await res.json().catch(() => ({}));
 
-        const S = window.__internState = {
-          internData: [],
-          internFiltered: [],
-          internStartingData: [],
-          internEndingData: [],
-          editingStarting: false,
-          editingEnding: false,
-          positions: [],
-          internManageMode: false,
-          selectedPosition: ""
-        };
+          const items = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
+          all.push(...items);
 
-        // ✅ Local meta (เช้า/บ่าย/สถานะ) เก็บใน localStorage ต่อ memberId
-        function metaKey(memberId) { return `pm_intern_meta:${memberId}`; }
-
-        function readMeta(memberId) {
-          try { return JSON.parse(localStorage.getItem(metaKey(memberId)) || "{}") || {}; }
-          catch { return {}; }
+          const totalPages = Number(data?.pagination?.totalPages || 1);
+          if (p >= totalPages) break;
+          p += 1;
         }
 
-        function writeMeta(memberId, patch) {
-          const cur = readMeta(memberId);
-          const next = { ...cur, ...patch };
-          try { localStorage.setItem(metaKey(memberId), JSON.stringify(next)); } catch { }
-          return next;
+        return { items: all, pagination: { loadedAll: true } };
+      } catch (err) {
+        console.error("โหลด interns ไม่สำเร็จ:", err);
+        return { items: [], pagination: {} };
+      }
+    },
+
+    async getInternStarting() {
+      try {
+        const res = await fetch(`${API_BASE}/events?search=starting&limit=100`, { method: "GET" });
+        if (!res.ok) return [];
+        const data = await res.json();
+        return (data.data || []).filter(e => e.tags && e.tags.includes("starting"));
+      } catch (err) {
+        return [];
+      }
+    },
+
+    async getInternEnding() {
+      try {
+        const res = await fetch(`${API_BASE}/events?search=ending&limit=100`, { method: "GET" });
+        if (!res.ok) return [];
+        const data = await res.json();
+        return (data.data || []).filter(e => e.tags && e.tags.includes("ending"));
+      } catch (err) {
+        return [];
+      }
+    },
+
+    async saveInternStarting(payload) {
+      try {
+        for (const item of payload) {
+          const eventData = {
+            title: `${item.fullName} เริ่มงาน`,
+            description: `ตำแหน่ง: ${item.position}, วันที่: ${item.dateRange}`,
+            tags: ["starting", item.position],
+            start: new Date().toISOString(),
+            status: item.notifyStatus ? "COMPLETED" : "NOT_STARTED"
+          };
+
+          await fetch(`${API_BASE}/events`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(eventData)
+          });
         }
+        return { success: true };
+      } catch (err) {
+        console.error("saveInternStarting error:", err);
+        return { success: false, message: err.message };
+      }
+    },
 
+    async saveInternEnding(payload) {
+      try {
+        for (const item of payload) {
+          const eventData = {
+            title: `${item.fullName} จบงาน`,
+            description: `ตำแหน่ง: ${item.position}, วันที่: ${item.dateRange}`,
+            tags: ["ending", item.position],
+            start: new Date().toISOString(),
+            status: item.notifyStatus ? "COMPLETED" : "NOT_STARTED"
+          };
 
-        function escapeHtml(str) {
-          return String(str ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
-        }
-
-        function escapeAttr(str) {
-          return String(str ?? "").replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("'", "&#039;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+          await fetch(`${API_BASE}/events`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(eventData)
+          });
         }
         return { success: true };
       } catch (err) {
@@ -1399,46 +1226,17 @@ a:hover {
 
         const attempts = [ basePayload ];
 
-        window.selectPosition = function (value, label) {
-          S.selectedPosition = value || "";
-          const t = document.getElementById("selectedPositionText");
-          if (t) t.textContent = label || "ตำแหน่งทั้งหมด";
-          const items = document.getElementById("positionDropdownItems");
-          if (items) items.classList.remove("open");
-          window.filterInterns();
-        };
+        let lastTxt = "";
 
-        window.updatePositionDropdown = function () {
-          const items = document.getElementById("positionDropdownItems");
-          if (!items) return;
-          let html = '<div class="dd-item-intern" onclick="selectPosition(\'\', \'ตำแหน่งทั้งหมด\')">ตำแหน่งทั้งหมด</div>';
-          (S.positions || []).forEach(function (pos) {
-            const escaped = escapeAttr(pos);
-            html += '<div class="dd-item-intern" onclick="selectPosition(\'' + escaped + '\', \'' + escaped + '\')">' + escapeHtml(pos) + '</div>';
+        for (const payload of attempts) {
+          const res = await fetch(`${API_BASE}/members`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify(payload)
           });
-          items.innerHTML = html;
-        };
 
-        document.addEventListener("click", function (e) {
-          const dd = document.getElementById("positionDropdownToggle");
-          const items = document.getElementById("positionDropdownItems");
-          if (!dd || !items) return;
-          if (e.target && e.target.closest && e.target.closest("#positionDropdownToggle")) return;
-          const container = dd.closest(".custom-dropdown-intern");
-          if (container && !container.contains(e.target)) items.classList.remove("open");
-        }, true);
-
-        window.filterInterns = function () {
-          const input = document.getElementById("internSearch");
-          const kw = (input ? input.value : "").toLowerCase().trim();
-          const selectedPos = S.selectedPosition || "";
-          S.internFiltered = (S.internData || []).filter(function (i) {
-            const matchName = !kw || String(i.displayName || "").toLowerCase().includes(kw) || String(i.position || "").toLowerCase().includes(kw);
-            const matchPos = !selectedPos || String(i.position || "") === selectedPos;
-            return matchName && matchPos;
-          });
-          renderInternTable();
-        };
+          if (res.ok) {
+            const created = await res.json().catch(() => ({}));
 
             // ✅ เก็บ docsUpdateWorks ไว้ local ต่อ memberId (ไม่พัง DTO ฝั่ง backend)
             const id = String(created?._id || created?.id || "");
@@ -1448,97 +1246,9 @@ a:hover {
             }
             return { success: true, created };
           }
-          if (col) col.style.display = S.editingEnding ? "table-cell" : "none";
-          renderInternEndingTable();
-        };
 
-        window.toggleInternManageMode = function () {
-          S.internManageMode = !S.internManageMode;
-          const btn = document.getElementById("internManageBtn");
-          const actionsHeader = document.getElementById("internActionsHeader");
-          const actionsHeaderCol = document.getElementById("internActionsHeaderCol");
-          const actionsBodyCol = document.getElementById("internActionsBodyCol");
-          const addForm = document.getElementById("addInternForm");
-          if (btn) btn.classList.toggle("active", S.internManageMode);
-          const displayValue = S.internManageMode ? "" : "none";
-          if (actionsHeader) actionsHeader.style.display = displayValue;
-          if (actionsHeaderCol) actionsHeaderCol.style.display = displayValue;
-          if (actionsBodyCol) actionsBodyCol.style.display = displayValue;
-          if (addForm) {
-            if (S.internManageMode) { addForm.classList.add("show"); updateAddInternPositionDatalist(); }
-            else { addForm.classList.remove("show"); }
-          }
-          renderInternTable();
-        };
-
-        window.addStartingIntern = function () {
-          const fullName = (document.getElementById("startingFullName")?.value || "").trim();
-          const nickName = (document.getElementById("startingNickName")?.value || "").trim();
-          const position = (document.getElementById("startingPosition")?.value || "").trim();
-          const dateRange = (document.getElementById("startingDate")?.value || "").trim();
-          if (!fullName || !position || !dateRange) { alert("กรุณากรอกข้อมูลให้ครบ"); return; }
-          S.internStartingData.push({ fullName: fullName, nickname: nickName, position: position, dateRange: dateRange, notifyStatus: "" });
-          document.getElementById("startingFullName").value = "";
-          document.getElementById("startingNickName").value = "";
-          document.getElementById("startingPosition").value = "";
-          document.getElementById("startingDate").value = "";
-          renderInternStartingTable();
-          saveStartingToStore();
-        };
-
-        window.deleteStartingIntern = function (idx) {
-          if (!confirm("ลบข้อมูลนี้ใช่หรือไม่?")) return;
-          S.internStartingData.splice(idx, 1);
-          renderInternStartingTable();
-          saveStartingToStore();
-        };
-
-        window.toggleStartingNotified = function (idx) {
-          const row = S.internStartingData[idx];
-          if (!row) return;
-          row.notifyStatus = row.notifyStatus ? "" : "แจ้งแล้ว";
-          renderInternStartingTable();
-          saveStartingToStore();
-        };
-
-        window.addEndingIntern = function () {
-          const fullName = (document.getElementById("endingFullName")?.value || "").trim();
-          const nickName = (document.getElementById("endingNickName")?.value || "").trim();
-          const position = (document.getElementById("endingPosition")?.value || "").trim();
-          const dateRange = (document.getElementById("endingDate")?.value || "").trim();
-          if (!fullName || !position || !dateRange) { alert("กรุณากรอกข้อมูลให้ครบ"); return; }
-          S.internEndingData.push({ fullName: fullName, nickname: nickName, position: position, dateRange: dateRange, notifyStatus: "" });
-          document.getElementById("endingFullName").value = "";
-          document.getElementById("endingNickName").value = "";
-          document.getElementById("endingPosition").value = "";
-          document.getElementById("endingDate").value = "";
-          renderInternEndingTable();
-          saveEndingToStore();
-        };
-
-        window.deleteEndingIntern = function (idx) {
-          if (!confirm("ลบข้อมูลนี้ใช่หรือไม่?")) return;
-          S.internEndingData.splice(idx, 1);
-          renderInternEndingTable();
-          saveEndingToStore();
-        };
-
-        window.toggleEndingNotified = function (idx) {
-          const row = S.internEndingData[idx];
-          if (!row) return;
-          row.notifyStatus = row.notifyStatus ? "" : "แจ้งแล้ว";
-          renderInternEndingTable();
-          saveEndingToStore();
-        };
-
-        function renderInternTable() {
-          const tbody = document.getElementById("internTableBody");
-          if (!tbody) return;
-          const colSpan = S.internManageMode ? 8 : 7;
-          if (!S.internFiltered || !S.internFiltered.length) { tbody.innerHTML = '<tr><td colspan="' + colSpan + '" style="text-align:center;color:#999;">ไม่มีข้อมูล</td></tr>'; return; }
-          let html = "";
-          S.internFiltered.forEach(function (i) { html += rowInternHtml(i); });
-          tbody.innerHTML = html;
+          lastTxt = await res.text().catch(() => "");
+          console.error("POST /members failed:", res.status, lastTxt);
         }
 
         return { success: false, message: lastTxt || "เพิ่มไม่สำเร็จ" };
@@ -1555,37 +1265,16 @@ a:hover {
           note: note
         };
 
-        window.hideAddInternForm = function () {
-          S.internManageMode = false;
-          const btn = document.getElementById("internManageBtn");
-          const actionsHeader = document.getElementById("internActionsHeader");
-          const actionsHeaderCol = document.getElementById("internActionsHeaderCol");
-          const actionsBodyCol = document.getElementById("internActionsBodyCol");
-          const addForm = document.getElementById("addInternForm");
-          if (btn) btn.classList.remove("active");
-          if (actionsHeader) actionsHeader.style.display = "none";
-          if (actionsHeaderCol) actionsHeaderCol.style.display = "none";
-          if (actionsBodyCol) actionsBodyCol.style.display = "none";
-          if (addForm) addForm.classList.remove("show");
-          renderInternTable();
-        };
+        const res = await fetch(`${API_BASE}/members/${memberId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify(memberData)
+        });
 
-        window.onInternCheckChange = async function (memberId, col, checked) {
-          try {
-            const res = await window.BACKEND.updateInternCheckbox(memberId, col, !!checked);
-            if (!res?.success) alert(res?.message || "บันทึกไม่สำเร็จ");
-          } catch (err) {
-            alert(err?.message || String(err));
-          }
-        };
-
-        async function onInternStatusChange(memberId, status) {
-          try {
-            const res = await window.BACKEND.updateInternStatus(memberId, status);
-            if (!res?.success) alert(res?.message || "บันทึกสถานะไม่สำเร็จ");
-          } catch (err) {
-            alert(err?.message || String(err));
-          }
+        if (!res.ok) {
+          const txt = await res.text().catch(() => "");
+          console.error("PATCH /members/:id failed:", res.status, txt);
+          return { success: false, message: txt || "อัปเดตไม่สำเร็จ" };
         }
 
         // ✅ docsUpdateWorks เก็บ local
@@ -1595,34 +1284,22 @@ a:hover {
           writeMeta(String(memberId), { docsUpdateWorks: "" });
         }
 
-        // Fallback: ตรวจสอบ custom tab:loaded event จาก Index.html
-        window.addEventListener("tab:loaded", function (e) {
-          console.log("[Intern] tab:loaded event received:", e.detail);
-          if (e.detail?.tabName === "intern") {
-            window.initIntern();
-          }
-        }, false);
-      })();
+        return { success: true };
+      } catch (err) {
+        return { success: false, message: err.message };
+      }
+    },
 
-      /* Scroll sync */
-      (function () {
-        function bindOneTableWrap(wrap) {
-          const head = wrap.querySelector(".table-header-wrapper");
-          const body = wrap.querySelector(".table-body-wrapper");
-          if (!head || !body) return;
-          if (body.__boundScrollSync) return;
-          body.__boundScrollSync = true;
-          const sync = () => { head.scrollLeft = body.scrollLeft; };
-          body.addEventListener("scroll", () => {
-            requestAnimationFrame(sync);
-            document.querySelectorAll(".status-items.open").forEach(function (items) {
-              items.classList.remove("open");
-            });
-          }, { passive: true });
-          head.addEventListener("scroll", () => {
-            if (body.scrollLeft !== head.scrollLeft) body.scrollLeft = head.scrollLeft;
-          }, { passive: true });
-          sync();
+    async deleteIntern(memberId) {
+      try {
+        const res = await fetch(`${API_BASE}/members/${memberId}`, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" }
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          return { success: false, message: err.message || "ลบไม่สำเร็จ" };
         }
 
         return { success: true };
@@ -2214,5 +1891,4 @@ a:hover {
   </script>
 
 </body>
-
 </html>

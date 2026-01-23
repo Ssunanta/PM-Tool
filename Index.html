@@ -1083,56 +1083,6 @@
       return out.join("\n");
     }
 
-// ✅ ฟังก์ชัน scope CSS แต่ keep :root variables
-function scopeCssForTabWithRootVars(cssText, scopeSel) {
-  let css = String(cssText || "");
-  
-  // ✅ Keep :root ไว้ที่ scopeSel (ไม่ลบ)
-  css = css.replace(/(^|[,{]\s*)body(\s*[,{])/g, `$1${scopeSel}$2`)
-           .replace(/(^|[,{]\s*)html(\s*[,{])/g, `$1${scopeSel}$2`);
-
-  const out = [];
-  const blocks = css.split("}");
-
-  for (let b of blocks) {
-    b = b.trim();
-    if (!b) continue;
-    const parts = b.split("{");
-    if (parts.length < 2) continue;
-
-    const sel = parts[0].trim();
-    const body = parts.slice(1).join("{");
-
-    // ✅ Keep @media, @keyframes อื่นๆ
-    if (sel.startsWith("@")) {
-      out.push(sel + "{" + body + "}");
-      continue;
-    }
-
-    // ✅ Keep :root ไว้ตามเดิม
-    if (sel === ":root") {
-      out.push(sel + "{" + body + "}");
-      continue;
-    }
-
-    const scopedSel = sel.split(",")
-      .map(s => s.trim())
-      .map(s => {
-        if (!s) return s;
-        if (s.startsWith(scopeSel)) return s;
-        if (/^(table|button|input|select|textarea|form|div|span|p|h\d|ul|ol|li|a)(\s|$|:|\[)/.test(s)) {
-          return `${scopeSel} ${s}`;
-        }
-        return `${scopeSel} ${s}`;
-      })
-      .join(", ");
-
-    out.push(scopedSel + "{" + body + "}");
-  }
-
-  return out.join("\n");
-}
-
 // ✅ ฟังก์ชันใหม่สำหรับ Intern - ไม่ต้อง scope css เลย เพราะใช้ .intern-wrapper class แล้ว
 function setTabHTMLIntern(tabElement, html) {
   if (!tabElement) return;
@@ -1491,36 +1441,47 @@ function loadTabContent(tabName) {
 
     const LS_DASH_PROJECTS = "pmtool_dashboard_projects_v1";
 
-// ✅ แทนที่ Mock Data ด้วย API Call
-async function loadDashboardProjectsFromAPI() {
-  const limit = 100;
-  let page = 1;
-  const all = [];
-
-  while (true) {
-    const url = `${API_BASE_URL}/projects?page=${page}&limit=${limit}`;
-    const response = await fetch(url, { headers: { "Accept": "application/json" } });
-    
-    if (!response.ok) {
-      throw new Error(`GET /projects failed: ${response.status} ${response.statusText}`);
+    function getMockProjectsForDashboard() {
+      return [
+        { id: "p1", name: "ระบบ PM Tool", status: "In Progress" },
+        { id: "p2", name: "จัดการ Intern", status: "Not Started" },
+        { id: "p3", name: "สรุปงานประจำสัปดาห์", status: "Finished" },
+        { id: "p4", name: "งานล่าช้า QA", status: "Delayed" },
+        { id: "p5", name: "โปรเจครอประกาศ", status: "N/A" },
+      ];
     }
 
-    const data = await response.json();
-    const rows = Array.isArray(data?.data) ? data.data : [];
-    all.push(...rows);
+    // แทนที่ฟังก์ชัน loadDashboardProjectsLocal()
+    async function loadDashboardProjectsFromAPI() {
+      // โหลด "ทุกหน้า" จาก GET /projects (มี pagination)
+      // ตามเอกสาร API: GET /projects จะคืน { data: [...], pagination: { page, limit, total, totalPages } }
+      const limit = 100;
+      let page = 1;
+      const all = [];
 
-    const totalPages = Number(data?.pagination?.totalPages || 1);
-    if (page >= totalPages) break;
-    page += 1;
-  }
+      while (true) {
+        const url = `${API_BASE_URL}/projects?page=${page}&limit=${limit}`;
+        const response = await fetch(url, { headers: { "Accept": "application/json" } });
+        if (!response.ok) {
+          throw new Error(`GET /projects failed: ${response.status} ${response.statusText}`);
+        }
 
-  // แปลง API response เป็น format ที่ Dashboard ใช้
-  return all.map(p => ({
-    id: p._id,
-    name: p.name,
-    status: mapAPIStatusToDashboard(p.status)
-  }));
-}
+        const data = await response.json();
+        const rows = Array.isArray(data?.data) ? data.data : [];
+        all.push(...rows);
+
+        const totalPages = Number(data?.pagination?.totalPages || 1);
+        if (page >= totalPages) break;
+        page += 1;
+      }
+
+      // แปลง API response เป็น format ที่ Dashboard ใช้
+      return all.map(p => ({
+        id: p._id,
+        name: p.name,
+        status: mapAPIStatusToDashboard(p.status)
+      }));
+    }
 
     function mapAPIStatusToDashboard(apiStatus) {
       const s = String(apiStatus || "").toLowerCase().trim();

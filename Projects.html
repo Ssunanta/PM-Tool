@@ -1358,46 +1358,41 @@
     /* =========================
        ✅ Member Name Autocomplete
        ========================= */
-.member-suggest{
-  position:absolute;
-  left:0;
-  right:0;
-  top: calc(100% + 8px);
-  background: #f1f5f9;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  box-shadow: var(--shadow);
-  padding: 10px;
-  max-height: 360px;
-  overflow-y: auto;
-  display: none;
-  z-index: 1200;
-  -webkit-overflow-scrolling: touch;
-}
+    .member-suggest{
+      position:absolute;
+      left:0;
+      right:0;
+      top: calc(100% + 8px);
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 10px;
+      max-height: 320px;
+      overflow-y: auto;
+      display: none;
+      z-index: 1200;
+    }
     .member-suggest.open{ display:block; }
 
-.member-suggest .ms-item{
-  display:flex;
-  align-items:center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 12px 12px;
-  border-radius: 14px;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: 900;
-  background: #fff;
-  border: 1px solid rgba(15, 23, 42, .06);
-  box-shadow: 0 10px 18px rgba(15, 23, 42, .06);
-  transition: all 0.15s ease;
-}
+    .member-suggest .ms-item{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 12px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 900;
+      background: #fff;
+      border: 1px solid rgba(15, 23, 42, .06);
+    }
     .member-suggest .ms-item + .ms-item{ margin-top: 8px; }
-.member-suggest .ms-item:hover{
-  background:#fafafa;
-  border-color: rgba(15, 23, 42, .12);
-  box-shadow: 0 10px 22px rgba(15, 23, 42, .08);
-  transform: translateY(-1px);
-}
+    .member-suggest .ms-item:hover{
+      background:#fafafa;
+      border-color: rgba(15, 23, 42, .12);
+    }
     .member-suggest .ms-left{
       display:flex;
       align-items:center;
@@ -1410,18 +1405,17 @@
       white-space: nowrap;
       max-width: 360px;
     }
-.member-suggest .ms-pos{
-  flex: 0 0 auto;
-  font-size: 12px;
-  font-weight: 1000;
-  color: #64748b;
-  border: 1px solid rgba(15, 23, 42, .10);
-  background: #f8fafc;
-  padding: 6px 10px;
-  border-radius: 999px;
-  white-space: nowrap;
-  box-shadow: 0 10px 18px rgba(15, 23, 42, .08);
-}
+    .member-suggest .ms-pos{
+      flex: 0 0 auto;
+      font-size: 12px;
+      font-weight: 1000;
+      color: #64748b;
+      border: 1px solid rgba(15, 23, 42, .10);
+      background: #f8fafc;
+      padding: 6px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
 
 </style>
 
@@ -1598,6 +1592,7 @@
   <div class="container">
     <div class="title-row">
       <div class="title" id="pageTitle">
+        <span class="dot"></span>
         All Project
       </div>
 
@@ -1795,60 +1790,69 @@
     </div>
   </div>
 
-<!-- Edit Project Modal -->
-<div id="editModal" class="modal-overlay">
-  <div class="modal-box">
-    <div class="modal-title">Edit Project</div>
+  <!-- Edit Project Modal -->
+  <div id="editModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-title">Edit Project</div>
 
-    <!-- ✅ ห่อ fields ด้วย modal-content -->
-    <div class="modal-content">
-      <div class="field">
-        <div class="label">ชื่อโปรเจค</div>
-        <input id="edit_name" class="input" placeholder="">
-      </div>
+      <!-- ✅ ห่อ fields ด้วย modal-content -->
+      <div class="modal-content">
+        <div class="field">
+          <div class="label">ชื่อโปรเจค</div>
+          <input id="edit_name" class="input" placeholder="">
+        </div>
 
-      <div class="field">
-        <div class="label">วันที่เริ่มต้น</div>
-        <input id="edit_start" type="date" class="input">
-      </div>
+        <div class="field">
+          <div class="label">วันที่เริ่มต้น</div>
+          <input id="edit_start" type="date" class="input">
+        </div>
 
-      <div class="field">
-        <div class="label">วันที่วางแผนสิ้นสุดโครงการ</div>
-        <input id="edit_end" type="date" class="input">
-      </div>
+        <div class="field">
+          <div class="label">วันที่วางแผนสิ้นสุดโครงการ</div>
+          <input id="edit_end" type="date" class="input">
+        </div>
 
-      <div class="field">
-        <div class="label">หมายเหตุ</div>
-        <input id="edit_note" class="input" placeholder="">
-      </div>
+        <div class="field">
+          <div class="label">หมายเหตุ</div>
+          <input id="edit_note" class="input" placeholder="">
+        </div>
 
-      <div class="field">
-        <div class="label">Figma Link</div>
-        <input id="edit_figma" class="input" placeholder="https://figma.com/...">
-      </div>
+        <div class="field">
+          <div class="label">Figma Link</div>
+          <input id="edit_figma" class="input" placeholder="https://figma.com/...">
+        </div>
 
-      <div class="field">
-        <div class="label">สถานะ</div>
-        <select id="edit_status" class="select">
+        <div class="field">
+          <div class="label">สถานะ</div>
+          <select id="edit_status" class="select">
           <option value="ยังไม่เริ่มงาน">ยังไม่เริ่มงาน</option>
           <option value="อยู่ในกำหนด">อยู่ในกำหนด</option>
           <option value="ช้ากว่ากำหนด">ช้ากว่ากำหนด</option>
           <option value="เสร็จแล้ว">เสร็จแล้ว</option>
         </select>
-      </div>
-    </div> <!-- ✅ ปิด modal-content ที่นี่ -->
+        </div>
 
-    <!-- ✅ ย้าย modal-actions ออกมานอก modal-content -->
-    <div class="modal-actions">
-      <button class="btn primary" id="btnEditSave" onclick="submitEdit()">
+      <div class="modal-actions">
+        <button class="btn primary" id="btnEditSave" onclick="submitEdit()">
         <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000"
              style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" alt="Edit">
         Edit Project
       </button>
-      <button class="btn cancel" onclick="closeEdit()">Cancel</button>
+        <button class="btn cancel" onclick="closeEdit()">Cancel</button>
+      </div>
     </div>
   </div>
-</div>
+
+      <div class="modal-actions">
+        <button class="btn primary" id="btnEditSave" onclick="submitEdit()">
+        <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000"
+             style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" alt="Edit">
+        Edit Project
+      </button>
+        <button class="btn cancel" onclick="closeEdit()">Cancel</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ✅ View Modal -->
   <div id="viewModal" class="modal-overlay">
@@ -1913,6 +1917,7 @@
       internSearch: "",
     };
 
+const API_BASE_URL = "http://localhost:3000";
     function uid(prefix="p"){
       return prefix + "_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
     }
@@ -3146,6 +3151,7 @@ function renderTableWithCachedMentors(rows, mentorMap) {
       window.__proj.selectedProjectName = name;
       window.__proj.selectedProjectIdForMembers = pid; // ✅ ใช้ตอน add member / load members
 
+      byId("pageTitle").innerHTML = `<span class="dot"></span>${escapeHtml(name)}`;
       byId("btnBackAll").style.display = "inline-flex";
 
       byId("projectSection").style.display = "none";
@@ -3161,6 +3167,7 @@ function renderTableWithCachedMentors(rows, mentorMap) {
       document.body.classList.remove("in-members");
 
       window.__proj.selectedProjectName = "";
+      byId("pageTitle").innerHTML = `<span class="dot"></span> All Project`;
       byId("btnBackAll").style.display = "none";
 
       byId("memberSection").style.display = "none";

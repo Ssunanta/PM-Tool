@@ -1057,15 +1057,15 @@
     }
 
     /* ===== Dropdown inside Modal ===== */
-.modal-box .ctrl-items {
-  position: absolute;
-  z-index: 10000;
-  max-height: 280px;
-}
+    .modal-box .ctrl-items {
+      position: absolute;
+      z-index: 10000;
+      max-height: 280px;
+    }
 
-.modal-box .ctrl {
-  position: relative;
-}
+    .modal-box .ctrl {
+      position: relative;
+    }
 
     .preview-actions-bar {
       display: flex;
@@ -1231,8 +1231,10 @@
        - ไม่กระทบ iPad/PC
        ========================= */
     @media (max-width: 430px) {
+
       /* กัน iOS ตัดพื้นที่ท้ายจอ + ให้เลื่อนลงได้สุด */
-      html, body {
+      html,
+      body {
         min-height: 100dvh;
         height: auto;
         overflow-y: auto;
@@ -1240,7 +1242,8 @@
 
       .container {
         padding: 10px;
-        padding-bottom: 90px; /* เผื่อแถบ browser iOS */
+        padding-bottom: 90px;
+        /* เผื่อแถบ browser iOS */
       }
 
       /* ---- Filters: ให้ขึ้นบรรทัดใหม่ + ไม่ล้น ---- */
@@ -1273,13 +1276,14 @@
       }
 
       /* ช่องค้นหา (เดิมมี inline min-width:250px) */
-      .filters-row > div[style*="min-width:250px"] {
+      .filters-row>div[style*="min-width:250px"] {
         min-width: 0 !important;
         width: 100% !important;
         flex: 1 1 100% !important;
       }
 
-      .search-ctrl, .search-ctrl input {
+      .search-ctrl,
+      .search-ctrl input {
         width: 100% !important;
       }
 
@@ -1295,11 +1299,13 @@
       .actions-cell {
         gap: 6px;
       }
+
       .icon-btn {
         width: 36px;
         height: 36px;
         border-radius: 10px;
       }
+
       .icon-btn img {
         width: 20px;
         height: 20px;
@@ -1333,6 +1339,7 @@
       #memberTable tbody td:nth-child(3) {
         white-space: normal !important;
       }
+
       #memberTable tbody td:nth-child(3) .mini-btn {
         width: 100% !important;
         min-width: 0 !important;
@@ -1341,10 +1348,15 @@
       }
 
       /* ---- Add/Edit Project: input date ไม่ทะลุขอบ ---- */
-      input, select, textarea {
+      input,
+      select,
+      textarea {
         max-width: 100%;
       }
-      input[type="date"], input[type="text"], input[type="url"] {
+
+      input[type="date"],
+      input[type="text"],
+      input[type="url"] {
         width: 100% !important;
         box-sizing: border-box;
       }
@@ -1354,14 +1366,14 @@
         max-width: 100%;
       }
     }
-  
+
     /* =========================
        ✅ Member Name Autocomplete
        ========================= */
-    .member-suggest{
-      position:absolute;
-      left:0;
-      right:0;
+    .member-suggest {
+      position: absolute;
+      left: 0;
+      right: 0;
       top: calc(100% + 8px);
       background: #f1f5f9;
       border: 1px solid var(--border);
@@ -1373,11 +1385,14 @@
       display: none;
       z-index: 1200;
     }
-    .member-suggest.open{ display:block; }
 
-    .member-suggest .ms-item{
-      display:flex;
-      align-items:center;
+    .member-suggest.open {
+      display: block;
+    }
+
+    .member-suggest .ms-item {
+      display: flex;
+      align-items: center;
       justify-content: space-between;
       gap: 10px;
       padding: 12px 12px;
@@ -1388,24 +1403,31 @@
       background: #fff;
       border: 1px solid rgba(15, 23, 42, .06);
     }
-    .member-suggest .ms-item + .ms-item{ margin-top: 8px; }
-    .member-suggest .ms-item:hover{
-      background:#fafafa;
+
+    .member-suggest .ms-item+.ms-item {
+      margin-top: 8px;
+    }
+
+    .member-suggest .ms-item:hover {
+      background: #fafafa;
       border-color: rgba(15, 23, 42, .12);
     }
-    .member-suggest .ms-left{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width:0;
+
+    .member-suggest .ms-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
     }
-    .member-suggest .ms-name{
-      overflow:hidden;
+
+    .member-suggest .ms-name {
+      overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       max-width: 360px;
     }
-    .member-suggest .ms-pos{
+
+    .member-suggest .ms-pos {
       flex: 0 0 auto;
       font-size: 12px;
       font-weight: 1000;
@@ -1416,176 +1438,211 @@
       border-radius: 999px;
       white-space: nowrap;
     }
+  </style>
 
-</style>
+  <!-- === MOBILE-ONLY FIXES (iPhone) : does NOT affect PC/iPad === -->
+  <style>
+    @media (max-width: 430px) {
 
-<!-- === MOBILE-ONLY FIXES (iPhone) : does NOT affect PC/iPad === -->
-<style>
-@media (max-width: 430px) {
-  /* FILTERS: full width, stacked */
-  .filters-row {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 12px !important;
-    width: 100% !important;
-  }
-  .filters-row .ctrl,
-  .ctrl-selected {
-    width: 100% !important;
-  }
-  .filters-row > div[style*="min-width"] {
-    min-width: 0 !important;
-    width: 100% !important;
-  }
-  .search-ctrl, .search-ctrl input { width: 100% !important; }
-  .btn-clear { width: 100% !important; }
+      /* FILTERS: full width, stacked */
+      .filters-row {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        width: 100% !important;
+      }
 
-  /* MEMBER TABLE: keep name visible, buttons not clipped */
-  #memberTable { width: 100% !important; table-layout: fixed !important; }
-  #memberTable thead th:nth-child(1),
-  #memberTable tbody td:nth-child(1){
-    width: 50% !important;
-    text-align: left !important;
-    padding-left: 12px !important;
-    white-space: nowrap !important;
-    overflow: hidden; text-overflow: ellipsis;
-  }
-  #memberTable thead th:nth-child(2),
-  #memberTable tbody td:nth-child(2){ width: 20% !important; text-align: center !important; }
-  #memberTable thead th:nth-child(3),
-  #memberTable tbody td:nth-child(3){ width: 30% !important; text-align: center !important; }
-  #memberTable tbody td:nth-child(3){ white-space: normal !important; }
-  #memberTable .mini-btn{ width: 100% !important; margin: 4px 0 !important; }
-}
-</style>
+      .filters-row .ctrl,
+      .ctrl-selected {
+        width: 100% !important;
+      }
 
-<!-- === MOBILE-ONLY FIXES v2 (Phones) === -->
-<style>
-/* Use 479px to match your existing phone breakpoint in the app */
-@media (max-width: 479px) {
+      .filters-row>div[style*="min-width"] {
+        min-width: 0 !important;
+        width: 100% !important;
+      }
 
-  /* -------- FILTERS (force phone layout) -------- */
-  #projectsTab #sortControls.filters-row,
-  #projectsTab .filters-row#sortControls,
-  #sortControls.filters-row,
-  #sortControls {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 12px !important;
-    width: 100% !important;
-    max-width: 100% !important;
-  }
+      .search-ctrl,
+      .search-ctrl input {
+        width: 100% !important;
+      }
 
-  #projectsTab #sortControls .ctrl,
-  #sortControls .ctrl{
-    width: 100% !important;
-    min-width: 0 !important;
-  }
+      .btn-clear {
+        width: 100% !important;
+      }
 
-  #projectsTab #sortControls .ctrl-selected,
-  #sortControls .ctrl-selected{
-    width: 100% !important;
-  }
+      /* MEMBER TABLE: keep name visible, buttons not clipped */
+      #memberTable {
+        width: 100% !important;
+        table-layout: fixed !important;
+      }
 
-  /* the search wrapper uses inline min-width:250px; override only on phones */
-  #projectsTab #sortControls > div[style*="min-width"],
-  #sortControls > div[style*="min-width"]{
-    min-width: 0 !important;
-    width: 100% !important;
-  }
+      #memberTable thead th:nth-child(1),
+      #memberTable tbody td:nth-child(1) {
+        width: 50% !important;
+        text-align: left !important;
+        padding-left: 12px !important;
+        white-space: nowrap !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
 
-  #projectsTab #sortControls .search-ctrl,
-  #projectsTab #sortControls .search-ctrl input,
-  #sortControls .search-ctrl,
-  #sortControls .search-ctrl input{
-    width: 100% !important;
-  }
+      #memberTable thead th:nth-child(2),
+      #memberTable tbody td:nth-child(2) {
+        width: 20% !important;
+        text-align: center !important;
+      }
 
-  #projectsTab #sortControls .btn-clear,
-  #sortControls .btn-clear{
-    width: 100% !important;
-    justify-content: center !important;
-  }
+      #memberTable thead th:nth-child(3),
+      #memberTable tbody td:nth-child(3) {
+        width: 30% !important;
+        text-align: center !important;
+      }
 
-  /* -------- MEMBER TABLE (fix name hidden + header not full + allow swipe) -------- */
-  #projectsTab #memberSection .table-wrap,
-  #memberSection .table-wrap{
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow-x: auto !important;                 /* allow horizontal swipe if needed */
-    overflow-y: hidden !important;
-    -webkit-overflow-scrolling: touch !important;
-    touch-action: pan-x pan-y !important;
-  }
+      #memberTable tbody td:nth-child(3) {
+        white-space: normal !important;
+      }
 
-  #projectsTab #memberTable,
-  #memberTable{
-    width: 100% !important;
-    min-width: 520px !important;                 /* ensures 'ชื่อ' column exists and header spans */
-    table-layout: fixed !important;
-  }
+      #memberTable .mini-btn {
+        width: 100% !important;
+        margin: 4px 0 !important;
+      }
+    }
+  </style>
 
-  /* make sure columns are real and the first column doesn't collapse */
-  #projectsTab #memberTable thead th:nth-child(1),
-  #projectsTab #memberTable tbody td:nth-child(1),
-  #memberTable thead th:nth-child(1),
-  #memberTable tbody td:nth-child(1){
-    width: 45% !important;
-    min-width: 180px !important;
-    text-align: left !important;
-    padding-left: 12px !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-  }
+  <!-- === MOBILE-ONLY FIXES v2 (Phones) === -->
+  <style>
+    /* Use 479px to match your existing phone breakpoint in the app */
+    @media (max-width: 479px) {
 
-  #projectsTab #memberTable thead th:nth-child(2),
-  #projectsTab #memberTable tbody td:nth-child(2),
-  #memberTable thead th:nth-child(2),
-  #memberTable tbody td:nth-child(2){
-    width: 20% !important;
-    min-width: 90px !important;
-    text-align: center !important;
-  }
+      /* -------- FILTERS (force phone layout) -------- */
+      #projectsTab #sortControls.filters-row,
+      #projectsTab .filters-row#sortControls,
+      #sortControls.filters-row,
+      #sortControls {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
 
-  #projectsTab #memberTable thead th:nth-child(3),
-  #projectsTab #memberTable tbody td:nth-child(3),
-  #memberTable thead th:nth-child(3),
-  #memberTable tbody td:nth-child(3){
-    width: 35% !important;
-    min-width: 160px !important;
-    text-align: center !important;
-  }
+      #projectsTab #sortControls .ctrl,
+      #sortControls .ctrl {
+        width: 100% !important;
+        min-width: 0 !important;
+      }
 
-  /* buttons: never overflow right; wrap nicely inside the cell */
-  #projectsTab #memberTable tbody td:nth-child(3),
-  #memberTable tbody td:nth-child(3){
-    white-space: normal !important;
-  }
-  #projectsTab #memberTable tbody td:nth-child(3) .mini-btn,
-  #memberTable tbody td:nth-child(3) .mini-btn{
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 4px 0 !important;
-    box-sizing: border-box !important;
-  }
-}
-@media (max-width: 479px) {
-  #sortControls .btn-clear,
-  #projectsTab #sortControls .btn-clear,
-  button.btn-clear {
-    height: 50px !important;
-    min-height: 50px !important;
-    line-height: 50px !important;  /* อันนี้สำคัญมาก */
-    padding: 0 16px !important;     /* กัน padding เดิมทำให้เตี้ย */
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-  }
-}
+      #projectsTab #sortControls .ctrl-selected,
+      #sortControls .ctrl-selected {
+        width: 100% !important;
+      }
 
-</style>
+      /* the search wrapper uses inline min-width:250px; override only on phones */
+      #projectsTab #sortControls>div[style*="min-width"],
+      #sortControls>div[style*="min-width"] {
+        min-width: 0 !important;
+        width: 100% !important;
+      }
+
+      #projectsTab #sortControls .search-ctrl,
+      #projectsTab #sortControls .search-ctrl input,
+      #sortControls .search-ctrl,
+      #sortControls .search-ctrl input {
+        width: 100% !important;
+      }
+
+      #projectsTab #sortControls .btn-clear,
+      #sortControls .btn-clear {
+        width: 100% !important;
+        justify-content: center !important;
+      }
+
+      /* -------- MEMBER TABLE (fix name hidden + header not full + allow swipe) -------- */
+      #projectsTab #memberSection .table-wrap,
+      #memberSection .table-wrap {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: auto !important;
+        /* allow horizontal swipe if needed */
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch !important;
+        touch-action: pan-x pan-y !important;
+      }
+
+      #projectsTab #memberTable,
+      #memberTable {
+        width: 100% !important;
+        min-width: 520px !important;
+        /* ensures 'ชื่อ' column exists and header spans */
+        table-layout: fixed !important;
+      }
+
+      /* make sure columns are real and the first column doesn't collapse */
+      #projectsTab #memberTable thead th:nth-child(1),
+      #projectsTab #memberTable tbody td:nth-child(1),
+      #memberTable thead th:nth-child(1),
+      #memberTable tbody td:nth-child(1) {
+        width: 45% !important;
+        min-width: 180px !important;
+        text-align: left !important;
+        padding-left: 12px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+      }
+
+      #projectsTab #memberTable thead th:nth-child(2),
+      #projectsTab #memberTable tbody td:nth-child(2),
+      #memberTable thead th:nth-child(2),
+      #memberTable tbody td:nth-child(2) {
+        width: 20% !important;
+        min-width: 90px !important;
+        text-align: center !important;
+      }
+
+      #projectsTab #memberTable thead th:nth-child(3),
+      #projectsTab #memberTable tbody td:nth-child(3),
+      #memberTable thead th:nth-child(3),
+      #memberTable tbody td:nth-child(3) {
+        width: 35% !important;
+        min-width: 160px !important;
+        text-align: center !important;
+      }
+
+      /* buttons: never overflow right; wrap nicely inside the cell */
+      #projectsTab #memberTable tbody td:nth-child(3),
+      #memberTable tbody td:nth-child(3) {
+        white-space: normal !important;
+      }
+
+      #projectsTab #memberTable tbody td:nth-child(3) .mini-btn,
+      #memberTable tbody td:nth-child(3) .mini-btn {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 4px 0 !important;
+        box-sizing: border-box !important;
+      }
+    }
+
+    @media (max-width: 479px) {
+
+      #sortControls .btn-clear,
+      #projectsTab #sortControls .btn-clear,
+      button.btn-clear {
+        height: 50px !important;
+        min-height: 50px !important;
+        line-height: 50px !important;
+        /* อันนี้สำคัญมาก */
+        padding: 0 16px !important;
+        /* กัน padding เดิมทำให้เตี้ย */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+    }
+  </style>
 </head>
 
 <body onload="loadProjects()">
@@ -1598,7 +1655,7 @@
 
       <button class="back-btn" id="btnBackAll" onclick="goBackAll()">
         <img src="https://img.icons8.com/?size=100&id=bLgaSbZ7m3FK&format=png&color=000000"
-             style="width:16px;height:16px;" alt="Back">
+          style="width:16px;height:16px;" alt="Back">
         ย้อนกลับ
       </button>
     </div>
@@ -1713,7 +1770,7 @@
           </div>
           <button class="member-add" onclick="openMemberAdd()">
             <img src="https://img.icons8.com/?size=100&id=bDKqvw7V0ANQ&format=png&color=000000"
-                 style="width:18px;height:18px;" alt="Add">
+              style="width:18px;height:18px;" alt="Add">
             Add Member
           </button>
         </div>
@@ -1753,7 +1810,7 @@
           <input id="add_start" type="date" class="input">
         </div>
 
-<div class="field">
+        <div class="field">
           <div class="label">วันที่วางแผนสิ้นสุดโครงการ</div>
           <input id="add_end" type="date" class="input">
         </div>
@@ -1771,20 +1828,20 @@
         <div class="field">
           <div class="label">สถานะ</div>
           <select id="add_status" class="select">
-          <option value="ยังไม่เริ่มงาน">ยังไม่เริ่มงาน</option>
-          <option value="อยู่ในกำหนด">อยู่ในกำหนด</option>
-          <option value="ช้ากว่ากำหนด">ช้ากว่ากำหนด</option>
-          <option value="เสร็จแล้ว">เสร็จแล้ว</option>
-        </select>
+            <option value="ยังไม่เริ่มงาน">ยังไม่เริ่มงาน</option>
+            <option value="อยู่ในกำหนด">อยู่ในกำหนด</option>
+            <option value="ช้ากว่ากำหนด">ช้ากว่ากำหนด</option>
+            <option value="เสร็จแล้ว">เสร็จแล้ว</option>
+          </select>
         </div>
       </div>
 
       <div class="modal-actions">
         <button class="btn primary" id="btnAddSave" onclick="submitAdd()">
-        <img src="https://img.icons8.com/?size=100&id=XpyLr4ervzGM&format=png&color=000000"
-             style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" alt="Add">
-        Add Project
-      </button>
+          <img src="https://img.icons8.com/?size=100&id=XpyLr4ervzGM&format=png&color=000000"
+            style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" alt="Add">
+          Add Project
+        </button>
         <button class="btn cancel" onclick="closeAdd()">Cancel</button>
       </div>
     </div>
@@ -1825,33 +1882,33 @@
         <div class="field">
           <div class="label">สถานะ</div>
           <select id="edit_status" class="select">
-          <option value="ยังไม่เริ่มงาน">ยังไม่เริ่มงาน</option>
-          <option value="อยู่ในกำหนด">อยู่ในกำหนด</option>
-          <option value="ช้ากว่ากำหนด">ช้ากว่ากำหนด</option>
-          <option value="เสร็จแล้ว">เสร็จแล้ว</option>
-        </select>
+            <option value="ยังไม่เริ่มงาน">ยังไม่เริ่มงาน</option>
+            <option value="อยู่ในกำหนด">อยู่ในกำหนด</option>
+            <option value="ช้ากว่ากำหนด">ช้ากว่ากำหนด</option>
+            <option value="เสร็จแล้ว">เสร็จแล้ว</option>
+          </select>
         </div>
 
-      <div class="modal-actions">
-        <button class="btn primary" id="btnEditSave" onclick="submitEdit()">
+        <div class="modal-actions">
+          <button class="btn primary" id="btnEditSave" onclick="submitEdit()">
+            <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000"
+              style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" alt="Edit">
+            Edit Project
+          </button>
+          <button class="btn cancel" onclick="closeEdit()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn primary" id="btnEditSave" onclick="submitEdit()">
         <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000"
-             style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" alt="Edit">
+          style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" alt="Edit">
         Edit Project
       </button>
-        <button class="btn cancel" onclick="closeEdit()">Cancel</button>
-      </div>
+      <button class="btn cancel" onclick="closeEdit()">Cancel</button>
     </div>
   </div>
-
-      <div class="modal-actions">
-        <button class="btn primary" id="btnEditSave" onclick="submitEdit()">
-        <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000"
-             style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" alt="Edit">
-        Edit Project
-      </button>
-        <button class="btn cancel" onclick="closeEdit()">Cancel</button>
-      </div>
-    </div>
   </div>
 
   <!-- ✅ View Modal -->
@@ -1884,7 +1941,7 @@
       <div class="modal-actions">
         <button class="btn primary" id="btnMemberSave" onclick="submitMemberModal()">
           <img src="https://img.icons8.com/?size=100&id=IoxdKD291KHp&format=png&color=000000"
-               style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" alt="Save">
+            style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" alt="Save">
           Save
         </button>
         <button class="btn cancel" onclick="closeMemberModal()">Cancel</button>
@@ -1893,8 +1950,8 @@
     </div>
   </div>
 
-    <script>
-    function byId(id){ return document.getElementById(id); }
+  <script>
+    function byId(id) { return document.getElementById(id); }
 
     const TRASH_SVG = `
       <img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000"
@@ -1917,577 +1974,577 @@
       internSearch: "",
     };
 
-    function uid(prefix="p"){
+    function uid(prefix = "p") {
       return prefix + "_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
     }
-    function todayISO(){
+    function todayISO() {
       const d = new Date();
       const yyyy = d.getFullYear();
-      const mm = String(d.getMonth()+1).padStart(2,"0");
-      const dd = String(d.getDate()).padStart(2,"0");
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
       return `${yyyy}-${mm}-${dd}`;
     }
-    function ymdFromISO(iso){
-      const s = String(iso||"").trim();
+    function ymdFromISO(iso) {
+      const s = String(iso || "").trim();
       if (!s) return "";
       // รับทั้ง YYYY-MM-DD และ ISO DateTime เช่น 2026-01-01T00:00:00.000Z
       if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
-      if (s.length >= 10 && /^\d{4}-\d{2}-\d{2}$/.test(s.slice(0,10))) return s.slice(0,10);
+      if (s.length >= 10 && /^\d{4}-\d{2}-\d{2}$/.test(s.slice(0, 10))) return s.slice(0, 10);
       return "";
     }
 
-    function formatDMY(iso){
+    function formatDMY(iso) {
       const ymd = ymdFromISO(iso);
-      if (!ymd) return (String(iso||"").trim() || "-");
-      const [y,m,d] = ymd.split("-");
+      if (!ymd) return (String(iso || "").trim() || "-");
+      const [y, m, d] = ymd.split("-");
       return `${Number(d)}/${Number(m)}/${y}`;
     }
-    function daysBetween(startISO, endISO){
-      const a = Date.parse(startISO||"");
-      const b = Date.parse(endISO||"");
+    function daysBetween(startISO, endISO) {
+      const a = Date.parse(startISO || "");
+      const b = Date.parse(endISO || "");
       if (Number.isNaN(a) || Number.isNaN(b)) return "-";
-      const diff = Math.round((b-a)/(1000*60*60*24));
+      const diff = Math.round((b - a) / (1000 * 60 * 60 * 24));
       return diff >= 0 ? diff : "-";
     }
 
-/* =========================
-   ✅ API Configuration & Helpers
-   ========================= */
+    /* =========================
+       ✅ API Configuration & Helpers
+       ========================= */
 
-// Utility functions (เก็บไว้)
-function uid(prefix="p"){
-  return prefix + "_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
-}
-function todayISO(){
-  const d = new Date();
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth()+1).padStart(2,"0");
-  const dd = String(d.getDate()).padStart(2,"0");
-  return `${yyyy}-${mm}-${dd}`;
-}
-function formatDMY(iso){
-  const s = String(iso||"").trim();
-  if (!s) return "-";
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
-  const [y,m,d] = s.split("-");
-  return `${Number(d)}/${Number(m)}/${y}`;
-}
-function daysBetween(startISO, endISO){
-  const a = Date.parse(startISO||"");
-  const b = Date.parse(endISO||"");
-  if (Number.isNaN(a) || Number.isNaN(b)) return "-";
-  const diff = Math.round((b-a)/(1000*60*60*24));
-  return diff >= 0 ? diff : "-";
-}
-
-/* =========================
-   ✅ Status Mapping (Thai ↔ API)
-   ========================= */
-function mapStatusToAPI(thaiStatus) {
-  // ✅ enum จริงของ backend: not_started | on_track | delayed | completed
-  const map = {
-    'ยังไม่เริ่มงาน': 'not_started',
-    'อยู่ในกำหนด': 'on_track',
-    'เสร็จแล้ว': 'completed',
-    'ช้ากว่ากำหนด': 'delayed',
-
-    // เผื่อกรณี UI มีอังกฤษ
-    'Not Started': 'not_started',
-    'In progress': 'on_track',
-    'Finished': 'completed',
-    'Delayed': 'delayed'
-  };
-  return map[thaiStatus] || 'on_track';
-}
-
-function mapStatusFromAPI(apiStatus) {
-  const s = String(apiStatus || "").toLowerCase().trim();
-
-  const map = {
-    'not_started': 'ยังไม่เริ่มงาน',
-    'on_track': 'อยู่ในกำหนด',
-    'delayed': 'ช้ากว่ากำหนด',
-    'completed': 'เสร็จแล้ว',
-
-    // เผื่อค่าเก่า
-    'not_started_old': 'ยังไม่เริ่มงาน'
-  };
-
-  if (map[s]) return map[s];
-
-  // เผื่อ backend เก่า (UPPERCASE)
-  if (s === 'not_started' || s === 'not started') return 'ยังไม่เริ่มงาน';
-  if (s === 'ongoing' || s === 'in_progress' || s === 'on_track') return 'อยู่ในกำหนด';
-  if (s === 'on_hold' || s === 'delayed') return 'ช้ากว่ากำหนด';
-  if (s === 'completed' || s === 'finished' || s === 'done') return 'เสร็จแล้ว';
-
-  return 'อยู่ในกำหนด';
-}
-
-/* =========================
-   ✅ API Functions - Projects
-   ========================= */
-
-async function fetchProjectsFromAPI() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/projects?limit=100&sortBy=createdAt&order=desc`);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const data = await response.json();
-    return data.data || [];
-  } catch (e) {
-    console.error('Failed to fetch projects:', e);
-    alert('ไม่สามารถโหลดโปรเจคได้ กรุณาตรวจสอบ backend');
-    return [];
-  }
-}
-
-async function getProjectByIdAPI(projectId) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/projects/${projectId}`);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return await response.json();
-  } catch (e) {
-    console.error('Failed to get project:', e);
-    return null;
-  }
-}
-
-async function createProjectAPI(projectData) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/projects`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({
-        name: projectData.name,
-        description: projectData.note || '',
-        startDate: projectData.startISO || undefined,
-        plannedEndDate: projectData.endISO || undefined,
-        figmaURL: projectData.figma || '',
-        status: mapStatusToAPI(projectData.status),
-        completionPercent: 0,
-        members: []
-      })
-    });
-
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      const msg = Array.isArray(err.message) ? err.message.join(", ") : (err.message || err.error || `HTTP ${response.status}`);
-      throw new Error(msg || 'Failed to create project');
+    // Utility functions (เก็บไว้)
+    function uid(prefix = "p") {
+      return prefix + "_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+    }
+    function todayISO() {
+      const d = new Date();
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    }
+    function formatDMY(iso) {
+      const s = String(iso || "").trim();
+      if (!s) return "-";
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+      const [y, m, d] = s.split("-");
+      return `${Number(d)}/${Number(m)}/${y}`;
+    }
+    function daysBetween(startISO, endISO) {
+      const a = Date.parse(startISO || "");
+      const b = Date.parse(endISO || "");
+      if (Number.isNaN(a) || Number.isNaN(b)) return "-";
+      const diff = Math.round((b - a) / (1000 * 60 * 60 * 24));
+      return diff >= 0 ? diff : "-";
     }
 
-    return await response.json();
-  } catch (e) {
-    console.error('Failed to create project:', e);
-    throw e;
-  }
-}
+    /* =========================
+       ✅ Status Mapping (Thai ↔ API)
+       ========================= */
+    function mapStatusToAPI(thaiStatus) {
+      // ✅ enum จริงของ backend: not_started | on_track | delayed | completed
+      const map = {
+        'ยังไม่เริ่มงาน': 'not_started',
+        'อยู่ในกำหนด': 'on_track',
+        'เสร็จแล้ว': 'completed',
+        'ช้ากว่ากำหนด': 'delayed',
 
-async function updateProjectAPI(projectId, updates) {
-  try {
-    const payload = {};
-    if (updates.name !== undefined) payload.name = updates.name;
-    if (updates.startISO !== undefined) payload.startDate = updates.startISO || null;
-    if (updates.endISO !== undefined) payload.plannedEndDate = updates.endISO || null;
-    if (updates.note !== undefined) payload.description = updates.note; // ✅ UI note -> backend description
-    if (updates.figma !== undefined) payload.figmaURL = updates.figma;
-    if (updates.status !== undefined) payload.status = mapStatusToAPI(updates.status);
-
-    const response = await fetch(`${API_BASE_URL}/projects/${encodeURIComponent(projectId)}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      const msg = Array.isArray(err.message) ? err.message.join(", ") : (err.message || err.error || `HTTP ${response.status}`);
-      throw new Error(msg);
+        // เผื่อกรณี UI มีอังกฤษ
+        'Not Started': 'not_started',
+        'In progress': 'on_track',
+        'Finished': 'completed',
+        'Delayed': 'delayed'
+      };
+      return map[thaiStatus] || 'on_track';
     }
-    return await response.json();
-  } catch (e) {
-    console.error('Failed to update project:', e);
-    throw e;
-  }
-}
 
-async function deleteProjectAPI(projectId) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/projects/${projectId}`, {
-      method: 'DELETE'
-    });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return true;
-  } catch (e) {
-    console.error('Failed to delete project:', e);
-    throw e;
-  }
-}
+    function mapStatusFromAPI(apiStatus) {
+      const s = String(apiStatus || "").toLowerCase().trim();
 
-/* =========================
-   ✅ API Functions - Members
-   ========================= */
+      const map = {
+        'not_started': 'ยังไม่เริ่มงาน',
+        'on_track': 'อยู่ในกำหนด',
+        'delayed': 'ช้ากว่ากำหนด',
+        'completed': 'เสร็จแล้ว',
 
-async function fetchProjectMembersAPI(projectId) {
-  try {
-    const pid = String(projectId || "").trim();
-    if (!pid) return [];
-
-    // 1) พยายามอ่านจาก project.members ก่อน (ถ้า backend เก็บ relation ไว้ใน project)
-    const project = await getProjectByIdAPI(pid);
-    const arr = Array.isArray(project?.members) ? project.members : [];
-
-    let memberObjs = [];
-
-    if (arr.length) {
-      const memberPromises = arr.map(async (x) => {
-        if (!x) return null;
-
-        // populate case
-        if (typeof x === "object" && (x._id || x.id)) return x;
-
-        // id case
-        const memberId = String(x);
-        const r = await fetch(`${API_BASE_URL}/members/${encodeURIComponent(memberId)}`, { headers: { "Accept": "application/json" } });
-        if (!r.ok) {
-          const t = await r.text().catch(() => "");
-          throw new Error(`GET /members/${memberId} failed: ${r.status} ${t}`);
-        }
-        return await r.json();
-      });
-
-      memberObjs = (await Promise.all(memberPromises)).filter(Boolean);
-    } else {
-      // 2) Fallback: ถ้า project.members ว่าง แต่จริงๆ backend ผูก relation ไว้ฝั่ง member
-      const limit = 200;
-      let page = 1;
-      const all = [];
-
-      while (true) {
-        const url = `${API_BASE_URL}/members?page=${page}&limit=${limit}`;
-        const r = await fetch(url, { headers: { "Accept": "application/json" } });
-        if (!r.ok) {
-          const t = await r.text().catch(() => "");
-          throw new Error(`GET /members failed: ${r.status} ${t}`);
-        }
-        const data = await r.json();
-        const rows = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
-        all.push(...rows);
-
-        const totalPages = Number(data?.pagination?.totalPages || 1);
-        if (page >= totalPages) break;
-        page += 1;
-      }
-
-      const hasPid = (v) => {
-        if (!v) return false;
-        if (typeof v === "string") return v === pid;
-        if (typeof v === "object") return (v._id || v.id) === pid;
-        return false;
+        // เผื่อค่าเก่า
+        'not_started_old': 'ยังไม่เริ่มงาน'
       };
 
-      memberObjs = all.filter(mem => {
-        const candidates = [
-          mem.projects,
-          mem.projectIds,
-          mem.assignedProjects,
-          mem.project,
-          mem.projectId
-        ];
+      if (map[s]) return map[s];
 
-        for (const c of candidates) {
-          if (!c) continue;
-          if (Array.isArray(c) && c.some(hasPid)) return true;
-          if (hasPid(c)) return true;
+      // เผื่อ backend เก่า (UPPERCASE)
+      if (s === 'not_started' || s === 'not started') return 'ยังไม่เริ่มงาน';
+      if (s === 'ongoing' || s === 'in_progress' || s === 'on_track') return 'อยู่ในกำหนด';
+      if (s === 'on_hold' || s === 'delayed') return 'ช้ากว่ากำหนด';
+      if (s === 'completed' || s === 'finished' || s === 'done') return 'เสร็จแล้ว';
+
+      return 'อยู่ในกำหนด';
+    }
+
+    /* =========================
+       ✅ API Functions - Projects
+       ========================= */
+
+    async function fetchProjectsFromAPI() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/projects?limit=100&sortBy=createdAt&order=desc`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        return data.data || [];
+      } catch (e) {
+        console.error('Failed to fetch projects:', e);
+        alert('ไม่สามารถโหลดโปรเจคได้ กรุณาตรวจสอบ backend');
+        return [];
+      }
+    }
+
+    async function getProjectByIdAPI(projectId) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/projects/${projectId}`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return await response.json();
+      } catch (e) {
+        console.error('Failed to get project:', e);
+        return null;
+      }
+    }
+
+    async function createProjectAPI(projectData) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/projects`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            name: projectData.name,
+            description: projectData.note || '',
+            startDate: projectData.startISO || undefined,
+            plannedEndDate: projectData.endISO || undefined,
+            figmaURL: projectData.figma || '',
+            status: mapStatusToAPI(projectData.status),
+            completionPercent: 0,
+            members: []
+          })
+        });
+
+        if (!response.ok) {
+          const err = await response.json().catch(() => ({}));
+          const msg = Array.isArray(err.message) ? err.message.join(", ") : (err.message || err.error || `HTTP ${response.status}`);
+          throw new Error(msg || 'Failed to create project');
         }
-        return false;
+
+        return await response.json();
+      } catch (e) {
+        console.error('Failed to create project:', e);
+        throw e;
+      }
+    }
+
+    async function updateProjectAPI(projectId, updates) {
+      try {
+        const payload = {};
+        if (updates.name !== undefined) payload.name = updates.name;
+        if (updates.startISO !== undefined) payload.startDate = updates.startISO || null;
+        if (updates.endISO !== undefined) payload.plannedEndDate = updates.endISO || null;
+        if (updates.note !== undefined) payload.description = updates.note; // ✅ UI note -> backend description
+        if (updates.figma !== undefined) payload.figmaURL = updates.figma;
+        if (updates.status !== undefined) payload.status = mapStatusToAPI(updates.status);
+
+        const response = await fetch(`${API_BASE_URL}/projects/${encodeURIComponent(projectId)}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          const err = await response.json().catch(() => ({}));
+          const msg = Array.isArray(err.message) ? err.message.join(", ") : (err.message || err.error || `HTTP ${response.status}`);
+          throw new Error(msg);
+        }
+        return await response.json();
+      } catch (e) {
+        console.error('Failed to update project:', e);
+        throw e;
+      }
+    }
+
+    async function deleteProjectAPI(projectId) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/projects/${projectId}`, {
+          method: 'DELETE'
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return true;
+      } catch (e) {
+        console.error('Failed to delete project:', e);
+        throw e;
+      }
+    }
+
+    /* =========================
+       ✅ API Functions - Members
+       ========================= */
+
+    async function fetchProjectMembersAPI(projectId) {
+      try {
+        const pid = String(projectId || "").trim();
+        if (!pid) return [];
+
+        // 1) พยายามอ่านจาก project.members ก่อน (ถ้า backend เก็บ relation ไว้ใน project)
+        const project = await getProjectByIdAPI(pid);
+        const arr = Array.isArray(project?.members) ? project.members : [];
+
+        let memberObjs = [];
+
+        if (arr.length) {
+          const memberPromises = arr.map(async (x) => {
+            if (!x) return null;
+
+            // populate case
+            if (typeof x === "object" && (x._id || x.id)) return x;
+
+            // id case
+            const memberId = String(x);
+            const r = await fetch(`${API_BASE_URL}/members/${encodeURIComponent(memberId)}`, { headers: { "Accept": "application/json" } });
+            if (!r.ok) {
+              const t = await r.text().catch(() => "");
+              throw new Error(`GET /members/${memberId} failed: ${r.status} ${t}`);
+            }
+            return await r.json();
+          });
+
+          memberObjs = (await Promise.all(memberPromises)).filter(Boolean);
+        } else {
+          // 2) Fallback: ถ้า project.members ว่าง แต่จริงๆ backend ผูก relation ไว้ฝั่ง member
+          const limit = 200;
+          let page = 1;
+          const all = [];
+
+          while (true) {
+            const url = `${API_BASE_URL}/members?page=${page}&limit=${limit}`;
+            const r = await fetch(url, { headers: { "Accept": "application/json" } });
+            if (!r.ok) {
+              const t = await r.text().catch(() => "");
+              throw new Error(`GET /members failed: ${r.status} ${t}`);
+            }
+            const data = await r.json();
+            const rows = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
+            all.push(...rows);
+
+            const totalPages = Number(data?.pagination?.totalPages || 1);
+            if (page >= totalPages) break;
+            page += 1;
+          }
+
+          const hasPid = (v) => {
+            if (!v) return false;
+            if (typeof v === "string") return v === pid;
+            if (typeof v === "object") return (v._id || v.id) === pid;
+            return false;
+          };
+
+          memberObjs = all.filter(mem => {
+            const candidates = [
+              mem.projects,
+              mem.projectIds,
+              mem.assignedProjects,
+              mem.project,
+              mem.projectId
+            ];
+
+            for (const c of candidates) {
+              if (!c) continue;
+              if (Array.isArray(c) && c.some(hasPid)) return true;
+              if (hasPid(c)) return true;
+            }
+            return false;
+          });
+        }
+
+        return memberObjs.map(m => ({
+          tag: m._id || m.id,
+          name: m.displayName || m.nickname || m.name || '-',
+          position: m.position || '-',
+          role: (m.role || '').toString()
+        }));
+      } catch (e) {
+        console.error('Failed to fetch members:', e);
+        return [];
+      }
+    }
+
+    /* =========================
+       ✅ Members Autocomplete (เลือกชื่อจาก members เดิม)
+       - พิมพ์เพื่อ filter รายชื่อ
+       - เลือกแล้วจะเติม "ตำแหน่ง" ให้อัตโนมัติ
+       - ✅ ตอน Add Member: ไม่ POST /members แล้ว (assign อย่างเดียว)
+       ========================= */
+    async function fetchAllMembersAPI() {
+      try {
+        const limit = 200;
+        let page = 1;
+        const all = [];
+
+        while (true) {
+          const url = `${API_BASE_URL}/members?page=${page}&limit=${limit}`;
+          const r = await fetch(url, { headers: { "Accept": "application/json" } });
+          if (!r.ok) {
+            const t = await r.text().catch(() => "");
+            throw new Error(`GET /members failed: ${r.status} ${t}`);
+          }
+          const data = await r.json();
+          const rows = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
+          all.push(...rows);
+
+          const totalPages = Number(data?.pagination?.totalPages || 1);
+          if (page >= totalPages) break;
+          page += 1;
+        }
+
+        return all.map(m => ({
+          _id: m._id || m.id,
+          displayName: m.displayName || m.nickname || m.name || "",
+          nickname: m.nickname || "",
+          position: m.position || "",
+          role: m.role || ""
+        })).filter(m => m._id && m.displayName);
+      } catch (e) {
+        console.error("fetchAllMembersAPI failed:", e);
+        return [];
+      }
+    }
+
+    async function ensureMembersCacheFresh() {
+      const S = window.__proj = window.__proj || {};
+      const now = Date.now();
+      const ttl = 1000 * 60 * 5; // 5 นาที
+
+      if (Array.isArray(S.allMembers) && S.allMembers.length && S.allMembersFetchedAt && (now - S.allMembersFetchedAt < ttl)) {
+        return S.allMembers;
+      }
+      S.allMembers = await fetchAllMembersAPI();
+      S.allMembersFetchedAt = now;
+      return S.allMembers;
+    }
+
+    function openMemberSuggest() { byId("m_nameList")?.classList.add("open"); }
+    function closeMemberSuggest() { byId("m_nameList")?.classList.remove("open"); }
+
+    function filterMembersByKeyword(all, q) {
+      const kw = String(q || "").trim().toLowerCase();
+      if (!kw) return all.slice(0, 30);
+      return all.filter(m => {
+        const dn = String(m.displayName || "").toLowerCase();
+        const nn = String(m.nickname || "").toLowerCase();
+        const pos = String(m.position || "").toLowerCase();
+        return dn.includes(kw) || nn.includes(kw) || pos.includes(kw);
       });
     }
 
-    return memberObjs.map(m => ({
-      tag: m._id || m.id,
-      name: m.displayName || m.nickname || m.name || '-',
-      position: m.position || '-',
-      role: (m.role || '').toString()
-    }));
-  } catch (e) {
-    console.error('Failed to fetch members:', e);
-    return [];
-  }
-}
+    function renderMemberSuggest(items) {
+      const box = byId("m_nameList");
+      if (!box) return;
 
-/* =========================
-   ✅ Members Autocomplete (เลือกชื่อจาก members เดิม)
-   - พิมพ์เพื่อ filter รายชื่อ
-   - เลือกแล้วจะเติม "ตำแหน่ง" ให้อัตโนมัติ
-   - ✅ ตอน Add Member: ไม่ POST /members แล้ว (assign อย่างเดียว)
-   ========================= */
-async function fetchAllMembersAPI() {
-  try {
-    const limit = 200;
-    let page = 1;
-    const all = [];
-
-    while (true) {
-      const url = `${API_BASE_URL}/members?page=${page}&limit=${limit}`;
-      const r = await fetch(url, { headers: { "Accept": "application/json" } });
-      if (!r.ok) {
-        const t = await r.text().catch(() => "");
-        throw new Error(`GET /members failed: ${r.status} ${t}`);
+      if (!items.length) {
+        box.innerHTML = `<div class="loading" style="padding:12px 12px;">ไม่พบชื่อที่ตรงกัน</div>`;
+        openMemberSuggest();
+        return;
       }
-      const data = await r.json();
-      const rows = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
-      all.push(...rows);
 
-      const totalPages = Number(data?.pagination?.totalPages || 1);
-      if (page >= totalPages) break;
-      page += 1;
-    }
-
-    return all.map(m => ({
-      _id: m._id || m.id,
-      displayName: m.displayName || m.nickname || m.name || "",
-      nickname: m.nickname || "",
-      position: m.position || "",
-      role: m.role || ""
-    })).filter(m => m._id && m.displayName);
-  } catch (e) {
-    console.error("fetchAllMembersAPI failed:", e);
-    return [];
-  }
-}
-
-async function ensureMembersCacheFresh() {
-  const S = window.__proj = window.__proj || {};
-  const now = Date.now();
-  const ttl = 1000 * 60 * 5; // 5 นาที
-
-  if (Array.isArray(S.allMembers) && S.allMembers.length && S.allMembersFetchedAt && (now - S.allMembersFetchedAt < ttl)) {
-    return S.allMembers;
-  }
-  S.allMembers = await fetchAllMembersAPI();
-  S.allMembersFetchedAt = now;
-  return S.allMembers;
-}
-
-function openMemberSuggest(){ byId("m_nameList")?.classList.add("open"); }
-function closeMemberSuggest(){ byId("m_nameList")?.classList.remove("open"); }
-
-function filterMembersByKeyword(all, q){
-  const kw = String(q||"").trim().toLowerCase();
-  if (!kw) return all.slice(0, 30);
-  return all.filter(m=>{
-    const dn = String(m.displayName||"").toLowerCase();
-    const nn = String(m.nickname||"").toLowerCase();
-    const pos = String(m.position||"").toLowerCase();
-    return dn.includes(kw) || nn.includes(kw) || pos.includes(kw);
-  });
-}
-
-function renderMemberSuggest(items){
-  const box = byId("m_nameList");
-  if (!box) return;
-
-  if (!items.length){
-    box.innerHTML = `<div class="loading" style="padding:12px 12px;">ไม่พบชื่อที่ตรงกัน</div>`;
-    openMemberSuggest();
-    return;
-  }
-
-  box.innerHTML = "";
-  items.slice(0,30).forEach(m=>{
-    const div = document.createElement("div");
-    div.className = "ms-item";
-    div.innerHTML = `
+      box.innerHTML = "";
+      items.slice(0, 30).forEach(m => {
+        const div = document.createElement("div");
+        div.className = "ms-item";
+        div.innerHTML = `
       <div class="ms-left">
         <span class="ms-name" title="${escapeHtml(m.displayName)}">${escapeHtml(m.displayName)}</span>
       </div>
-      <span class="ms-pos" title="${escapeHtml(m.position||"-")}">${escapeHtml(m.position||"-")}</span>
+      <span class="ms-pos" title="${escapeHtml(m.position || "-")}">${escapeHtml(m.position || "-")}</span>
     `;
-    div.onclick = ()=> selectMemberFromSuggest(m);
-    box.appendChild(div);
-  });
-  openMemberSuggest();
-}
-
-function selectMemberFromSuggest(m){
-  if (!m) return;
-  byId("m_memberId").value = String(m._id||"");
-  byId("m_name").value = String(m.displayName||"");
-  byId("m_pos").value = String(m.position||"");
-  closeMemberSuggest();
-}
-
-async function refreshMemberSuggest(){
-  const all = await ensureMembersCacheFresh();
-  const q = byId("m_name")?.value || "";
-  renderMemberSuggest(filterMembersByKeyword(all, q));
-}
-
-// bind once
-(function bindMemberAutocompleteOnce(){
-  if (window.__proj?.__memberAutoBound) return;
-  window.__proj.__memberAutoBound = true;
-
-  document.addEventListener("click", (e)=>{
-    const wrap = byId("m_name")?.closest(".member-autocomplete");
-    if (!wrap) return;
-    if (wrap.contains(e.target)) return;
-    closeMemberSuggest();
-  });
-
-  document.addEventListener("input", (e)=>{
-    if (e.target && e.target.id === "m_name"){
-      // พอพิมพ์ใหม่ → ล้าง id/pos (ต้องเลือกใหม่)
-      byId("m_memberId").value = "";
-      byId("m_pos").value = "";
-      refreshMemberSuggest();
+        div.onclick = () => selectMemberFromSuggest(m);
+        box.appendChild(div);
+      });
+      openMemberSuggest();
     }
-  });
 
-  document.addEventListener("focusin", (e)=>{
-    if (e.target && e.target.id === "m_name"){
-      refreshMemberSuggest();
+    function selectMemberFromSuggest(m) {
+      if (!m) return;
+      byId("m_memberId").value = String(m._id || "");
+      byId("m_name").value = String(m.displayName || "");
+      byId("m_pos").value = String(m.position || "");
+      closeMemberSuggest();
     }
-  });
-})();
 
+    async function refreshMemberSuggest() {
+      const all = await ensureMembersCacheFresh();
+      const q = byId("m_name")?.value || "";
+      renderMemberSuggest(filterMembersByKeyword(all, q));
+    }
 
+    // bind once
+    (function bindMemberAutocompleteOnce() {
+      if (window.__proj?.__memberAutoBound) return;
+      window.__proj.__memberAutoBound = true;
 
-async function createMemberAPI(memberData) {
-  // ✅ Backend อาจบังคับ/ไม่บังคับ role และ enum อาจต่างกัน
-  const basePayload = {
-    displayName: memberData.name,
-    position: memberData.position
-  };
-
-  const attempts = [
-    basePayload,
-    { ...basePayload, role: memberData.role }, // ถ้า UI มี role
-    { ...basePayload, role: "intern" },
-    { ...basePayload, role: "INTERN" }
-  ].filter(p => (p === basePayload) || (p.role !== undefined && p.role !== ""));
-
-  let lastErr = null;
-
-  for (const payload of attempts) {
-    try {
-      const response = await fetch(`${API_BASE_URL}/members`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify(payload)
+      document.addEventListener("click", (e) => {
+        const wrap = byId("m_name")?.closest(".member-autocomplete");
+        if (!wrap) return;
+        if (wrap.contains(e.target)) return;
+        closeMemberSuggest();
       });
 
-      if (!response.ok) {
-        const txt = await response.text().catch(() => '');
-        lastErr = new Error(`HTTP ${response.status}: ${txt || 'Failed to create member'}`);
-        continue;
+      document.addEventListener("input", (e) => {
+        if (e.target && e.target.id === "m_name") {
+          // พอพิมพ์ใหม่ → ล้าง id/pos (ต้องเลือกใหม่)
+          byId("m_memberId").value = "";
+          byId("m_pos").value = "";
+          refreshMemberSuggest();
+        }
+      });
+
+      document.addEventListener("focusin", (e) => {
+        if (e.target && e.target.id === "m_name") {
+          refreshMemberSuggest();
+        }
+      });
+    })();
+
+
+
+    async function createMemberAPI(memberData) {
+      // ✅ Backend อาจบังคับ/ไม่บังคับ role และ enum อาจต่างกัน
+      const basePayload = {
+        displayName: memberData.name,
+        position: memberData.position
+      };
+
+      const attempts = [
+        basePayload,
+        { ...basePayload, role: memberData.role }, // ถ้า UI มี role
+        { ...basePayload, role: "intern" },
+        { ...basePayload, role: "INTERN" }
+      ].filter(p => (p === basePayload) || (p.role !== undefined && p.role !== ""));
+
+      let lastErr = null;
+
+      for (const payload of attempts) {
+        try {
+          const response = await fetch(`${API_BASE_URL}/members`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            const txt = await response.text().catch(() => '');
+            lastErr = new Error(`HTTP ${response.status}: ${txt || 'Failed to create member'}`);
+            continue;
+          }
+          return await response.json();
+        } catch (e) {
+          lastErr = e;
+        }
       }
-      return await response.json();
-    } catch (e) {
-      lastErr = e;
+
+      console.error('Failed to create member:', lastErr);
+      throw lastErr || new Error('Failed to create member');
     }
-  }
 
-  console.error('Failed to create member:', lastErr);
-  throw lastErr || new Error('Failed to create member');
-}
+    async function updateMemberAPI(memberId, updates) {
+      try {
+        const payload = {
+          displayName: updates.name,
+          position: updates.position
+        };
+        if (updates.role !== undefined && updates.role !== "") payload.role = updates.role;
 
-async function updateMemberAPI(memberId, updates) {
-  try {
-    const payload = {
-      displayName: updates.name,
-      position: updates.position
-    };
-    if (updates.role !== undefined && updates.role !== "") payload.role = updates.role;
+        const response = await fetch(`${API_BASE_URL}/members/${encodeURIComponent(memberId)}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(payload)
+        });
 
-    const response = await fetch(`${API_BASE_URL}/members/${encodeURIComponent(memberId)}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) {
-      const txt = await response.text().catch(() => '');
-      throw new Error(`HTTP ${response.status}: ${txt || 'Failed to update member'}`);
+        if (!response.ok) {
+          const txt = await response.text().catch(() => '');
+          throw new Error(`HTTP ${response.status}: ${txt || 'Failed to update member'}`);
+        }
+        return await response.json();
+      } catch (e) {
+        console.error('Failed to update member:', e);
+        throw e;
+      }
     }
-    return await response.json();
-  } catch (e) {
-    console.error('Failed to update member:', e);
-    throw e;
-  }
-}
 
-async function assignMemberToProjectAPI(projectId, memberId) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/members/${encodeURIComponent(memberId)}/project/${encodeURIComponent(projectId)}`, {
-      method: 'PATCH',
-      headers: { 'Accept': 'application/json' }
-    });
+    async function assignMemberToProjectAPI(projectId, memberId) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/members/${encodeURIComponent(memberId)}/project/${encodeURIComponent(projectId)}`, {
+          method: 'PATCH',
+          headers: { 'Accept': 'application/json' }
+        });
 
-    if (!response.ok) {
-      const txt = await response.text().catch(() => '');
-      throw new Error(`HTTP ${response.status}: ${txt || 'Failed to assign member to project'}`);
+        if (!response.ok) {
+          const txt = await response.text().catch(() => '');
+          throw new Error(`HTTP ${response.status}: ${txt || 'Failed to assign member to project'}`);
+        }
+        return true;
+      } catch (e) {
+        console.error('Failed to assign member:', e);
+        throw e;
+      }
     }
-    return true;
-  } catch (e) {
-    console.error('Failed to assign member:', e);
-    throw e;
-  }
-}
 
-async function removeMemberFromProjectAPI(projectId, memberId) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/members/${encodeURIComponent(memberId)}/project/${encodeURIComponent(projectId)}`, {
-      method: 'DELETE',
-      headers: { 'Accept': 'application/json' }
-    });
+    async function removeMemberFromProjectAPI(projectId, memberId) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/members/${encodeURIComponent(memberId)}/project/${encodeURIComponent(projectId)}`, {
+          method: 'DELETE',
+          headers: { 'Accept': 'application/json' }
+        });
 
-    if (!response.ok) {
-      const txt = await response.text().catch(() => '');
-      throw new Error(`HTTP ${response.status}: ${txt || 'Failed to remove member from project'}`);
+        if (!response.ok) {
+          const txt = await response.text().catch(() => '');
+          throw new Error(`HTTP ${response.status}: ${txt || 'Failed to remove member from project'}`);
+        }
+        return true;
+      } catch (e) {
+        console.error('Failed to remove member:', e);
+        throw e;
+      }
     }
-    return true;
-  } catch (e) {
-    console.error('Failed to remove member:', e);
-    throw e;
-  }
-}
 
-async function deleteMemberAPI(memberId) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/members/${memberId}`, {
-      method: 'DELETE'
-    });
-    
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return true;
-  } catch (e) {
-    console.error('Failed to delete member:', e);
-    throw e;
-  }
-}
+    async function deleteMemberAPI(memberId) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/members/${memberId}`, {
+          method: 'DELETE'
+        });
 
-/* =========================
-   ✅ Helper: Convert API Project to Local Format
-   ========================= */
-function convertAPIProjectToLocal(apiProject) {
-  const startYMD = ymdFromISO(apiProject.startDate || '');
-  const endYMD = ymdFromISO(apiProject.plannedEndDate || '');
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return true;
+      } catch (e) {
+        console.error('Failed to delete member:', e);
+        throw e;
+      }
+    }
 
-  return {
-    id: apiProject._id,
-    name: apiProject.name,
-    startISO: startYMD || '',
-    endISO: endYMD || '',
-    start: formatDMY(startYMD || apiProject.startDate || ''),
-    end: formatDMY(endYMD || apiProject.plannedEndDate || ''),
-    days: daysBetween(apiProject.startDate || '', apiProject.plannedEndDate || ''),
-    note: apiProject.note || apiProject.description || '',
-    figma: apiProject.figmaURL || '',
-    status: mapStatusFromAPI(apiProject.status),
-    rowIndex: apiProject._id
-  };
-}
+    /* =========================
+       ✅ Helper: Convert API Project to Local Format
+       ========================= */
+    function convertAPIProjectToLocal(apiProject) {
+      const startYMD = ymdFromISO(apiProject.startDate || '');
+      const endYMD = ymdFromISO(apiProject.plannedEndDate || '');
+
+      return {
+        id: apiProject._id,
+        name: apiProject.name,
+        startISO: startYMD || '',
+        endISO: endYMD || '',
+        start: formatDMY(startYMD || apiProject.startDate || ''),
+        end: formatDMY(endYMD || apiProject.plannedEndDate || ''),
+        days: daysBetween(apiProject.startDate || '', apiProject.plannedEndDate || ''),
+        note: apiProject.note || apiProject.description || '',
+        figma: apiProject.figmaURL || '',
+        status: mapStatusFromAPI(apiProject.status),
+        rowIndex: apiProject._id
+      };
+    }
 
     /* =========================
        ✅ smart wrap
@@ -2526,17 +2583,17 @@ function convertAPIProjectToLocal(apiProject) {
       return out.join("\n");
     }
 
-// เดิม: โหลดจาก localStorage
-// ใหม่: เรียก API
-async function loadProjects() {
-  try { bindEventsOnce(); } catch(e){}
-  try { bindInternSearchOnce(); } catch(e){}
-  await fetchProjects(); // ใช้ async/await
-  requestAnimationFrame(adjustHeaderForScrollbar);
-  window.addEventListener("resize", () => requestAnimationFrame(adjustHeaderForScrollbar), { passive: true });
-}
+    // เดิม: โหลดจาก localStorage
+    // ใหม่: เรียก API
+    async function loadProjects() {
+      try { bindEventsOnce(); } catch (e) { }
+      try { bindInternSearchOnce(); } catch (e) { }
+      await fetchProjects(); // ใช้ async/await
+      requestAnimationFrame(adjustHeaderForScrollbar);
+      window.addEventListener("resize", () => requestAnimationFrame(adjustHeaderForScrollbar), { passive: true });
+    }
 
-    function adjustHeaderForScrollbar(){
+    function adjustHeaderForScrollbar() {
       // ในเวอร์ชันนี้ใช้ table-wrap เดียว → คำนวณจากมันแทน
       const body = document.querySelector(".table-wrap");
       if (!body) return;
@@ -2567,11 +2624,11 @@ async function loadProjects() {
         });
       }, true);
 
-      ["addModal","editModal","memberModal","viewModal"].forEach(id=>{
+      ["addModal", "editModal", "memberModal", "viewModal"].forEach(id => {
         const el = byId(id);
         if (!el) return;
-        el.addEventListener("click", (e)=>{
-          if (e.target === el){
+        el.addEventListener("click", (e) => {
+          if (e.target === el) {
             if (id === "addModal") closeAdd();
             if (id === "editModal") closeEdit();
             if (id === "memberModal") closeMemberModal();
@@ -2622,7 +2679,7 @@ async function loadProjects() {
     }
 
     let __internBound = false;
-    function bindInternSearchOnce(){
+    function bindInternSearchOnce() {
       if (__internBound) return;
       __internBound = true;
 
@@ -2640,29 +2697,29 @@ async function loadProjects() {
     /* =========================
        ✅ "fetch" without backend
        ========================= */
-async function fetchProjects() {
-  const items = byId("dropdownItems");
-  const tbody = byId("projectTableBody");
-  if (items) items.innerHTML = `<div class="loading">กำลังโหลด...</div>`;
-  if (tbody) tbody.innerHTML = `<tr><td colspan="9" class="loading">กำลังโหลดข้อมูล...</td></tr>`;
+    async function fetchProjects() {
+      const items = byId("dropdownItems");
+      const tbody = byId("projectTableBody");
+      if (items) items.innerHTML = `<div class="loading">กำลังโหลด...</div>`;
+      if (tbody) tbody.innerHTML = `<tr><td colspan="9" class="loading">กำลังโหลดข้อมูล...</td></tr>`;
 
-  try {
-    const projects = await fetchProjectsFromAPI(); // เรียก API
-    
-    window.__proj.list = projects.map(p => ({ 
-      id: p._id, 
-      name: p.name 
-    }));
-    
-    renderDropdown();
-    window.__proj.selectedId = "all";
-    byId("selectedProjectText").textContent = "All Project";
-    goBackAll();
-  } catch (e) {
-    console.error('fetchProjects error:', e);
-    if (tbody) tbody.innerHTML = `<tr><td colspan="9" class="loading" style="color:#dc3545;">เกิดข้อผิดพลาด: ${escapeHtml(e.message)}</td></tr>`;
-  }
-}
+      try {
+        const projects = await fetchProjectsFromAPI(); // เรียก API
+
+        window.__proj.list = projects.map(p => ({
+          id: p._id,
+          name: p.name
+        }));
+
+        renderDropdown();
+        window.__proj.selectedId = "all";
+        byId("selectedProjectText").textContent = "All Project";
+        goBackAll();
+      } catch (e) {
+        console.error('fetchProjects error:', e);
+        if (tbody) tbody.innerHTML = `<tr><td colspan="9" class="loading" style="color:#dc3545;">เกิดข้อผิดพลาด: ${escapeHtml(e.message)}</td></tr>`;
+      }
+    }
 
     function renderDropdown() {
       const items = byId("dropdownItems");
@@ -2734,55 +2791,55 @@ async function fetchProjects() {
       return row;
     }
 
-async function handleDeleteProject(pid, pname) {
-  if (!confirm(`ต้องการลบโปรเจค "${pname}" ใช่ไหม?`)) return;
-  
-  try {
-    await deleteProjectAPI(pid);
-    await fetchProjects();
-    goBackAll();
-  } catch (e) {
-    alert(`ลบโปรเจคไม่สำเร็จ: ${e.message}`);
-  }
-}
+    async function handleDeleteProject(pid, pname) {
+      if (!confirm(`ต้องการลบโปรเจค "${pname}" ใช่ไหม?`)) return;
 
-async function fetchAllProjectsTable() {
-  try {
-    const projects = await fetchProjectsFromAPI();
-    
-    const rows = projects.map(p => convertAPIProjectToLocal(p));
-    window.__proj.tableRows = rows;
-
-    // สร้าง mentor map และ people map จาก API
-    const mentorMap = {};
-    const peopleMap = {};
-    
-    for (const p of projects) {
-      const key = normalizeKey(p.name);
-      // ดึง members ของแต่ละโปรเจค
-      const members = await fetchProjectMembersAPI(p._id);
-      peopleMap[key] = members.map(m => m.name);
-      // ✅ Mentor: ถ้าในโปรเจคมี member role=mentor ให้เอาชื่อมาแสดงใน col Mentor
-      const mentors = members.filter(m => {
-        const role = String(m.role || "").toLowerCase();
-        const pos = String(m.position || "").toLowerCase();
-        return role === "mentor" || pos.includes("mentor") || pos.includes("พี่เลี้ยง");
-      }).map(m => m.name).filter(Boolean);
-      mentorMap[key] = mentors;
-
+      try {
+        await deleteProjectAPI(pid);
+        await fetchProjects();
+        goBackAll();
+      } catch (e) {
+        alert(`ลบโปรเจคไม่สำเร็จ: ${e.message}`);
+      }
     }
 
-    window.__proj.mentorMap = mentorMap;
-    window.__proj.peopleMap = peopleMap;
+    async function fetchAllProjectsTable() {
+      try {
+        const projects = await fetchProjectsFromAPI();
 
-    applySortFilterAndRender();
-    requestAnimationFrame(adjustHeaderForScrollbar);
-  } catch (e) {
-    console.error('fetchAllProjectsTable error:', e);
-  }
-}
+        const rows = projects.map(p => convertAPIProjectToLocal(p));
+        window.__proj.tableRows = rows;
 
-    function normalizeKey(s){
+        // สร้าง mentor map และ people map จาก API
+        const mentorMap = {};
+        const peopleMap = {};
+
+        for (const p of projects) {
+          const key = normalizeKey(p.name);
+          // ดึง members ของแต่ละโปรเจค
+          const members = await fetchProjectMembersAPI(p._id);
+          peopleMap[key] = members.map(m => m.name);
+          // ✅ Mentor: ถ้าในโปรเจคมี member role=mentor ให้เอาชื่อมาแสดงใน col Mentor
+          const mentors = members.filter(m => {
+            const role = String(m.role || "").toLowerCase();
+            const pos = String(m.position || "").toLowerCase();
+            return role === "mentor" || pos.includes("mentor") || pos.includes("พี่เลี้ยง");
+          }).map(m => m.name).filter(Boolean);
+          mentorMap[key] = mentors;
+
+        }
+
+        window.__proj.mentorMap = mentorMap;
+        window.__proj.peopleMap = peopleMap;
+
+        applySortFilterAndRender();
+        requestAnimationFrame(adjustHeaderForScrollbar);
+      } catch (e) {
+        console.error('fetchAllProjectsTable error:', e);
+      }
+    }
+
+    function normalizeKey(s) {
       return String(s || "")
         .replace(/[\u200B-\u200D\uFEFF]/g, "")
         .trim()
@@ -2803,7 +2860,7 @@ async function fetchAllProjectsTable() {
     }
 
     // local people map from db.projects[].members (names)
-    function fetchPeopleMapForProjects(projectNames){
+    function fetchPeopleMapForProjects(projectNames) {
       const db = loadDB();
       const map = {};
       projectNames.forEach(name => {
@@ -2815,18 +2872,18 @@ async function fetchAllProjectsTable() {
       return map;
     }
 
-    function applySortFilterAndRender(){
+    function applySortFilterAndRender() {
       const rows = Array.isArray(window.__proj.tableRows) ? [...window.__proj.tableRows] : [];
       if (!rows.length) { renderEmpty("ไม่มีข้อมูลโปรเจค"); requestAnimationFrame(adjustHeaderForScrollbar); return; }
 
       const f = window.__proj.statusFilter || "all";
       let filtered = rows;
-      if (f !== "all"){
+      if (f !== "all") {
         filtered = rows.filter(r => mapStatusLabel(r.status) === f);
       }
 
       const q = normalizeKey(window.__proj.internSearch || "");
-      if (q){
+      if (q) {
         const peopleMap = window.__proj.peopleMap || {};
         filtered = filtered.filter(r => {
           const key = normalizeKey(r.name);
@@ -2837,7 +2894,7 @@ async function fetchAllProjectsTable() {
 
       const sortBy = window.__proj.sortBy || "start";
       const dir = (window.__proj.sortDir || "asc") === "desc" ? -1 : 1;
-      const compareText = (a,b) => String(a||"").localeCompare(String(b||""), "th", { sensitivity:"base" });
+      const compareText = (a, b) => String(a || "").localeCompare(String(b || ""), "th", { sensitivity: "base" });
 
       filtered.sort((ra, rb) => {
         if (sortBy === "name") return dir * compareText(ra.name, rb.name);
@@ -2850,7 +2907,7 @@ async function fetchAllProjectsTable() {
       requestAnimationFrame(adjustHeaderForScrollbar);
     }
 
-    function parseDateToMs(row, which){
+    function parseDateToMs(row, which) {
       const iso = which === "end" ? (row.endISO || "") : (row.startISO || "");
       const s = String(iso || "").trim();
       if (s) {
@@ -2862,13 +2919,13 @@ async function fetchAllProjectsTable() {
       const d = String(disp || "").trim();
       if (!d || d === "-") return 0;
 
-      if (/^\d{4}-\d{2}-\d{2}/.test(d)){
+      if (/^\d{4}-\d{2}-\d{2}/.test(d)) {
         const t = Date.parse(d);
         return Number.isNaN(t) ? 0 : t;
       }
 
       const m = d.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
-      if (m){
+      if (m) {
         const dd = Number(m[1]), mm = Number(m[2]) - 1, yy = Number(m[3]);
         const t = new Date(yy, mm, dd).getTime();
         return Number.isNaN(t) ? 0 : t;
@@ -2878,7 +2935,7 @@ async function fetchAllProjectsTable() {
       return Number.isNaN(t2) ? 0 : t2;
     }
 
-    function positionClassFromTag(tagText){
+    function positionClassFromTag(tagText) {
       const s = normalizeKey(tagText);
       if (s.includes("web") || s.includes("dev")) return "webdev";
       if (s.includes("ux") || s.includes("ui")) return "uxui";
@@ -2890,31 +2947,30 @@ async function fetchAllProjectsTable() {
       return "default";
     }
 
-    function renderMentorChips(mentorTags){
+    function renderMentorChips(mentorTags) {
       if (!mentorTags.length) return `<div style="opacity:.7;font-weight:900;">-</div>`;
-      return `<div class="mentor-cell">${
-        mentorTags.map(t=>{
-          const cls = positionClassFromTag(t);
-          return `<span class="mentor-chip ${cls}" title="${escapeHtml(t)}">${escapeHtml(t)}</span>`;
-        }).join("")
-      }</div>`;
+      return `<div class="mentor-cell">${mentorTags.map(t => {
+        const cls = positionClassFromTag(t);
+        return `<span class="mentor-chip ${cls}" title="${escapeHtml(t)}">${escapeHtml(t)}</span>`;
+      }).join("")
+        }</div>`;
     }
 
-    
-function renderFigmaLink(figma) {
-  const url = String(figma || "").trim();
-  if (!url || url === "-") {
-    return `<span style="opacity:.7;font-weight:900;">-</span>`;
-  }
-  return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" 
+
+    function renderFigmaLink(figma) {
+      const url = String(figma || "").trim();
+      if (!url || url === "-") {
+        return `<span style="opacity:.7;font-weight:900;">-</span>`;
+      }
+      return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" 
     style="color:#111;font-weight:900;text-decoration:none;display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:8px;background:#f8fafc;border:1px solid rgba(15,23,42,.1);"
     onclick="event.stopPropagation();">
     <img src="https://img.icons8.com/?size=100&id=zfHRZ6i1Wg0U&format=png&color=000000" style="width:16px;height:16px;" alt="Figma">
     Figma
   </a>`;
-}
+    }
 
-function renderTableWithCachedMentors(rows, mentorMap) {
+    function renderTableWithCachedMentors(rows, mentorMap) {
       const tbody = byId("projectTableBody");
       if (!tbody) return;
 
@@ -2941,12 +2997,12 @@ function renderTableWithCachedMentors(rows, mentorMap) {
           <td>
             <div class="actions-cell">
               <button class="icon-btn" title="ดูรายละเอียด"
-                onclick='openView(${JSON.stringify(r).replace(/</g,"\\u003c")}); event.stopPropagation();'>
+                onclick='openView(${JSON.stringify(r).replace(/</g, "\\u003c")}); event.stopPropagation();'>
                 <img src="https://img.icons8.com/?size=100&id=QPdTYbgW0Hm4&format=png&color=000000" style="width:20px;height:20px;" alt="ดูรายละเอียด">
               </button>
 
               <button class="icon-btn" title="แก้ไข"
-                onclick='openEdit(${JSON.stringify(r).replace(/</g,"\\u003c")}); event.stopPropagation();'>
+                onclick='openEdit(${JSON.stringify(r).replace(/</g, "\\u003c")}); event.stopPropagation();'>
                 <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000" style="width:20px;height:20px;" alt="แก้ไข">
               </button>
             </div>
@@ -2962,7 +3018,7 @@ function renderTableWithCachedMentors(rows, mentorMap) {
        ✅ Preview (No backend)
        - เก็บ preview ใน localStorage ต่อโปรเจค
        ========================= */
-    function openView(row){
+    function openView(row) {
       var name = String((row && row.name) ? row.name : "-");
       var start = String((row && row.start) ? row.start : "-");
       var end = String((row && row.end) ? row.end : "-");
@@ -2976,27 +3032,27 @@ function renderTableWithCachedMentors(rows, mentorMap) {
 
       var html = ''
         + '<div class="view-head">'
-        +   '<div>'
-        +     '<div class="view-title">' + escapeHtml(name) + '</div>'
-        +     '<div class="view-meta">Start: ' + escapeHtml(start) + ' • End: ' + escapeHtml(end) + '</div>'
-        +   '</div>'
+        + '<div>'
+        + '<div class="view-title">' + escapeHtml(name) + '</div>'
+        + '<div class="view-meta">Start: ' + escapeHtml(start) + ' • End: ' + escapeHtml(end) + '</div>'
+        + '</div>'
         + '</div>'
         + '<div class="view-note">' + escapeHtml(note) + '</div>'
         + '<div class="outline-wrap">'
-        +   '<div class="outline-head">'
-        +     '<div class="label">Project Preview</div>'
-        +   '</div>'
-        +   '<div id="outlineBox" class="outline-box">กำลังโหลด...</div>'
-        +   '<textarea id="outlineEditor" class="outline-editor" style="display:none;margin-top:5px" rows="16" cols="88"></textarea>'
-        +   '<div class="preview-actions-bar">'
-        +     '<div class="left-actions">'
-        +       '<button class="btn small" id="btnOutlineEdit" onclick="startOutlineEdit()">Edit</button>'
-        +       '<button class="btn small primary" id="btnOutlineSave" onclick="saveOutlineEdit()" style="display:none;">Save</button>'
-        +     '</div>'
-        +     '<div class="right-actions">'
-        +       '<button class="btn cancel" onclick="closeView()">Close</button>'
-        +     '</div>'
-        +   '</div>'
+        + '<div class="outline-head">'
+        + '<div class="label">Project Preview</div>'
+        + '</div>'
+        + '<div id="outlineBox" class="outline-box">กำลังโหลด...</div>'
+        + '<textarea id="outlineEditor" class="outline-editor" style="display:none;margin-top:5px" rows="16" cols="88"></textarea>'
+        + '<div class="preview-actions-bar">'
+        + '<div class="left-actions">'
+        + '<button class="btn small" id="btnOutlineEdit" onclick="startOutlineEdit()">Edit</button>'
+        + '<button class="btn small primary" id="btnOutlineSave" onclick="saveOutlineEdit()" style="display:none;">Save</button>'
+        + '</div>'
+        + '<div class="right-actions">'
+        + '<button class="btn cancel" onclick="closeView()">Close</button>'
+        + '</div>'
+        + '</div>'
         + '</div>';
 
       byId("viewContent").innerHTML = html;
@@ -3005,12 +3061,12 @@ function renderTableWithCachedMentors(rows, mentorMap) {
       loadPreviewForCurrentProject();
     }
 
-    function closeView(){
-      try{ cancelOutlineEdit(); }catch(e){}
+    function closeView() {
+      try { cancelOutlineEdit(); } catch (e) { }
       byId("viewModal").classList.remove("show");
     }
 
-    function loadPreviewForCurrentProject(){
+    function loadPreviewForCurrentProject() {
       var pid = String(window.__outlineProjectId || "").trim();
       var box = document.getElementById("outlineBox");
       if (!box) return;
@@ -3020,13 +3076,13 @@ function renderTableWithCachedMentors(rows, mentorMap) {
       var contentRaw = "";
       try {
         if (key) contentRaw = localStorage.getItem(key) || "";
-      } catch (e) {}
+      } catch (e) { }
 
       const content = wrapTextSmart(contentRaw || "", 85);
 
       window.__outlineCache = content;
 
-      if (content && content.trim()){
+      if (content && content.trim()) {
         box.innerHTML = '<div class="outline-html">' + formatOutlineTextToHtml(content) + '</div>';
       } else {
         box.innerHTML = '<pre class="outline-pre">(ว่าง)</pre>';
@@ -3036,7 +3092,7 @@ function renderTableWithCachedMentors(rows, mentorMap) {
       if (btn) btn.disabled = false;
     }
 
-    function startOutlineEdit(){
+    function startOutlineEdit() {
       var box = document.getElementById("outlineBox");
       var ta = document.getElementById("outlineEditor");
       if (!box || !ta) return;
@@ -3051,7 +3107,7 @@ function renderTableWithCachedMentors(rows, mentorMap) {
       if (s) s.style.display = "inline-block";
     }
 
-    function cancelOutlineEdit(){
+    function cancelOutlineEdit() {
       var box = document.getElementById("outlineBox");
       var ta = document.getElementById("outlineEditor");
       if (!box || !ta) return;
@@ -3065,7 +3121,7 @@ function renderTableWithCachedMentors(rows, mentorMap) {
       if (s) s.style.display = "none";
     }
 
-    function saveOutlineEdit(){
+    function saveOutlineEdit() {
       var pid = String(window.__outlineProjectId || "").trim();
       var ta = document.getElementById("outlineEditor");
       var box = document.getElementById("outlineBox");
@@ -3078,7 +3134,7 @@ function renderTableWithCachedMentors(rows, mentorMap) {
       // ✅ save per-project localStorage
       try {
         if (pid) localStorage.setItem("pm_project_preview:" + pid, newText);
-      } catch (e) {}
+      } catch (e) { }
 
       if (btnSave) btnSave.disabled = false;
 
@@ -3176,25 +3232,25 @@ function renderTableWithCachedMentors(rows, mentorMap) {
       fetchAllProjectsTable();
     }
 
-async function fetchPeopleTable() {
-  const tbody = byId("memberTableBody");
-  if (tbody) tbody.innerHTML = `<tr><td colspan="3" class="loading">กำลังโหลดสมาชิก...</td></tr>`;
+    async function fetchPeopleTable() {
+      const tbody = byId("memberTableBody");
+      if (tbody) tbody.innerHTML = `<tr><td colspan="3" class="loading">กำลังโหลดสมาชิก...</td></tr>`;
 
-  try {
-    const projectId = String(window.__proj?.selectedProjectIdForMembers || "").trim();
-    if (!projectId) {
-      if (tbody) tbody.innerHTML = `<tr><td colspan="3" class="loading" style="color:#dc3545;">ไม่พบ Project ID</td></tr>`;
-      return;
+      try {
+        const projectId = String(window.__proj?.selectedProjectIdForMembers || "").trim();
+        if (!projectId) {
+          if (tbody) tbody.innerHTML = `<tr><td colspan="3" class="loading" style="color:#dc3545;">ไม่พบ Project ID</td></tr>`;
+          return;
+        }
+        const members = await fetchProjectMembersAPI(projectId);
+        renderPeopleTable({ projectName: window.__proj.selectedProjectName, rows: members });
+      } catch (e) {
+        console.error('fetchPeopleTable error:', e);
+        if (tbody) tbody.innerHTML = `<tr><td colspan="3" class="loading" style="color:#dc3545;">เกิดข้อผิดพลาด</td></tr>`;
+      }
     }
-    const members = await fetchProjectMembersAPI(projectId);
-    renderPeopleTable({ projectName: window.__proj.selectedProjectName, rows: members });
-  } catch (e) {
-    console.error('fetchPeopleTable error:', e);
-    if (tbody) tbody.innerHTML = `<tr><td colspan="3" class="loading" style="color:#dc3545;">เกิดข้อผิดพลาด</td></tr>`;
-  }
-}
 
-    function positionPillClass(pos){
+    function positionPillClass(pos) {
       const p = normalizeKey(pos);
       if (p.includes("web") || p.includes("dev")) return "webdev";
       if (p.includes("ux") || p.includes("ui")) return "uxui";
@@ -3206,18 +3262,18 @@ async function fetchPeopleTable() {
       return "";
     }
 
-    function renderPeopleTable(res){
+    function renderPeopleTable(res) {
       const tbody = byId("memberTableBody");
       if (!tbody) return;
 
       const rows = Array.isArray(res.rows) ? res.rows : [];
-      if (!rows.length){
+      if (!rows.length) {
         tbody.innerHTML = `<tr><td colspan="3" class="loading">ยังไม่มีสมาชิก</td></tr>`;
         return;
       }
 
       tbody.innerHTML = "";
-      rows.forEach(r=>{
+      rows.forEach(r => {
         const tag = String(r.tag || "");
         const name = String(r.name || "");
         const pos = String(r.position || "");
@@ -3225,21 +3281,21 @@ async function fetchPeopleTable() {
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td><span class="name-chip ${cls}" title="${escapeHtml(name||"-")}">${escapeHtml(name||"-")}</span></td>
+          <td><span class="name-chip ${cls}" title="${escapeHtml(name || "-")}">${escapeHtml(name || "-")}</span></td>
           <td style="text-align:center;">
             <span class="pos-pill ${cls}">${escapeHtml(pos || "-")}</span>
           </td>
           <td style="text-align:center;">
-            <button class="mini-btn" onclick='openMemberEdit(${JSON.stringify({tag,name,position:pos}).replace(/</g,"\\u003c")})'>✏️ Edit</button>
-            <button class="mini-btn danger" onclick='deleteMemberTag(${JSON.stringify({tag,name}).replace(/</g,"\\u003c")})'>🗑️ Delete</button>
+            <button class="mini-btn" onclick='openMemberEdit(${JSON.stringify({ tag, name, position: pos }).replace(/</g, "\\u003c")})'>✏️ Edit</button>
+            <button class="mini-btn danger" onclick='deleteMemberTag(${JSON.stringify({ tag, name }).replace(/</g, "\\u003c")})'>🗑️ Delete</button>
           </td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    function openMemberAdd(){
-      if (!window.__proj.selectedProjectName){
+    function openMemberAdd() {
+      if (!window.__proj.selectedProjectName) {
         alert("ยังไม่ได้เลือกโปรเจค");
         return;
       }
@@ -3253,11 +3309,11 @@ async function fetchPeopleTable() {
       byId("memberModal").classList.add("show");
 
       // ✅ โหลด members เพื่อให้ค้นหา/เลือกชื่อได้
-      ensureMembersCacheFresh().then(()=>refreshMemberSuggest());
+      ensureMembersCacheFresh().then(() => refreshMemberSuggest());
     }
 
-    function openMemberEdit(row){
-      if (!window.__proj.selectedProjectName){
+    function openMemberEdit(row) {
+      if (!window.__proj.selectedProjectName) {
         alert("ยังไม่ได้เลือกโปรเจค");
         return;
       }
@@ -3270,60 +3326,60 @@ async function fetchPeopleTable() {
       byId("m_memberId").value = String(row.tag || "");
       byId("memberModal").classList.add("show");
 
-      ensureMembersCacheFresh().then(()=>refreshMemberSuggest());
+      ensureMembersCacheFresh().then(() => refreshMemberSuggest());
     }
 
-    function closeMemberModal(){ byId("memberModal").classList.remove("show"); }
+    function closeMemberModal() { byId("memberModal").classList.remove("show"); }
 
-async function submitMemberModal() {
-  // ✅ ตอนอยู่หน้า Members ให้ใช้ projectId ของโปรเจคที่เลือกจริง (ไม่ใช่ selectedId = 'all')
-  const projectId = String(window.__proj?.selectedProjectIdForMembers || "").trim();
-  if (!projectId) { alert("ไม่พบ Project ID"); return; }
+    async function submitMemberModal() {
+      // ✅ ตอนอยู่หน้า Members ให้ใช้ projectId ของโปรเจคที่เลือกจริง (ไม่ใช่ selectedId = 'all')
+      const projectId = String(window.__proj?.selectedProjectIdForMembers || "").trim();
+      if (!projectId) { alert("ไม่พบ Project ID"); return; }
 
-  const typedName = (byId("m_name")?.value || "").trim();
-  const pickedId = (byId("m_memberId")?.value || "").trim();
+      const typedName = (byId("m_name")?.value || "").trim();
+      const pickedId = (byId("m_memberId")?.value || "").trim();
 
-  // ✅ ต้องเลือกจากรายการ (ไม่ POST /members แล้ว)
-  let memberId = pickedId;
+      // ✅ ต้องเลือกจากรายการ (ไม่ POST /members แล้ว)
+      let memberId = pickedId;
 
-  // fallback: ถ้าพิมพ์ชื่อแล้ว match ตรงเป๊ะ → จับ id ให้
-  if (!memberId && typedName) {
-    const all = await ensureMembersCacheFresh();
-    const hit = all.find(m => String(m.displayName || "").trim().toLowerCase() === typedName.toLowerCase());
-    if (hit) memberId = String(hit._id || "");
-  }
+      // fallback: ถ้าพิมพ์ชื่อแล้ว match ตรงเป๊ะ → จับ id ให้
+      if (!memberId && typedName) {
+        const all = await ensureMembersCacheFresh();
+        const hit = all.find(m => String(m.displayName || "").trim().toLowerCase() === typedName.toLowerCase());
+        if (hit) memberId = String(hit._id || "");
+      }
 
-  if (!memberId) {
-    alert("กรุณาเลือกชื่อจากรายการ (ระบบจะเติมตำแหน่งให้อัตโนมัติ)");
-    return;
-  }
+      if (!memberId) {
+        alert("กรุณาเลือกชื่อจากรายการ (ระบบจะเติมตำแหน่งให้อัตโนมัติ)");
+        return;
+      }
 
-  const btn = byId("btnMemberSave");
-  btn.disabled = true;
+      const btn = byId("btnMemberSave");
+      btn.disabled = true;
 
-  try {
-    if (window.__proj.memberMode === "add") {
-      // ✅ Add: assign อย่างเดียว (ไม่สร้าง member ใหม่)
-      await assignMemberToProjectAPI(projectId, memberId);
-    } else {
-      // ✅ Edit: เปลี่ยนคนในโปรเจค (remove เก่า + assign ใหม่)
-      const oldId = String(window.__proj.memberEditOldTag || "").trim();
-      if (oldId && oldId !== memberId) {
-        await removeMemberFromProjectAPI(projectId, oldId);
-        await assignMemberToProjectAPI(projectId, memberId);
+      try {
+        if (window.__proj.memberMode === "add") {
+          // ✅ Add: assign อย่างเดียว (ไม่สร้าง member ใหม่)
+          await assignMemberToProjectAPI(projectId, memberId);
+        } else {
+          // ✅ Edit: เปลี่ยนคนในโปรเจค (remove เก่า + assign ใหม่)
+          const oldId = String(window.__proj.memberEditOldTag || "").trim();
+          if (oldId && oldId !== memberId) {
+            await removeMemberFromProjectAPI(projectId, oldId);
+            await assignMemberToProjectAPI(projectId, memberId);
+          }
+        }
+
+        closeMemberModal();
+        await fetchPeopleTable();
+      } catch (e) {
+        alert(`บันทึกไม่สำเร็จ: ${e.message || e}`);
+      } finally {
+        btn.disabled = false;
       }
     }
 
-    closeMemberModal();
-    await fetchPeopleTable();
-  } catch (e) {
-    alert(`บันทึกไม่สำเร็จ: ${e.message || e}`);
-  } finally {
-    btn.disabled = false;
-  }
-}
-
-    async function deleteMemberTag(row){
+    async function deleteMemberTag(row) {
       const projectName = window.__proj.selectedProjectName;
       const projectId = String(window.__proj?.selectedProjectIdForMembers || "").trim();
       if (!projectName || !projectId) return;
@@ -3357,38 +3413,38 @@ async function submitMemberModal() {
     }
     function closeAdd() { byId("addModal").classList.remove("show"); }
 
-async function submitAdd() {
-  const name = byId("add_name").value.trim();
-  const start = byId("add_start").value || "";
-  const end = byId("add_end").value || "";
-  const note = byId("add_note").value.trim();
-  const figma = byId("add_figma").value.trim();
-  const status = byId("add_status").value;
-  
-  if (!name) { alert("กรอกชื่อโปรเจค"); return; }
+    async function submitAdd() {
+      const name = byId("add_name").value.trim();
+      const start = byId("add_start").value || "";
+      const end = byId("add_end").value || "";
+      const note = byId("add_note").value.trim();
+      const figma = byId("add_figma").value.trim();
+      const status = byId("add_status").value;
 
-  const btn = byId("btnAddSave");
-  btn.disabled = true;
+      if (!name) { alert("กรอกชื่อโปรเจค"); return; }
 
-  try {
-    await createProjectAPI({
-      name,
-      startISO: start,
-      endISO: end,
-      note,
-      figma,
-      status
-    });
-    
-    closeAdd();
-    await fetchProjects();
-    goBackAll();
-  } catch (e) {
-    alert(`เพิ่มโปรเจคไม่สำเร็จ: ${e.message}`);
-  } finally {
-    btn.disabled = false;
-  }
-}
+      const btn = byId("btnAddSave");
+      btn.disabled = true;
+
+      try {
+        await createProjectAPI({
+          name,
+          startISO: start,
+          endISO: end,
+          note,
+          figma,
+          status
+        });
+
+        closeAdd();
+        await fetchProjects();
+        goBackAll();
+      } catch (e) {
+        alert(`เพิ่มโปรเจคไม่สำเร็จ: ${e.message}`);
+      } finally {
+        btn.disabled = false;
+      }
+    }
 
     function openEdit(row) {
       window.__proj.selectedRow = row;
@@ -3398,48 +3454,48 @@ async function submitAdd() {
       byId("edit_start").value = ymdFromISO(row.startISO || row.start || "") || "";
       byId("edit_end").value = ymdFromISO(row.endISO || row.end || "") || "";
       byId("edit_note").value = row.note || "";
-        byId("edit_figma").value = row.figma || "";  // ✅ เพิ่มบรรทัดนี้
+      byId("edit_figma").value = row.figma || "";  // ✅ เพิ่มบรรทัดนี้
 
       byId("edit_status").value = row.status || "อยู่ในกำหนด";
     }
 
     function closeEdit() { byId("editModal").classList.remove("show"); }
 
-async function submitEdit() {
-  const row = window.__proj.selectedRow;
-  if (!row) return;
+    async function submitEdit() {
+      const row = window.__proj.selectedRow;
+      if (!row) return;
 
-  const name = byId("edit_name").value.trim();
-  const start = byId("edit_start").value || "";
-  const end = byId("edit_end").value || "";
-  const note = byId("edit_note").value.trim();
-  const figma = byId("edit_figma").value.trim();
-  const status = byId("edit_status").value;
+      const name = byId("edit_name").value.trim();
+      const start = byId("edit_start").value || "";
+      const end = byId("edit_end").value || "";
+      const note = byId("edit_note").value.trim();
+      const figma = byId("edit_figma").value.trim();
+      const status = byId("edit_status").value;
 
-  if (!name) { alert("กรอกชื่อโปรเจค"); return; }
+      if (!name) { alert("กรอกชื่อโปรเจค"); return; }
 
-  const btn = byId("btnEditSave");
-  btn.disabled = true;
+      const btn = byId("btnEditSave");
+      btn.disabled = true;
 
-  try {
-    await updateProjectAPI(row.id, {
-      name,
-      startISO: start,
-      endISO: end,
-      note,
-      figma,
-      status
-    });
+      try {
+        await updateProjectAPI(row.id, {
+          name,
+          startISO: start,
+          endISO: end,
+          note,
+          figma,
+          status
+        });
 
-    closeEdit();
-    await fetchProjects();
-    goBackAll();
-  } catch (e) {
-    alert(`แก้ไขโปรเจคไม่สำเร็จ: ${e.message}`);
-  } finally {
-    btn.disabled = false;
-  }
-}
+        closeEdit();
+        await fetchProjects();
+        goBackAll();
+      } catch (e) {
+        alert(`แก้ไขโปรเจคไม่สำเร็จ: ${e.message}`);
+      } finally {
+        btn.disabled = false;
+      }
+    }
 
     function clearAllFilters() {
       window.__proj.sortBy = "start";
@@ -3479,24 +3535,24 @@ async function submitEdit() {
         .replaceAll("'", "&#039;");
     }
 
-    function formatOutlineTextToHtml(text){
-      var lines = String(text||"").split(/\r?\n/);
+    function formatOutlineTextToHtml(text) {
+      var lines = String(text || "").split(/\r?\n/);
       var htmlOut = "";
       var inList = false;
-      for (var i=0;i<lines.length;i++){
+      for (var i = 0; i < lines.length; i++) {
         var line = lines[i];
-        var t = line.replace(/\s+$/,"");
-        if (!t){
-          if (inList){ htmlOut += "</ul>"; inList=false; }
+        var t = line.replace(/\s+$/, "");
+        if (!t) {
+          if (inList) { htmlOut += "</ul>"; inList = false; }
           continue;
         }
         var isBullet = /^\s*(?:[-•*]|\[[ xX]?\])\s+/.test(t);
-        if (isBullet){
-          if (!inList){ htmlOut += "<ul>"; inList=true; }
-          var item = t.replace(/^\s*(?:[-•*]|\[[ xX]?\])\s+/,"");
+        if (isBullet) {
+          if (!inList) { htmlOut += "<ul>"; inList = true; }
+          var item = t.replace(/^\s*(?:[-•*]|\[[ xX]?\])\s+/, "");
           htmlOut += "<li>" + escapeHtml(item) + "</li>";
         } else {
-          if (inList){ htmlOut += "</ul>"; inList=false; }
+          if (inList) { htmlOut += "</ul>"; inList = false; }
           htmlOut += "<p>" + escapeHtml(t) + "</p>";
         }
       }
@@ -3505,255 +3561,265 @@ async function submitEdit() {
     }
   </script>
 
-<!-- === MOBILE-ONLY FIXES v3 (Phones) === -->
-<style>
-@media (max-width: 479px) {
-  /* TOP ROW stacks */
-  #projectsTab .top-row,
-  #projectsTab #topRow {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 12px !important;
-    width: 100% !important;
-    max-width: 100% !important;
-  }
+  <!-- === MOBILE-ONLY FIXES v3 (Phones) === -->
+  <style>
+    @media (max-width: 479px) {
 
-  /* Project dropdown full width */
-  #projectsTab #projectDropdown {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-  }
-  #projectsTab #projectDropdown .dropdown-selected {
-    width: 100% !important;
-  }
+      /* TOP ROW stacks */
+      #projectsTab .top-row,
+      #projectsTab #topRow {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
 
-  /* FILTERS: stacked full width */
-  #projectsTab #sortControls,
-  #projectsTab .filters-row#sortControls,
-  #projectsTab #sortControls.filters-row,
-  #sortControls {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 12px !important;
-    width: 100% !important;
-    max-width: 100% !important;
-  }
+      /* Project dropdown full width */
+      #projectsTab #projectDropdown {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+      }
 
-  #projectsTab #sortControls .ctrl,
-  #sortControls .ctrl {
-    width: 100% !important;
-    min-width: 0 !important;
-  }
+      #projectsTab #projectDropdown .dropdown-selected {
+        width: 100% !important;
+      }
 
-  #projectsTab #sortControls .ctrl-selected,
-  #sortControls .ctrl-selected {
-    width: 100% !important;
-    justify-content: space-between !important;
-    height: 50px;
-  }
+      /* FILTERS: stacked full width */
+      #projectsTab #sortControls,
+      #projectsTab .filters-row#sortControls,
+      #projectsTab #sortControls.filters-row,
+      #sortControls {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
 
-  /* override inline min-width on search wrapper */
-  #projectsTab #sortControls > div[style],
-  #sortControls > div[style] {
-    min-width: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-  #projectsTab #sortControls .search-ctrl,
-  #projectsTab #sortControls .search-ctrl input {
-    width: 100% !important;
-  }
+      #projectsTab #sortControls .ctrl,
+      #sortControls .ctrl {
+        width: 100% !important;
+        min-width: 0 !important;
+      }
 
-  #projectsTab #sortControls .btn-clear,
-  #sortControls .btn-clear {
-    width: 100% !important;
-    justify-content: center !important;
-  }
+      #projectsTab #sortControls .ctrl-selected,
+      #sortControls .ctrl-selected {
+        width: 100% !important;
+        justify-content: space-between !important;
+        height: 50px;
+      }
 
-  /* MEMBERS: header full width + name never disappears + swipe works */
-  #projectsTab #memberSection .table-wrap,
-  #memberSection .table-wrap {
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    -webkit-overflow-scrolling: touch !important;
-    touch-action: pan-x pan-y !important;
-  }
+      /* override inline min-width on search wrapper */
+      #projectsTab #sortControls>div[style],
+      #sortControls>div[style] {
+        min-width: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
 
-  #projectsTab #memberTable,
-  #memberTable {
-    width: 100% !important;
-    min-width: 560px !important;
-    table-layout: fixed !important;
-    border-collapse: separate !important;
-  }
+      #projectsTab #sortControls .search-ctrl,
+      #projectsTab #sortControls .search-ctrl input {
+        width: 100% !important;
+      }
 
-  #projectsTab #memberTable thead th:nth-child(1),
-  #projectsTab #memberTable tbody td:nth-child(1),
-  #memberTable thead th:nth-child(1),
-  #memberTable tbody td:nth-child(1) {
-    width: 46% !important;
-    min-width: 200px !important;
-    text-align: left !important;
-    padding-left: 12px !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-  }
+      #projectsTab #sortControls .btn-clear,
+      #sortControls .btn-clear {
+        width: 100% !important;
+        justify-content: center !important;
+      }
 
-  #projectsTab #memberTable thead th:nth-child(2),
-  #projectsTab #memberTable tbody td:nth-child(2),
-  #memberTable thead th:nth-child(2),
-  #memberTable tbody td:nth-child(2) {
-    width: 20% !important;
-    min-width: 100px !important;
-    text-align: center !important;
-    white-space: nowrap !important;
-  }
+      /* MEMBERS: header full width + name never disappears + swipe works */
+      #projectsTab #memberSection .table-wrap,
+      #memberSection .table-wrap {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch !important;
+        touch-action: pan-x pan-y !important;
+      }
 
-  #projectsTab #memberTable thead th:nth-child(3),
-  #projectsTab #memberTable tbody td:nth-child(3),
-  #memberTable thead th:nth-child(3),
-  #memberTable tbody td:nth-child(3) {
-    width: 34% !important;
-    min-width: 160px !important;
-    text-align: center !important;
-  }
+      #projectsTab #memberTable,
+      #memberTable {
+        width: 100% !important;
+        min-width: 560px !important;
+        table-layout: fixed !important;
+        border-collapse: separate !important;
+      }
 
-  #projectsTab #memberTable tbody td:nth-child(3),
-  #memberTable tbody td:nth-child(3) {
-    white-space: normal !important;
-  }
-  #projectsTab #memberTable tbody td:nth-child(3) .mini-btn,
-  #memberTable tbody td:nth-child(3) .mini-btn {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 4px 0 !important;
-    box-sizing: border-box !important;
-  }
-}
-</style>
+      #projectsTab #memberTable thead th:nth-child(1),
+      #projectsTab #memberTable tbody td:nth-child(1),
+      #memberTable thead th:nth-child(1),
+      #memberTable tbody td:nth-child(1) {
+        width: 46% !important;
+        min-width: 200px !important;
+        text-align: left !important;
+        padding-left: 12px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+      }
 
-<!-- === MOBILE-ONLY FIXES v4 (Phones) === -->
-<style>
-/* Hide filters/top row when viewing Members (JS toggles .show-members) */
-#projectsTab.show-members #topRow,
-#projectsTab.show-members .top-row {
-  display: none !important;
-}
+      #projectsTab #memberTable thead th:nth-child(2),
+      #projectsTab #memberTable tbody td:nth-child(2),
+      #memberTable thead th:nth-child(2),
+      #memberTable tbody td:nth-child(2) {
+        width: 20% !important;
+        min-width: 100px !important;
+        text-align: center !important;
+        white-space: nowrap !important;
+      }
 
-/* Modal + label tweaks */
-.modal {
-  padding: 10px !important;
-}
-.label {
-  margin-left: 10px !important;
-}
-</style>
+      #projectsTab #memberTable thead th:nth-child(3),
+      #projectsTab #memberTable tbody td:nth-child(3),
+      #memberTable thead th:nth-child(3),
+      #memberTable tbody td:nth-child(3) {
+        width: 34% !important;
+        min-width: 160px !important;
+        text-align: center !important;
+      }
 
-<script>
-(function() {
-  try {
-    var tab = document.getElementById("projectsTab");
-    var member = document.getElementById("memberSection");
-    if (!tab || !member) return;
+      #projectsTab #memberTable tbody td:nth-child(3),
+      #memberTable tbody td:nth-child(3) {
+        white-space: normal !important;
+      }
 
-    function sync() {
-      var st = (member.getAttribute("style") || "").toLowerCase();
-      var visible = st.indexOf("display: block") !== -1 ||
-        (member.offsetParent !== null && getComputedStyle(member).display !== "none");
-      if (visible) tab.classList.add("show-members");
-      else tab.classList.remove("show-members");
+      #projectsTab #memberTable tbody td:nth-child(3) .mini-btn,
+      #memberTable tbody td:nth-child(3) .mini-btn {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 4px 0 !important;
+        box-sizing: border-box !important;
+      }
+    }
+  </style>
+
+  <!-- === MOBILE-ONLY FIXES v4 (Phones) === -->
+  <style>
+    /* Hide filters/top row when viewing Members (JS toggles .show-members) */
+    #projectsTab.show-members #topRow,
+    #projectsTab.show-members .top-row {
+      display: none !important;
     }
 
-    sync();
+    /* Modal + label tweaks */
+    .modal {
+      padding: 10px !important;
+    }
 
-    var mo = new MutationObserver(sync);
-    mo.observe(member, { attributes: true, attributeFilter: ["style", "class"] });
+    .label {
+      margin-left: 10px !important;
+    }
+  </style>
 
-    var proj = document.getElementById("projectSection");
-    if (proj) mo.observe(proj, { attributes: true, attributeFilter: ["style", "class"] });
+  <script>
+    (function () {
+      try {
+        var tab = document.getElementById("projectsTab");
+        var member = document.getElementById("memberSection");
+        if (!tab || !member) return;
 
-    document.addEventListener("click", function() { setTimeout(sync, 0); }, true);
-  } catch (e) {}
-})();
-</script>
+        function sync() {
+          var st = (member.getAttribute("style") || "").toLowerCase();
+          var visible = st.indexOf("display: block") !== -1 ||
+            (member.offsetParent !== null && getComputedStyle(member).display !== "none");
+          if (visible) tab.classList.add("show-members");
+          else tab.classList.remove("show-members");
+        }
 
-<!-- === MOBILE-ONLY FIXES v5 (Projects tweaks) === -->
-<style>
-/* 1) Projects main: make ctrl-selected taller */
-#projectsTab .ctrl-selected {
-  height: 50px !important;
-  display: flex !important;
-  align-items: center !important;
-}
+        sync();
 
-/* 2) Members list: allow scrolling + tighter columns on phones */
-@media (max-width: 479px) {
-  /* allow both vertical + horizontal scroll inside member area */
-  #projectsTab.show-members #memberSection .table-wrap,
-  #memberSection .table-wrap {
-    overflow-x: auto !important;
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-    touch-action: pan-x pan-y !important;
-    max-width: 100% !important;
-  }
+        var mo = new MutationObserver(sync);
+        mo.observe(member, { attributes: true, attributeFilter: ["style", "class"] });
 
-  /* make table fit screen more (narrower columns), but still scroll if needed */
-  #projectsTab.show-members #memberTable,
-  #memberTable {
-    width: 100% !important;
-    min-width: 100% !important;
-    table-layout: fixed !important;
-  }
+        var proj = document.getElementById("projectSection");
+        if (proj) mo.observe(proj, { attributes: true, attributeFilter: ["style", "class"] });
 
-  /* tighter padding so it looks cleaner */
-  #memberTable th, #memberTable td {
-    padding: 10px 8px !important;
-  }
+        document.addEventListener("click", function () { setTimeout(sync, 0); }, true);
+      } catch (e) { }
+    })();
+  </script>
 
-  /* narrower column percentages */
-  #memberTable thead th:nth-child(1),
-  #memberTable tbody td:nth-child(1) {
-    width: 20% !important;
-    min-width: 0 !important;
-    text-align: left !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-  }
-  #memberTable thead th:nth-child(2),
-  #memberTable tbody td:nth-child(2) {
-    width: 20% !important;
-    min-width: 0 !important;
-    text-align: center !important;
-    white-space: nowrap !important;
-  }
-  #memberTable thead th:nth-child(3),
-  #memberTable tbody td:nth-child(3) {
-    width: 40% !important;
-    min-width: 0 !important;
-    text-align: center !important;
-  }
+  <!-- === MOBILE-ONLY FIXES v5 (Projects tweaks) === -->
+  <style>
+    /* 1) Projects main: make ctrl-selected taller */
+    #projectsTab .ctrl-selected {
+      height: 50px !important;
+      display: flex !important;
+      align-items: center !important;
+    }
 
-  /* keep action buttons inside if present */
-  #memberTable tbody td:nth-child(3) {
-    white-space: normal !important;
-  }
-  #memberTable tbody td:nth-child(3) .mini-btn {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 4px 0 !important;
-    box-sizing: border-box !important;
-  }
-}
-</style>
+    /* 2) Members list: allow scrolling + tighter columns on phones */
+    @media (max-width: 479px) {
+
+      /* allow both vertical + horizontal scroll inside member area */
+      #projectsTab.show-members #memberSection .table-wrap,
+      #memberSection .table-wrap {
+        overflow-x: auto !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        touch-action: pan-x pan-y !important;
+        max-width: 100% !important;
+      }
+
+      /* make table fit screen more (narrower columns), but still scroll if needed */
+      #projectsTab.show-members #memberTable,
+      #memberTable {
+        width: 100% !important;
+        min-width: 100% !important;
+        table-layout: fixed !important;
+      }
+
+      /* tighter padding so it looks cleaner */
+      #memberTable th,
+      #memberTable td {
+        padding: 10px 8px !important;
+      }
+
+      /* narrower column percentages */
+      #memberTable thead th:nth-child(1),
+      #memberTable tbody td:nth-child(1) {
+        width: 20% !important;
+        min-width: 0 !important;
+        text-align: left !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+      }
+
+      #memberTable thead th:nth-child(2),
+      #memberTable tbody td:nth-child(2) {
+        width: 20% !important;
+        min-width: 0 !important;
+        text-align: center !important;
+        white-space: nowrap !important;
+      }
+
+      #memberTable thead th:nth-child(3),
+      #memberTable tbody td:nth-child(3) {
+        width: 40% !important;
+        min-width: 0 !important;
+        text-align: center !important;
+      }
+
+      /* keep action buttons inside if present */
+      #memberTable tbody td:nth-child(3) {
+        white-space: normal !important;
+      }
+
+      #memberTable tbody td:nth-child(3) .mini-btn {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 4px 0 !important;
+        box-sizing: border-box !important;
+      }
+    }
+  </style>
 </body>
 
 </html>

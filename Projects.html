@@ -1790,69 +1790,60 @@
     </div>
   </div>
 
-  <!-- Edit Project Modal -->
-  <div id="editModal" class="modal-overlay">
-    <div class="modal-box">
-      <div class="modal-title">Edit Project</div>
+<!-- Edit Project Modal -->
+<div id="editModal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title">Edit Project</div>
 
-      <!-- ✅ ห่อ fields ด้วย modal-content -->
-      <div class="modal-content">
-        <div class="field">
-          <div class="label">ชื่อโปรเจค</div>
-          <input id="edit_name" class="input" placeholder="">
-        </div>
+    <!-- ✅ ห่อ fields ด้วย modal-content -->
+    <div class="modal-content">
+      <div class="field">
+        <div class="label">ชื่อโปรเจค</div>
+        <input id="edit_name" class="input" placeholder="">
+      </div>
 
-        <div class="field">
-          <div class="label">วันที่เริ่มต้น</div>
-          <input id="edit_start" type="date" class="input">
-        </div>
+      <div class="field">
+        <div class="label">วันที่เริ่มต้น</div>
+        <input id="edit_start" type="date" class="input">
+      </div>
 
-        <div class="field">
-          <div class="label">วันที่วางแผนสิ้นสุดโครงการ</div>
-          <input id="edit_end" type="date" class="input">
-        </div>
+      <div class="field">
+        <div class="label">วันที่วางแผนสิ้นสุดโครงการ</div>
+        <input id="edit_end" type="date" class="input">
+      </div>
 
-        <div class="field">
-          <div class="label">หมายเหตุ</div>
-          <input id="edit_note" class="input" placeholder="">
-        </div>
+      <div class="field">
+        <div class="label">หมายเหตุ</div>
+        <input id="edit_note" class="input" placeholder="">
+      </div>
 
-        <div class="field">
-          <div class="label">Figma Link</div>
-          <input id="edit_figma" class="input" placeholder="https://figma.com/...">
-        </div>
+      <div class="field">
+        <div class="label">Figma Link</div>
+        <input id="edit_figma" class="input" placeholder="https://figma.com/...">
+      </div>
 
-        <div class="field">
-          <div class="label">สถานะ</div>
-          <select id="edit_status" class="select">
+      <div class="field">
+        <div class="label">สถานะ</div>
+        <select id="edit_status" class="select">
           <option value="ยังไม่เริ่มงาน">ยังไม่เริ่มงาน</option>
           <option value="อยู่ในกำหนด">อยู่ในกำหนด</option>
           <option value="ช้ากว่ากำหนด">ช้ากว่ากำหนด</option>
           <option value="เสร็จแล้ว">เสร็จแล้ว</option>
         </select>
-        </div>
+      </div>
+    </div> <!-- ✅ ปิด modal-content ที่นี่ -->
 
-      <div class="modal-actions">
-        <button class="btn primary" id="btnEditSave" onclick="submitEdit()">
+    <!-- ✅ ย้าย modal-actions ออกมานอก modal-content -->
+    <div class="modal-actions">
+      <button class="btn primary" id="btnEditSave" onclick="submitEdit()">
         <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000"
              style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" alt="Edit">
         Edit Project
       </button>
-        <button class="btn cancel" onclick="closeEdit()">Cancel</button>
-      </div>
+      <button class="btn cancel" onclick="closeEdit()">Cancel</button>
     </div>
   </div>
-
-      <div class="modal-actions">
-        <button class="btn primary" id="btnEditSave" onclick="submitEdit()">
-        <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000"
-             style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" alt="Edit">
-        Edit Project
-      </button>
-        <button class="btn cancel" onclick="closeEdit()">Cancel</button>
-      </div>
-    </div>
-  </div>
+</div>
 
   <!-- ✅ View Modal -->
   <div id="viewModal" class="modal-overlay">
@@ -1862,11 +1853,13 @@
     </div>
   </div>
 
-  <!-- ✅ Member Modal -->
-  <div id="memberModal" class="modal-overlay">
-    <div class="modal-box">
-      <div class="modal-title" id="memberModalTitle">Add Member</div>
+<!-- ✅ Member Modal (โครงสร้างที่ถูกต้อง) -->
+<div id="memberModal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title" id="memberModalTitle">Add Member</div>
 
+    <!-- ✅ Fields อยู่ใน modal-content -->
+    <div class="modal-content">
       <div class="field">
         <div class="label">ชื่อ</div>
         <div class="member-autocomplete" style="position:relative;">
@@ -1880,18 +1873,19 @@
         <div class="label">ตำแหน่ง</div>
         <input id="m_pos" class="input" placeholder="จะถูกเติมอัตโนมัติ" readonly>
       </div>
+    </div> <!-- ✅ ปิด modal-content -->
 
-      <div class="modal-actions">
-        <button class="btn primary" id="btnMemberSave" onclick="submitMemberModal()">
-          <img src="https://img.icons8.com/?size=100&id=IoxdKD291KHp&format=png&color=000000"
-               style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" alt="Save">
-          Save
-        </button>
-        <button class="btn cancel" onclick="closeMemberModal()">Cancel</button>
-
-      </div>
+    <!-- ✅ Actions อยู่นอก modal-content -->
+    <div class="modal-actions">
+      <button class="btn primary" id="btnMemberSave" onclick="submitMemberModal()">
+        <img src="https://img.icons8.com/?size=100&id=IoxdKD291KHp&format=png&color=000000"
+             style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" alt="Save">
+        Save
+      </button>
+      <button class="btn cancel" onclick="closeMemberModal()">Cancel</button>
     </div>
   </div>
+</div>
 
     <script>
     function byId(id){ return document.getElementById(id); }

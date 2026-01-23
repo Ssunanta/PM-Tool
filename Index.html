@@ -1083,95 +1083,107 @@
       return out.join("\n");
     }
 
-    // ✅ เพิ่มฟังก์ชันใหม่ตรงนี้ (หลัง scopeCssForTab)
-    function scopeCssForTabWithRootVars(cssText, scopeSel) {
-      let css = String(cssText || "");
+// ✅ ฟังก์ชันใหม่สำหรับ Intern - ไม่ต้อง scope css เลย เพราะใช้ .intern-wrapper class แล้ว
+function setTabHTMLIntern(tabElement, html) {
+  if (!tabElement) return;
 
-      // Extract :root block
-      let rootBlock = "";
-      const rootRegex = /:root\s*\{([^}]*)\}/;
-      const rootMatch = css.match(rootRegex);
+  const styleId = "tab-style-intern";
 
-      if (rootMatch) {
-        rootBlock = rootMatch[1].trim();
-        css = css.replace(rootRegex, "");
+  let doc;
+  try {
+    doc = new DOMParser().parseFromString(html, "text/html");
+  } catch (e) {
+    console.error("Parse error:", e);
+    tabElement.innerHTML = html;
+    return;
+  }
+
+  const bodyHtml = (doc.body && doc.body.innerHTML) ? doc.body.innerHTML : html;
+  const styleTags = Array.from(doc.querySelectorAll("style"));
+  const rawCss = styleTags.map(s => s.textContent || "").join("\n").trim();
+
+  // ลบ style เก่า
+  const oldStyle = document.getElementById(styleId);
+  if (oldStyle) oldStyle.remove();
+
+  // ✅ ใช้ CSS ตรงเดิม ไม่ต้อง scope เพราะ .intern-wrapper class มีอยู่แล้ว
+  if (rawCss) {
+    const styleEl = document.createElement("style");
+    styleEl.id = styleId;
+    styleEl.textContent = rawCss;
+    document.head.appendChild(styleEl);
+    console.log("[intern] Added style without scoping");
+  }
+
+  tabElement.innerHTML = bodyHtml;
+
+  // ===== Script execution =====
+  if (!tabElement.dataset.scriptsExecuted) {
+    const scripts = Array.from(tabElement.querySelectorAll("script"));
+    const collected = scripts.map(s => ({
+      src: (s.getAttribute("src") || "").trim(),
+      type: (s.getAttribute("type") || "").trim(),
+      code: s.src ? "" : (s.textContent || "")
+    }));
+
+    scripts.forEach(s => s.remove());
+
+    const sanitizeCode = (code) => {
+      return String(code || "")
+        .replace(/\u00A0/g, " ")
+        .replace(/\uFEFF/g, "")
+        .replace(/[\u200B-\u200D\u2060]/g, "")
+        .replace(/\u2028|\u2029/g, "\n")
+        .replace(/\r\n/g, "\n");
+    };
+
+    const loadExternal = (src, type = "") => new Promise((resolve, reject) => {
+      const sc = document.createElement("script");
+      if (type) sc.type = type;
+      sc.src = src;
+      sc.onload = () => resolve();
+      sc.onerror = () => reject(new Error("Failed to load " + src));
+      document.head.appendChild(sc);
+    });
+
+    const injectInlineAsScriptTag = (code, type = "text/javascript", label = "") => {
+      const sc = document.createElement("script");
+      sc.type = type || "text/javascript";
+      sc.textContent = code;
+      if (label) sc.setAttribute("data-from", label);
+      document.head.appendChild(sc);
+    };
+
+    (async () => {
+      for (let i = 0; i < collected.length; i++) {
+        const s = collected[i];
+        if (!s.src) continue;
+        try { await loadExternal(s.src, s.type); }
+        catch (e) { console.error(`[intern] external script #${i} failed`, e); }
       }
 
-      // Inject :root variables
-      let scopedRoot = "";
-      if (rootBlock) {
-        scopedRoot = `${scopeSel} { ${rootBlock} }\n`;
-      }
+      for (let i = 0; i < collected.length; i++) {
+        const s = collected[i];
+        if (s.src) continue;
 
-      // Replace body/html selectors
-      css = css
-        .replace(/(^|[,{]\s*)body(\s*[,{])/g, `$1${scopeSel}$2`)
-        .replace(/(^|[,{]\s*)html(\s*[,{])/g, `$1${scopeSel}$2`);
+        const safe = sanitizeCode(s.code);
+        const isModule =
+          (s.type && s.type.toLowerCase() === "module") ||
+          /\b(import|export)\b/.test(safe);
 
-      const out = [];
-      const blocks = css.split("}");
-
-      for (let b of blocks) {
-        b = b.trim();
-        if (!b) continue;
-        const parts = b.split("{");
-        if (parts.length < 2) continue;
-
-        const sel = parts[0].trim();
-        const body = parts.slice(1).join("{");
-
-        if (sel.startsWith("@")) {
-          if (sel.startsWith("@media")) {
-            const mediaBody = body;
-            let mediaCss = "";
-            const mediaBlocks = mediaBody.split("}");
-            for (let mb of mediaBlocks) {
-              mb = mb.trim();
-              if (!mb) continue;
-              const mediaParts = mb.split("{");
-              if (mediaParts.length < 2) continue;
-              const mediaSel = mediaParts[0].trim();
-              const mediaBodyContent = mediaParts.slice(1).join("{");
-              const scopedMediaSel = mediaSel.split(",")
-                .map(s => s.trim())
-                .map(s => {
-                  if (!s || s.startsWith(scopeSel)) return s;
-                  if (s === "*") return `${scopeSel} *`;
-                  if (/^(table|button|input|select|textarea|form|div|span|p|h\d|ul|ol|li|a|label|section)(\s|$|:|\[|,)/.test(s)) {
-                    return `${scopeSel} ${s}`;
-                  }
-                  if (/^[\.#]/.test(s)) return `${scopeSel} ${s}`;
-                  return `${scopeSel} ${s}`;
-                })
-                .join(", ");
-              mediaCss += scopedMediaSel + "{" + mediaBodyContent + "}\n";
-            }
-            out.push(sel + "{" + mediaCss + "}");
-          } else {
-            out.push(sel + "{" + body + "}");
-          }
-          continue;
+        try {
+          injectInlineAsScriptTag(safe, isModule ? "module" : "text/javascript", `intern#${i}`);
+        } catch (e) {
+          console.error(`[intern] inline inject failed`, e);
         }
-
-        const scopedSel = sel.split(",")
-          .map(s => s.trim())
-          .map(s => {
-            if (!s) return s;
-            if (s.startsWith(scopeSel)) return s;
-            if (s === "*") return `${scopeSel} *`;
-            if (/^(table|button|input|select|textarea|form|div|span|p|h\d|ul|ol|li|a|label|section|header|footer|nav|body)(\s|$|:|\[|,)/.test(s)) {
-              return `${scopeSel} ${s}`;
-            }
-            if (/^[\.#]/.test(s)) return `${scopeSel} ${s}`;
-            return `${scopeSel} ${s}`;
-          })
-          .join(", ");
-
-        out.push(scopedSel + "{" + body + "}");
       }
+    })();
 
-      return scopedRoot + out.join("\n");
-    }
+    tabElement.dataset.scriptsExecuted = "1";
+  } else {
+    tabElement.querySelectorAll("script").forEach(s => s.remove());
+  }
+}
 
     // ===== ฟังก์ชันต่อไปจะเป็น escapeHtml() หรือฟังก์ชันอื่น =====
 
@@ -1244,104 +1256,103 @@
       localStorage.setItem("activeTab", tabName);
     }
 
-    function loadTabContent(tabName) {
-      const tabElement = document.getElementById(tabName + "Tab");
-      if (!tabElement) { hideGlobalLoading(); return; }
+function loadTabContent(tabName) {
+  const tabElement = document.getElementById(tabName + "Tab");
+  if (!tabElement) { hideGlobalLoading(); return; }
 
-      tabElement.innerHTML = `<div class="loading">⏳ กำลังโหลด...</div>`;
+  tabElement.innerHTML = `<div class="loading">⏳ กำลังโหลด...</div>`;
 
-      // แมปชื่อไฟล์
-      const fileMap = {
-        dashboard: "Dashboard",
-        projects: "Projects",
-        todos: "Todos",
-        intern: "Intern",
-        notes: "Note",
-        meeting: "Meeting",
-        aboutPM: "AboutPM",
-      };
+  const fileMap = {
+    dashboard: "Dashboard",
+    projects: "Projects",
+    todos: "Todos",
+    intern: "Intern",
+    notes: "Note",
+    meeting: "Meeting",
+    aboutPM: "AboutPM",
+  };
 
-      function loadTabContent(tabName) {
-        const fileBase = fileMap[tabName];
-        // โหลดไฟล์ HTML ของแต่ละแท็บ
-        fetch(fileBase + ".html")
-          .then(r => r.text())
-          .then(html => {
-            setTabHTML(tabElement, html, tabName);
-          });
-      }
+  const fileBase = fileMap[tabName];
+  if (!fileBase) {
+    tabElement.innerHTML = `<div class="container" style="padding:24px;color:#dc3545;">ไม่รู้ไฟล์ของแท็บ ${escapeHtml(tabName)}</div>`;
+    hideGlobalLoading();
+    return;
+  }
 
-      const fileBase = fileMap[tabName];
-      if (!fileBase) {
-        tabElement.innerHTML = `<div class="container" style="padding:24px;color:#dc3545;">ไม่รู้ไฟล์ของแท็บ ${escapeHtml(tabName)}</div>`;
-        hideGlobalLoading();
-        return;
-      }
-
-      // GAS
-      if (hasGAS()) {
-        google.script.run
-          .withSuccessHandler((html) => {
-            setTabHTML(tabElement, html, tabName);
-            loadedTabs[tabName] = true;
-
-            // ✅ แจ้งว่าแท็บถูก inject เสร็จแล้ว
-            window.dispatchEvent(new CustomEvent("tab:loaded", { detail: { tabName } }));
-
-            if (tabName === "intern") {
-              initWhenReady("initIntern", () => {
-                if (typeof window.initIntern === "function") {
-                  window.initIntern();
-                }
-              }, "intern", 160);
-            }
-
-            // ✅ สำคัญ: todos ให้รอ init หลัง inject
-            if (tabName === "todos") {
-              initWhenReady("initTodos", () => window.initTodos(), "todos", 160);
-            }
-
-            setTimeout(() => {
-              initializeTab(tabName);
-              hideGlobalLoading();
-            }, 50);
-          })
-          .withFailureHandler((err) => {
-            console.error(err);
-            tabElement.innerHTML = `<div class="container" style="padding:24px;color:#dc3545;">โหลด ${fileBase}.html ไม่สำเร็จ</div>`;
-            hideGlobalLoading();
-          })
-          .getHtml(fileBase);
-        return;
-      }
-
-      // Fetch (non-GAS)
-      fetch(fileBase + ".html", { cache: "no-store" })
-        .then(r => {
-          if (!r.ok) throw new Error("HTTP " + r.status);
-          return r.text();
-        })
-        .then(html => {
+  // GAS
+  if (hasGAS()) {
+    google.script.run
+      .withSuccessHandler((html) => {
+        // ✅ ใช้ setTabHTMLIntern() สำหรับ intern
+        if (tabName === "intern") {
+          setTabHTMLIntern(tabElement, html);
+        } else {
           setTabHTML(tabElement, html, tabName);
-          loadedTabs[tabName] = true;
+        }
 
-          window.dispatchEvent(new CustomEvent("tab:loaded", { detail: { tabName } }));
+        loadedTabs[tabName] = true;
 
-          if (tabName === "todos") {
-            initWhenReady("initTodos", () => window.initTodos(), "todos", 160);
-          }
+        window.dispatchEvent(new CustomEvent("tab:loaded", { detail: { tabName } }));
 
-          setTimeout(() => {
-            initializeTab(tabName);
-            hideGlobalLoading();
-          }, 50);
-        })
-        .catch(err => {
-          console.error(err);
-          tabElement.innerHTML = `<div class="container" style="padding:24px;color:#dc3545;">โหลด ${fileBase}.html ไม่ได้ (${escapeHtml(err.message)})</div>`;
+        if (tabName === "intern") {
+          initWhenReady("initIntern", () => {
+            if (typeof window.initIntern === "function") {
+              window.initIntern();
+            }
+          }, "intern", 160);
+        }
+
+        if (tabName === "todos") {
+          initWhenReady("initTodos", () => window.initTodos(), "todos", 160);
+        }
+
+        setTimeout(() => {
+          initializeTab(tabName);
           hideGlobalLoading();
-        });
-    }
+        }, 50);
+      })
+      .withFailureHandler((err) => {
+        console.error(err);
+        tabElement.innerHTML = `<div class="container" style="padding:24px;color:#dc3545;">โหลด ${fileBase}.html ไม่สำเร็จ</div>`;
+        hideGlobalLoading();
+      })
+      .getHtml(fileBase);
+    return;
+  }
+
+  // Fetch (non-GAS)
+  fetch(fileBase + ".html", { cache: "no-store" })
+    .then(r => {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.text();
+    })
+    .then(html => {
+      // ✅ ใช้ setTabHTMLIntern() สำหรับ intern
+      if (tabName === "intern") {
+        setTabHTMLIntern(tabElement, html);
+      } else {
+        setTabHTML(tabElement, html, tabName);
+      }
+
+      loadedTabs[tabName] = true;
+
+      window.dispatchEvent(new CustomEvent("tab:loaded", { detail: { tabName } }));
+
+      if (tabName === "todos") {
+        initWhenReady("initTodos", () => window.initTodos(), "todos", 160);
+      }
+
+      setTimeout(() => {
+        initializeTab(tabName);
+        hideGlobalLoading();
+      }, 50);
+    })
+    .catch(err => {
+      console.error(err);
+      tabElement.innerHTML = `<div class="container" style="padding:24px;color:#dc3545;">โหลด ${fileBase}.html ไม่ได้ (${escapeHtml(err.message)})</div>`;
+      hideGlobalLoading();
+    });
+}
 
     function initializeTab(tabName) {
       switch (tabName) {

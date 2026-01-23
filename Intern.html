@@ -1614,28 +1614,32 @@
         }
 
         async function fetchInternMain() {
-  try {
-    console.log("[Intern] fetchInternMain started");
-    const result = await window.BACKEND.getInternData(1, 100);
-    
-    const items = Array.isArray(result.items) ? result.items : [];
-    
-    // ✅ ผสาน meta (เช้า/บ่าย/สถานะ/fileLink) จาก localStorage
-    items.forEach(function (it) {
-      const id = String(it?._id || "");
-      it._meta = id ? readMeta(id) : {};
-      
-      // ✅ ถ้า fileLink ไม่อยู่ใน meta ให้อ่านจากส่วนสำรอง
-      if (!it._meta.fileLink && it.fileLink) {
-        it._meta.fileLink = it.fileLink;
-      }
-    });
+          try {
+            console.log("[Intern] fetchInternMain started");
+            const result = await window.BACKEND.getInternData(1, 100);
+            console.log("[Intern] getInternData result:", result);
 
-    S.internData = items;
-    S.internFiltered = S.internData.slice();
-    // ... โค้ดต่อไป
-  } catch (err) {
-    console.error("[Intern] fetchInternMain error:", err);
+            const items = Array.isArray(result.items) ? result.items : [];
+            console.log("[Intern] items count:", items.length);
+
+            // ✅ ผสาน meta (เช้า/บ่าย/สถานะ) จาก localStorage
+            items.forEach(function (it) {
+              const id = String(it?._id || "");
+              it._meta = id ? readMeta(id) : {};
+            });
+
+            S.internData = items;
+            S.internFiltered = S.internData.slice();
+
+            const posSet = new Set();
+            S.internData.forEach(function (i) { if (i.position) posSet.add(i.position); });
+            S.positions = Array.from(posSet).sort(function (a, b) { return String(a).localeCompare(String(b), "th"); });
+
+            console.log("[Intern] positions found:", S.positions);
+            window.updatePositionDropdown();
+            updateAddInternPositionDatalist();
+            renderInternTable();
+          } catch (err) {
             console.error("[Intern] fetchInternMain error:", err);
             S.internData = [];
             S.internFiltered = [];

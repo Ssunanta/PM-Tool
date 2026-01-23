@@ -1319,8 +1319,8 @@ function setTabHTML(tabElement, html, tabName) {
 
   if (rawCss) {
     // ✅ Scope CSS ตามประเภท tab
-    const inheritRootVarsTabs = ["intern"];
-    const noScopeTabs = ["todos"];
+    const inheritRootVarsTabs = ["intern", "aboutpm"];
+const noScopeTabs = ["todos", "intern"];
 
     let finalCss;
     if (noScopeTabs.includes(tabName)) {

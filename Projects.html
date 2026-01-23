@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PM Tool - Projects (Fixed FULL v3) (No Backend)</title>
+  <title>PM Tool - Projects (Fixed FULL v3) (Backend: localhost:3000)</title>
 
   <style>
     body {
@@ -1831,6 +1831,7 @@
           <option value="เสร็จแล้ว">เสร็จแล้ว</option>
         </select>
         </div>
+      </div>
 
       <div class="modal-actions">
         <button class="btn primary" id="btnEditSave" onclick="submitEdit()">
@@ -1884,6 +1885,13 @@
 
     <script>
     function byId(id){ return document.getElementById(id); }
+
+    /* ==========================================
+       🔧 BACKEND CONFIGURATION
+       ========================================== */
+    // ✅ ตั้งค่า base URL ของ backend
+    // ถ้า deploy เปลี่ยนเป็นโดเมนจริงได้เลย เช่น https://api.yoursite.com
+    
 
     const TRASH_SVG = `
       <img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000"

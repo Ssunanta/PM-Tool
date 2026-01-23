@@ -1368,99 +1368,119 @@
     }
 
 /* =========================
-       ✅ Member Name Autocomplete (ใช้สไตล์เดียวกับ ctrl-items)
-       ========================= */
-    .member-suggest {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: calc(100% + 8px);
-      background: #f1f5f9;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      padding: 10px;
-      max-height: 320px;
-      overflow-y: auto;
-      display: none;
-      z-index: 1200;
-      -webkit-overflow-scrolling: touch;
-    }
+   ✅ Member Name Autocomplete (ใช้สไตล์เดียวกับ ctrl-items)
+   ========================= */
+.member-suggest {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 8px);
+  background: #f1f5f9;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 10px;
+  max-height: 320px;
+  overflow-y: auto;
+  display: none;
+  z-index: 1200;
+  -webkit-overflow-scrolling: touch;
+}
 
-    .member-suggest.open {
-      display: block;
-    }
+.member-suggest.open {
+  display: block;
+}
 
-    .member-suggest .ms-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: 900;
-      background: #fff;
-      border: 1px solid rgba(15, 23, 42, .06);
-      transition: all 0.15s ease;
-      box-shadow: 0 2px 8px rgba(15, 23, 42, .04);
-    }
+.member-suggest .ms-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 900;
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, .06);
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, .04);
+}
 
-    .member-suggest .ms-item+.ms-item {
-      margin-top: 8px;
-    }
+.member-suggest .ms-item+.ms-item {
+  margin-top: 8px;
+}
 
-    .member-suggest .ms-item:hover {
-      background: #fafafa;
-      border-color: rgba(15, 23, 42, .18);
-      box-shadow: 0 4px 12px rgba(15, 23, 42, .08);
-      transform: translateY(-1px);
-    }
+.member-suggest .ms-item:hover {
+  background: #fafafa;
+  border-color: rgba(15, 23, 42, .18);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, .08);
+  transform: translateY(-1px);
+}
 
-    .member-suggest .ms-item:active {
-      transform: translateY(0);
-      box-shadow: 0 2px 6px rgba(15, 23, 42, .06);
-    }
+.member-suggest .ms-item:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, .06);
+}
 
-    .member-suggest .ms-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-      flex: 1;
-    }
+.member-suggest .ms-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
 
-    .member-suggest .ms-name {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      color: #111827;
-      font-weight: 900;
-      font-size: 15px;
-    }
+.member-suggest .ms-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #111827;
+  font-weight: 900;
+  font-size: 15px;
+}
 
-    .member-suggest .ms-pos {
-      flex: 0 0 auto;
-      font-size: 12px;
-      font-weight: 900;
-      color: #374151;
-      border: 1px solid rgba(15, 23, 42, .12);
-      background: #f8fafc;
-      padding: 6px 12px;
-      border-radius: 999px;
-      white-space: nowrap;
-      box-shadow: 0 1px 3px rgba(15, 23, 42, .04);
-    }
+.member-suggest .ms-pos {
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 900;
+  color: #374151;
+  border: 1px solid rgba(15, 23, 42, .12);
+  background: #f8fafc;
+  padding: 6px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, .04);
+  min-width: 80px;
+  text-align: center;
+}
 
-    /* Empty/Loading state */
-    .member-suggest .loading {
-      padding: 16px 12px;
-      text-align: center;
-      color: #94a3b8;
-      font-size: 14px;
-      font-weight: 800;
-    }
+/* Empty/Loading state */
+.member-suggest .loading {
+  padding: 16px 12px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 479px) {
+  .member-suggest {
+    max-height: 280px;
+  }
+  
+  .member-suggest .ms-item {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  
+  .member-suggest .ms-pos {
+    font-size: 11px;
+    padding: 5px 10px;
+    min-width: 70px;
+  }
+}
   </style>
 
   <!-- === MOBILE-ONLY FIXES (iPhone) : does NOT affect PC/iPad === -->
@@ -2363,31 +2383,44 @@
       });
     }
 
-    function renderMemberSuggest(items) {
-      const box = byId("m_nameList");
-      if (!box) return;
+function renderMemberSuggest(items) {
+  const box = byId("m_nameList");
+  if (!box) return;
 
-      if (!items.length) {
-        box.innerHTML = `<div class="loading" style="padding:12px 12px;">ไม่พบชื่อที่ตรงกัน</div>`;
-        openMemberSuggest();
-        return;
-      }
+  if (!items.length) {
+    box.innerHTML = `<div class="loading">ไม่พบชื่อที่ตรงกัน</div>`;
+    openMemberSuggest();
+    return;
+  }
 
-      box.innerHTML = "";
-      items.slice(0, 30).forEach(m => {
-        const div = document.createElement("div");
-        div.className = "ms-item";
-        div.innerHTML = `
-      <div class="ms-left">
-        <span class="ms-name" title="${escapeHtml(m.displayName)}">${escapeHtml(m.displayName)}</span>
-      </div>
-      <span class="ms-pos" title="${escapeHtml(m.position || "-")}">${escapeHtml(m.position || "-")}</span>
-    `;
-        div.onclick = () => selectMemberFromSuggest(m);
-        box.appendChild(div);
-      });
-      openMemberSuggest();
-    }
+  box.innerHTML = "";
+  items.slice(0, 30).forEach(m => {
+    const div = document.createElement("div");
+    div.className = "ms-item";
+    
+    const msLeft = document.createElement("div");
+    msLeft.className = "ms-left";
+    
+    const msName = document.createElement("span");
+    msName.className = "ms-name";
+    msName.title = escapeHtml(m.displayName);
+    msName.textContent = m.displayName;
+    
+    msLeft.appendChild(msName);
+    
+    const msPos = document.createElement("span");
+    msPos.className = "ms-pos";
+    msPos.title = escapeHtml(m.position || "-");
+    msPos.textContent = m.position || "-";
+    
+    div.appendChild(msLeft);
+    div.appendChild(msPos);
+    div.onclick = () => selectMemberFromSuggest(m);
+    
+    box.appendChild(div);
+  });
+  openMemberSuggest();
+}
 
     function selectMemberFromSuggest(m) {
       if (!m) return;

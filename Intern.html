@@ -569,8 +569,32 @@ a:hover {
   flex: 1;
   min-width: 160px;
   background: #fff;
+
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
 }
 
+
+
+/* ✅ ให้ select สวยเหมือน input */
+#startingAddForm select,
+#endingAddForm select,
+#addInternForm select {
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 900;
+  box-shadow: var(--shadow2);
+  flex: 1;
+  min-width: 160px;
+  background: #fff;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
 #startingAddForm input:focus,
 #endingAddForm input:focus,
 #addInternForm input:focus {
@@ -579,6 +603,14 @@ a:hover {
   box-shadow: 0 10px 22px rgba(15, 23, 42, .10);
 }
 
+
+#startingAddForm select:focus,
+#endingAddForm select:focus,
+#addInternForm select:focus {
+  outline: none;
+  border-color: var(--btn);
+  box-shadow: 0 0 0 3px rgba(17,17,17,.08);
+}
 #startingAddForm button,
 #endingAddForm button,
 #addInternForm button {
@@ -919,7 +951,14 @@ a:hover {
       <input type="text" id="newInternPosition" placeholder="ตำแหน่ง" list="addInternPositionDatalist">
       <datalist id="addInternPositionDatalist"></datalist>
       <input type="text" id="newInternNote" placeholder="หมายเหตุ (ไม่บังคับ)">
-      <input type="text" id="newInternFileLink" placeholder="ลิงก์ไฟล์อัปเดตงาน (ไม่บังคับ)">
+      <input type="text" id="newInternNickname" placeholder="ชื่อเล่น (ไม่บังคับ)">
+      <select id="newInternRole" title="Role">
+        <option value="intern" selected="">INTERN</option>
+        <option value="fulltime">FULLTIME</option>
+        <option value="mentor">MENTOR</option>
+        <option value="admin">ADMIN</option>
+      </select>
+      <input type="url" id="newInternDocsUpdateWorks" placeholder="docsUpdateWorks (URL) (ไม่บังคับ)">
       <button onclick="addNewInternSubmit()">
         <img src="https://img.icons8.com/?size=100&id=0YcjyJq4ROPU&format=png&color=000000" alt="check" style="width:16px;height:16px;">
         เพิ่ม
@@ -1172,22 +1211,20 @@ a:hover {
       }
     },
 
-    async addNewIntern(name, position, note, fileLink) {
+    async addNewIntern(member) {
       try {
-        // ✅ Backend หลายตัว "ต้องการ role" และอาจไม่รู้จัก field fileLink
+        // ✅ Backend หลายตัว "ต้องการ role" และอาจไม่รู้จัก field docsUpdateWorks
         // เราเลยส่งเฉพาะ field มาตรฐาน + role intern
         const basePayload = {
-          displayName: name,
-          position: position,
-          note: note,
-          role: "intern"
+          displayName: (member?.displayName || "").toString().trim(),
+          nickname: (member?.nickname || "").toString().trim() || undefined,
+          position: (member?.position || "").toString().trim() || undefined,
+          note: (member?.note || "").toString().trim() || undefined,
+          docsUpdateWorks: (member?.docsUpdateWorks || "").toString().trim() || undefined,
+          role: (member?.role || "intern").toString().trim().toLowerCase()
         };
 
-        const attempts = [
-          basePayload,
-          { ...basePayload, role: "INTERN" },
-          { ...basePayload, role: "Intern" }
-        ];
+        const attempts = [ basePayload ];
 
         let lastTxt = "";
 
@@ -1201,10 +1238,11 @@ a:hover {
           if (res.ok) {
             const created = await res.json().catch(() => ({}));
 
-            // ✅ เก็บ fileLink ไว้ local ต่อ memberId (ไม่พัง DTO ฝั่ง backend)
+            // ✅ เก็บ docsUpdateWorks ไว้ local ต่อ memberId (ไม่พัง DTO ฝั่ง backend)
             const id = String(created?._id || created?.id || "");
-            if (id && fileLink && String(fileLink).trim()) {
-              writeMeta(id, { fileLink: String(fileLink).trim() });
+            const duw = String(payload?.docsUpdateWorks || "").trim();
+            if (id && duw) {
+              writeMeta(id, { docsUpdateWorks: duw });
             }
             return { success: true, created };
           }
@@ -1219,7 +1257,7 @@ a:hover {
       }
     },
 
-    async updateIntern(memberId, name, position, note, fileLink) {
+    async updateIntern(memberId, name, position, note, docsUpdateWorks) {
       try {
         const memberData = {
           displayName: name,
@@ -1239,11 +1277,11 @@ a:hover {
           return { success: false, message: txt || "อัปเดตไม่สำเร็จ" };
         }
 
-        // ✅ fileLink เก็บ local
-        if (fileLink && String(fileLink).trim()) {
-          writeMeta(String(memberId), { fileLink: String(fileLink).trim() });
+        // ✅ docsUpdateWorks เก็บ local
+        if (docsUpdateWorks && String(docsUpdateWorks).trim()) {
+          writeMeta(String(memberId), { docsUpdateWorks: String(docsUpdateWorks).trim() });
         } else {
-          writeMeta(String(memberId), { fileLink: "" });
+          writeMeta(String(memberId), { docsUpdateWorks: "" });
         }
 
         return { success: true };
@@ -1320,6 +1358,11 @@ a:hover {
     try { localStorage.setItem(metaKey(memberId), JSON.stringify(next)); } catch {}
     return next;
   }
+
+  // ✅ expose meta helpers (กัน ReferenceError จาก handler ที่เป็น global)
+  window.readMeta = readMeta;
+  window.writeMeta = writeMeta;
+
 
 
   function escapeHtml(str) {
@@ -1532,7 +1575,7 @@ a:hover {
 
     const rawStatus = String(meta.status || i.status || "ทำงาน");
     const rawNote = String(i.note || "");
-    const rawFileLink = String(meta.fileLink || i.fileLink || "");
+    const rawFileLink = String(meta.docsUpdateWorks || i.docsUpdateWorks || "");
 
     const name = escapeHtml(rawName);
     const position = escapeHtml(rawPos);
@@ -1695,19 +1738,35 @@ a:hover {
   }
 
   window.addNewInternSubmit = async function () {
-    const name = (document.getElementById("newInternName")?.value || "").trim();
+    const displayName = (document.getElementById("newInternName")?.value || "").trim();
     const position = (document.getElementById("newInternPosition")?.value || "").trim();
     const note = (document.getElementById("newInternNote")?.value || "").trim();
-    const fileLink = (document.getElementById("newInternFileLink")?.value || "").trim();
-    if (!name || !position) { alert("กรุณากรอกชื่อและตำแหน่ง"); return; }
+    const nickname = (document.getElementById("newInternNickname")?.value || "").trim();
+    const role = (document.getElementById("newInternRole")?.value || "intern").toString().trim(); // ✅ backend ต้องการตัวเล็ก
+    const docsUpdateWorks = (document.getElementById("newInternDocsUpdateWorks")?.value || "").trim();
+
+    if (!displayName) { alert("กรุณากรอกชื่อ (displayName)"); return; }
+
     try {
-      const res = await window.BACKEND.addNewIntern(name, position, note, fileLink);
+      const res = await window.BACKEND.addNewIntern({
+        displayName,
+        nickname: nickname || undefined,
+        position: position || undefined,
+        role,
+        note: note || undefined,
+        docsUpdateWorks: docsUpdateWorks || undefined
+      });
+
       if (res?.success) {
         document.getElementById("newInternName").value = "";
         document.getElementById("newInternPosition").value = "";
         document.getElementById("newInternNote").value = "";
-        document.getElementById("newInternFileLink").value = "";
-        window.reloadInternTab();
+
+        const nn = document.getElementById("newInternNickname"); if (nn) nn.value = "";
+        const rr = document.getElementById("newInternRole"); if (rr) rr.value = "intern";
+        const duw = document.getElementById("newInternDocsUpdateWorks"); if (duw) duw.value = "";
+
+        if (typeof window.reloadInternTab === "function") window.reloadInternTab();
       } else {
         alert(res?.message || "เพิ่มไม่สำเร็จ");
       }

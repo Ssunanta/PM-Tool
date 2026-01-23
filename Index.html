@@ -1441,18 +1441,35 @@ function loadTabContent(tabName) {
 
     const LS_DASH_PROJECTS = "pmtool_dashboard_projects_v1";
 
-    function getMockProjectsForDashboard() {
-      return [
-        { id: "p1", name: "ระบบ PM Tool", status: "In Progress" },
-        { id: "p2", name: "จัดการ Intern", status: "Not Started" },
-        { id: "p3", name: "สรุปงานประจำสัปดาห์", status: "Finished" },
-        { id: "p4", name: "งานล่าช้า QA", status: "Delayed" },
-        { id: "p5", name: "โปรเจครอประกาศ", status: "N/A" },
-      ];
-    }
-
-    // แทนที่ฟังก์ชัน loadDashboardProjectsLocal()
     async function loadDashboardProjectsFromAPI() {
+      // โหลด "ทุกหน้า" จาก GET /projects (มี pagination)
+      const limit = 100;
+      let page = 1;
+      const all = [];
+
+      while (true) {
+        const url = `${API_BASE_URL}/projects?page=${page}&limit=${limit}`;
+        const response = await fetch(url, { headers: { "Accept": "application/json" } });
+        if (!response.ok) {
+          throw new Error(`GET /projects failed: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        const rows = Array.isArray(data?.data) ? data.data : [];
+        all.push(...rows);
+
+        const totalPages = Number(data?.pagination?.totalPages || 1);
+        if (page >= totalPages) break;
+        page += 1;
+      }
+
+      // แปลง API response เป็น format ที่ Dashboard ใช้
+      return all.map(p => ({
+        id: p._id,
+        name: p.name,
+        status: mapAPIStatusToDashboard(p.status)
+      }));
+    }
       // โหลด "ทุกหน้า" จาก GET /projects (มี pagination)
       // ตามเอกสาร API: GET /projects จะคืน { data: [...], pagination: { page, limit, total, totalPages } }
       const limit = 100;
@@ -1481,9 +1498,8 @@ function loadTabContent(tabName) {
         name: p.name,
         status: mapAPIStatusToDashboard(p.status)
       }));
-    }
 
-    function mapAPIStatusToDashboard(apiStatus) {
+function mapAPIStatusToDashboard(apiStatus) {
       const s = String(apiStatus || "").toLowerCase().trim();
 
       // ✅ enum จริงของ backend: not_started | on_track | delayed | completed

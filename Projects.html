@@ -1056,6 +1056,17 @@
       justify-content: flex-start
     }
 
+    /* ===== Dropdown inside Modal ===== */
+.modal-box .ctrl-items {
+  position: absolute;
+  z-index: 10000;
+  max-height: 280px;
+}
+
+.modal-box .ctrl {
+  position: relative;
+}
+
     .preview-actions-bar {
       display: flex;
       align-items: center;
@@ -1742,7 +1753,7 @@
           <input id="add_start" type="date" class="input">
         </div>
 
-        <div class="field">
+<div class="field">
           <div class="label">วันที่วางแผนสิ้นสุดโครงการ</div>
           <input id="add_end" type="date" class="input">
         </div>
@@ -1820,7 +1831,17 @@
           <option value="เสร็จแล้ว">เสร็จแล้ว</option>
         </select>
         </div>
+
+      <div class="modal-actions">
+        <button class="btn primary" id="btnEditSave" onclick="submitEdit()">
+        <img src="https://img.icons8.com/?size=100&id=ulYKuVdTiawZ&format=png&color=000000"
+             style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" alt="Edit">
+        Edit Project
+      </button>
+        <button class="btn cancel" onclick="closeEdit()">Cancel</button>
       </div>
+    </div>
+  </div>
 
       <div class="modal-actions">
         <button class="btn primary" id="btnEditSave" onclick="submitEdit()">

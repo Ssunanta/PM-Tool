@@ -742,8 +742,7 @@ function setTabHTML(tabElement, html, tabName) {
 
  if (rawCss) {
     // ✅ แก้ไขตรงนี้ - เลือกว่า tab ไหนควร scope
-    const noScopeTabs = ["todos"]; // ✅ เฉพาะ todos ไม่ scope
-    
+const noScopeTabs = ["todos", "intern"];    
     let finalCss;
     if (noScopeTabs.includes(tabName)) {
       finalCss = rawCss; // ไม่ scope

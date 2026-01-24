@@ -5,6 +5,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meeting Schedule</title>
+    <script src="config.js"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -1937,15 +1939,8 @@
        ========================================== */
 
     // ✅ ตั้งค่า API Base URL
-    const API_CONFIG = {
-      baseURL: 'https://pmapi.ideatrade1.com/',
-      endpoints: {
-        members: '/members',
-        projects: '/projects',
-        weeklyTemplates: '/weekly-templates',
-        weeklyMeetings: '/weekly-meeting'
-      }
-    };
+const { API_BASE } = window.config;
+
 
     /* ==========================================
        🔧 BACKEND API HANDLER (FIXED - ตาม API Doc)

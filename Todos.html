@@ -2477,8 +2477,17 @@ function normalizeName(s) {
 }
 
 function isMentorRole(obj) {
-  const role = String(obj?.role || obj?.memberRole || obj?.projectRole || obj?.position || "").toLowerCase();
-  return role.includes("mentor");
+  // ✅ ถ้ามี field ไหน field หนึ่งมีคำว่า mentor ให้ถือว่าเป็น mentor
+  // รองรับกรณี: position="mentor" แต่ role="intern" (หรือกลับกัน)
+  const fields = [
+    obj?.role,
+    obj?.position,
+    obj?.memberRole,
+    obj?.projectRole,
+    obj?.project_position,
+    obj?.project_role
+  ];
+  return fields.some(v => String(v || "").toLowerCase().includes("mentor"));
 }
 
 async function fetchProjectByIdForTodos(projectId) {
@@ -2633,12 +2642,20 @@ async function loadMentorOwnersForProjectName(projectName) {
 
   renderTodoOwnerDropdown();
 
-  // ✅ AUTO-SELECT: ถ้ามี mentor คนเดียว เลือกให้ทันที
-  if (Array.isArray(todoOwnerList) && todoOwnerList.length === 1) {
-    const m = todoOwnerList[0];
-    selectTodoOwner(String(m.id || ""), String(m.name || ""));
+    // ✅ AUTO-SELECT:
+  // - ถ้ามี mentor 1 คน: เลือกให้อัตโนมัติ
+  // - ถ้ามีหลายคน: ถ้ายังไม่ได้เลือก (hidden ว่าง) ให้เลือกคนแรก (เรียงชื่อแล้ว)
+  const h = $("todoOwnerHidden");
+  const current = String(h?.value || "").trim();
+  if (Array.isArray(todoOwnerList) && todoOwnerList.length >= 1) {
+    const exists = current && todoOwnerList.some(x => String(x?.id || x?._id || "") === current);
+    if (!exists) {
+      const m = todoOwnerList[0];
+      selectTodoOwner(String(m.id || ""), String(m.name || ""));
+    }
   }
 }
+
 
 
 // ==================== STATUS DROPDOWN IN MODAL ====================

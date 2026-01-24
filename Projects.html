@@ -1359,17 +1359,25 @@
        ✅ Member Name Autocomplete
        ========================= */
     .member-suggest{
-      position:absolute;
-      left:0;
-      right:0;
-      top: calc(100% + 8px);
+      position: relative;          /* ✅ FIX: อยู่ใน flow ของ modal -> เลื่อนได้สุด */
+      left: auto;
+      right: auto;
+      top: auto;
+
+      margin-top: 8px;             /* แทน top: calc(100% + 8px) */
+      width: 100%;
+
       background: #f1f5f9;
       border: 1px solid var(--border);
       border-radius: 16px;
       box-shadow: var(--shadow);
       padding: 10px;
-      max-height: 320px;
+
+      max-height: min(320px, 45vh);
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+
       display: none;
       z-index: 1200;
     }
@@ -1857,6 +1865,9 @@
     <div class="modal-box">
       <div class="modal-title" id="memberModalTitle">Add Member</div>
 
+      <!-- ✅ scrollable content -->
+      <div class="modal-content">
+
       <div class="field">
         <div class="label">ชื่อ</div>
         <div class="member-autocomplete" style="position:relative;">
@@ -1869,6 +1880,8 @@
       <div class="field">
         <div class="label">ตำแหน่ง</div>
         <input id="m_pos" class="input" placeholder="จะถูกเติมอัตโนมัติ" readonly>
+      </div>
+
       </div>
 
       <div class="modal-actions">
@@ -2271,27 +2284,79 @@ function closeMemberSuggest(){ byId("m_nameList")?.classList.remove("open"); }
 
 function filterMembersByKeyword(all, q){
   const kw = String(q||"").trim().toLowerCase();
-  if (!kw) return all.slice(0, 30);
-  return all.filter(m=>{
+
+  // de-dupe by _id (กันชื่อซ้ำถ้า backend/pagination แปลกๆ)
+  const uniq = [];
+  const seen = new Set();
+  (Array.isArray(all)?all:[]).forEach(m=>{
+    const id = String(m?._id || m?.id || "").trim();
+    if (!id) return;
+    if (seen.has(id)) return;
+    seen.add(id);
+    uniq.push(m);
+  });
+
+  // helper score for sorting relevance
+  const scoreOf = (m)=>{
     const dn = String(m.displayName||"").toLowerCase();
     const nn = String(m.nickname||"").toLowerCase();
     const pos = String(m.position||"").toLowerCase();
-    return dn.includes(kw) || nn.includes(kw) || pos.includes(kw);
+
+    if (!kw) return 10; // default
+    if (dn.startsWith(kw)) return 0;
+    if (nn.startsWith(kw)) return 1;
+    if (dn.includes(kw)) return 2;
+    if (nn.includes(kw)) return 3;
+    if (pos.startsWith(kw)) return 4;
+    if (pos.includes(kw)) return 5;
+    return 99;
+  };
+
+  let items = uniq;
+  if (kw){
+    items = uniq.filter(m=>{
+      const dn = String(m.displayName||"").toLowerCase();
+      const nn = String(m.nickname||"").toLowerCase();
+      const pos = String(m.position||"").toLowerCase();
+      return dn.includes(kw) || nn.includes(kw) || pos.includes(kw);
+    });
+  }
+
+  items.sort((a,b)=>{
+    const sa = scoreOf(a), sb = scoreOf(b);
+    if (sa !== sb) return sa - sb;
+    const an = String(a.displayName||"").toLowerCase();
+    const bn = String(b.displayName||"").toLowerCase();
+    return an.localeCompare(bn);
   });
+
+  return items; // ไม่ slice ที่นี่ ให้ render คุมจำนวนแทน
 }
 
 function renderMemberSuggest(items){
   const box = byId("m_nameList");
   if (!box) return;
 
-  if (!items.length){
+  const arr = Array.isArray(items)?items:[];
+  const showMax = 80; // แสดงได้เยอะขึ้น (ยังลื่น)
+  const total = arr.length;
+  const shown = Math.min(total, showMax);
+
+  if (!total){
     box.innerHTML = `<div class="loading" style="padding:12px 12px;">ไม่พบชื่อที่ตรงกัน</div>`;
     openMemberSuggest();
     return;
   }
 
   box.innerHTML = "";
-  items.slice(0,30).forEach(m=>{
+
+  // header count
+  const head = document.createElement("div");
+  head.style.cssText = "padding:6px 10px 10px 10px;font-size:12px;font-weight:900;color:#64748b;";
+  head.textContent = `แสดง ${shown} / ${total} คน`;
+  box.appendChild(head);
+
+  arr.slice(0, showMax).forEach(m=>{
     const div = document.createElement("div");
     div.className = "ms-item";
     div.innerHTML = `
@@ -2303,6 +2368,7 @@ function renderMemberSuggest(items){
     div.onclick = ()=> selectMemberFromSuggest(m);
     box.appendChild(div);
   });
+
   openMemberSuggest();
 }
 

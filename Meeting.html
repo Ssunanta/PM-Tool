@@ -1934,14 +1934,14 @@
     }
 
 
-    /* ==========================================
+/* ==========================================
        🔧 BACKEND CONFIGURATION
        ========================================== */
 
-    // ✅ ตั้งค่า API Base URL
+    // ✅ ใช้ค่าจาก config.js แทน hardcode
     const API_CONFIG = {
-      baseURL: 'https://pmapi.ideatrade1.com/',
-      endpoints: {
+      baseURL: window.config?.API_BASE_URL || 'https://pmapi.ideatrade1.com/',
+      endpoints: window.config?.endpoints || {
         members: '/members',
         projects: '/projects',
         weeklyTemplates: '/weekly-templates',

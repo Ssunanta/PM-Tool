@@ -5,6 +5,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Intern Management</title>
+    <script src="config.js"></script>
+
 
   <style>
 :root {
@@ -1347,8 +1349,7 @@
   <script>
     /* API Adapter - PM Project API */
     (function initBackendAdapter() {
-      const API_BASE = "https://pmapi.ideatrade1.com/";
-
+          const { API_BASE } = window.config;
       window.BACKEND = {
         async getInternData(page = 1, limit = 100, search = "", role = "") {
           try {

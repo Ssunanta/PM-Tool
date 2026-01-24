@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PM Tool - Todos</title>
+  <script src="config.js"></script>
 
   <style>
   body {
@@ -1829,7 +1830,7 @@
 
     <script>
   
-const API_BASE = "https://pmapi.ideatrade1.com/";
+const { API_BASE } = window.config;
 const API_TASKS = `${API_BASE}/tasks`;
 const API_PROJECTS = `${API_BASE}/projects`;
 const API_MEMBERS = `${API_BASE}/members`;

@@ -5,8 +5,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meeting Schedule</title>
-  <script src="config.js"></script>
-
   <style>
     * {
       box-sizing: border-box;
@@ -1849,11 +1847,11 @@
     let meetingData = [];
     let originalMeetingData = [];
     let isEditingMeeting = false;
-    // ✅ FIX: ซ่อนหัวคอลัมน์ add/delete หลังบันทึก (กันคอลัมน์เพี้ยน)
-    const addHeader = document.getElementById("addRowHeader");
-    const deleteHeader = document.getElementById("deleteRowHeader");
-    if (addHeader) addHeader.style.display = "none";
-    if (deleteHeader) deleteHeader.style.display = "none";
+        // ✅ FIX: ซ่อนหัวคอลัมน์ add/delete หลังบันทึก (กันคอลัมน์เพี้ยน)
+        const addHeader = document.getElementById("addRowHeader");
+        const deleteHeader = document.getElementById("deleteRowHeader");
+        if (addHeader) addHeader.style.display = "none";
+        if (deleteHeader) deleteHeader.style.display = "none";
     let draggedMeetingItem = null;
     let tempMeetingRow = null;
     let tempMeetingDay = null;
@@ -1863,7 +1861,7 @@
     // ✅ Helper: API request wrapper (ใช้ใน getMemberIdByName)
     async function apiRequest(path, options = {}) {
       const isAbs = /^https?:\/\//i.test(path);
-      const url = isAbs ? path : `${API_BASE}${path.startsWith('/') ? '' : '/'}${path}`;
+      const url = isAbs ? path : `${API_CONFIG.baseURL}${path.startsWith('/') ? '' : '/'}${path}`;
       const res = await fetch(url, {
         method: options.method || 'GET',
         headers: {
@@ -1897,7 +1895,7 @@
 
       // 1) try search endpoint (if supported)
       try {
-        const response = await apiRequest(`${API_MEMBERS}?search=${encodeURIComponent(raw)}&limit=10`);
+        const response = await apiRequest(`${API_CONFIG.endpoints.members}?search=${encodeURIComponent(raw)}&limit=10`);
         const list = Array.isArray(response?.data) ? response.data : (Array.isArray(response) ? response : []);
         if (list.length) {
           // exact match by displayName/name
@@ -1914,7 +1912,7 @@
 
       // 2) fallback: fetch all members and match locally
       try {
-        const response = await apiRequest(`${API_MEMBERS}`);
+        const response = await apiRequest(`${API_CONFIG.endpoints.members}`);
         const list = Array.isArray(response?.data) ? response.data : (Array.isArray(response) ? response : []);
         if (list.length) {
           const exact = list.find(m => normalizeName(m.displayName || m.name) === raw);
@@ -1935,33 +1933,19 @@
 
 
     /* ==========================================
-       🔧 API CONFIGURATION
+       🔧 BACKEND CONFIGURATION
        ========================================== */
 
-    // ✅ ดึง Base URL จาก window.config (ต้องโหลด config.js ก่อน)
-    const API_BASE = window.config?.API?.baseURL || 'https://pmapi.ideatrade1.com';
-
-    // ✅ API Endpoints
-    const API_MEMBERS = `${API_BASE}/members`;
-    const API_PROJECTS = `${API_BASE}/projects`;
-    const API_WEEKLY_TEMPLATES = `${API_BASE}/weekly-templates`;
-    const API_WEEKLY_MEETINGS = `${API_BASE}/weekly-meeting`;
-
-    // ✅ Export ตัวแปร API สำหรับใช้งาน
-    window.API_BASE = API_BASE;
-    window.API_MEMBERS = API_MEMBERS;
-    window.API_PROJECTS = API_PROJECTS;
-    window.API_WEEKLY_TEMPLATES = API_WEEKLY_TEMPLATES;
-    window.API_WEEKLY_MEETINGS = API_WEEKLY_MEETINGS;
-
-    console.log('✅ API Configuration Loaded');
-    console.log('Base URL:', API_BASE);
-    console.log('Endpoints:', {
-      members: API_MEMBERS,
-      projects: API_PROJECTS,
-      weeklyTemplates: API_WEEKLY_TEMPLATES,
-      weeklyMeetings: API_WEEKLY_MEETINGS
-    });
+    // ✅ ตั้งค่า API Base URL
+    const API_CONFIG = {
+      baseURL: 'https://pmapi.ideatrade1.com/',
+      endpoints: {
+        members: '/members',
+        projects: '/projects',
+        weeklyTemplates: '/weekly-templates',
+        weeklyMeetings: '/weekly-meeting'
+      }
+    };
 
     /* ==========================================
        🔧 BACKEND API HANDLER (FIXED - ตาม API Doc)
@@ -1976,7 +1960,7 @@
 
             // ✅ ดึง active template
             const response = await fetch(
-              `${API_WEEKLY_TEMPLATES}?active=true&limit=1`,
+              `${API_CONFIG.baseURL}${API_CONFIG.endpoints.weeklyTemplates}?active=true&limit=1`,
               {
                 method: 'GET',
                 headers: {
@@ -2077,7 +2061,7 @@
             if (!memberId) return null;
 
             const response = await fetch(
-              `${API_MEMBERS}/${memberId}`,
+              `${API_CONFIG.baseURL}${API_CONFIG.endpoints.members}/${memberId}`,
               {
                 method: 'GET',
                 headers: {
@@ -2164,7 +2148,7 @@
 
             // ส่วนเซิร์ฟเวอร์ (เหมือนเดิม)
             const getResponse = await fetch(
-              `${API_WEEKLY_TEMPLATES}?active=true&limit=1`,
+              `${API_CONFIG.baseURL}${API_CONFIG.endpoints.weeklyTemplates}?active=true&limit=1`,
               { method: 'GET', headers: { 'Content-Type': 'application/json' } }
             );
 
@@ -2179,7 +2163,7 @@
             let response;
             if (templateId) {
               response = await fetch(
-                `${API_WEEKLY_TEMPLATES}/${templateId}`,
+                `${API_CONFIG.baseURL}${API_CONFIG.endpoints.weeklyTemplates}/${templateId}`,
                 {
                   method: 'PATCH',
                   headers: { 'Content-Type': 'application/json' },
@@ -2188,7 +2172,7 @@
               );
             } else {
               response = await fetch(
-                API_WEEKLY_TEMPLATES,
+                `${API_CONFIG.baseURL}${API_CONFIG.endpoints.weeklyTemplates}`,
                 {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
@@ -2213,54 +2197,54 @@
         },
 
         // ✅ 5. Get Intern Data (Members)
-        // ใช้ endpoint /members เพื่อดึงรายชื่อสำหรับ dropdown "ชื่อ" และ auto-select "ตำแหน่ง"
-        async getInternData() {
-          try {
-            console.log('📡 Fetching members.');
+// ใช้ endpoint /members เพื่อดึงรายชื่อสำหรับ dropdown "ชื่อ" และ auto-select "ตำแหน่ง"
+async getInternData() {
+  try {
+    console.log('📡 Fetching members.');
 
-            // ✅ รองรับทั้ง style limit อย่างเดียว และ page+limit (ตาม API Doc)
-            const url = `${API_MEMBERS}?page=1&limit=2000`;
+    // ✅ รองรับทั้ง style limit อย่างเดียว และ page+limit (ตาม API Doc)
+    const url = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.members}?page=1&limit=2000`;
 
-            const response = await fetch(url, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-              }
-            });
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    });
 
-            if (!response.ok) {
-              throw new Error(`HTTP ${response.status}`);
-            }
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
 
-            const result = await response.json();
-            console.log('✅ Members Response:', result);
+    const result = await response.json();
+    console.log('✅ Members Response:', result);
 
-            const raw = Array.isArray(result?.data) ? result.data : (Array.isArray(result) ? result : []);
-            const members = raw.map(member => ({
-              id: member?._id || member?.id || '',
-              name: member?.nickname || member?.displayName || member?.name || '',
-              position: member?.position || '',
-              role: member?.role || member?.memberRole || '',
-              projects: Array.isArray(member?.projects) ? member.projects : []
-            })).filter(m => String(m.name || '').trim() !== '');
+    const raw = Array.isArray(result?.data) ? result.data : (Array.isArray(result) ? result : []);
+    const members = raw.map(member => ({
+      id: member?._id || member?.id || '',
+      name: member?.nickname || member?.displayName || member?.name || '',
+      position: member?.position || '',
+      role: member?.role || member?.memberRole || '',
+      projects: Array.isArray(member?.projects) ? member.projects : []
+    })).filter(m => String(m.name || '').trim() !== '');
 
-            console.log('✅ Formatted Members:', members);
-            return members;
+    console.log('✅ Formatted Members:', members);
+    return members;
 
-          } catch (err) {
-            console.error('❌ getInternData Error:', err);
-            return [];
-          }
-        },
+  } catch (err) {
+    console.error('❌ getInternData Error:', err);
+    return [];
+  }
+},
 
-        // ✅ 6. Get Project List
+// ✅ 6. Get Project List
         async getProjectList() {
           try {
             console.log('📡 Fetching projects...');
 
             const response = await fetch(
-              `${API_PROJECTS}?limit=100`,
+              `${API_CONFIG.baseURL}${API_CONFIG.endpoints.projects}?limit=100`,
               {
                 method: 'GET',
                 headers: {
@@ -2473,230 +2457,230 @@
       meetingData[targetRow][targetDay].push(movedItem);
     }
 
-    /* ==========================================
-       FIX: renderMeeting() - Project Display Bug
-    ========================================== */
+/* ==========================================
+   FIX: renderMeeting() - Project Display Bug
+========================================== */
 
-    function renderMeeting(data) {
-      const tbody = document.getElementById("meetingBody");
-      if (!tbody) return;
+function renderMeeting(data) {
+  const tbody = document.getElementById("meetingBody");
+  if (!tbody) return;
 
-      // ✅ FIX: Sync header visibility with edit mode every render (กันคอลัมน์เพี้ยน)
-      const addHeader = document.getElementById("addRowHeader");
-      const deleteHeader = document.getElementById("deleteRowHeader");
-      if (addHeader) addHeader.style.display = isEditingMeeting ? "table-cell" : "none";
-      if (deleteHeader) deleteHeader.style.display = isEditingMeeting ? "table-cell" : "none";
+  // ✅ FIX: Sync header visibility with edit mode every render (กันคอลัมน์เพี้ยน)
+  const addHeader = document.getElementById("addRowHeader");
+  const deleteHeader = document.getElementById("deleteRowHeader");
+  if (addHeader) addHeader.style.display = isEditingMeeting ? "table-cell" : "none";
+  if (deleteHeader) deleteHeader.style.display = isEditingMeeting ? "table-cell" : "none";
 
-      // convert to array if needed
-      if (!Array.isArray(data)) {
-        if (data && typeof data === 'object') data = Object.values(data);
-        else data = [];
-      }
+  // convert to array if needed
+  if (!Array.isArray(data)) {
+    if (data && typeof data === 'object') data = Object.values(data);
+    else data = [];
+  }
 
-      tbody.innerHTML = "";
+  tbody.innerHTML = "";
 
-      if (!data || data.length === 0) {
-        const colspan = isEditingMeeting ? 8 : 6;
-        tbody.innerHTML = `<tr><td colspan="${colspan}" style="text-align:center; padding:40px; color:#999;">ไม่มีข้อมูลการประชุม</td></tr>`;
-        return;
-      }
+  if (!data || data.length === 0) {
+    const colspan = isEditingMeeting ? 8 : 6;
+    tbody.innerHTML = `<tr><td colspan="${colspan}" style="text-align:center; padding:40px; color:#999;">ไม่มีข้อมูลการประชุม</td></tr>`;
+    return;
+  }
 
-      data.forEach((row, i) => {
-        if (!row) return;
+  data.forEach((row, i) => {
+    if (!row) return;
 
-        const tr = document.createElement("tr");
+    const tr = document.createElement("tr");
 
-        // ✅ Column 0: Add Row Button (ซ้ายสุด)
-        const addCell = document.createElement("td");
-        addCell.style.width = "50px";
-        addCell.style.minWidth = "50px";
-        addCell.style.maxWidth = "50px";
-        addCell.style.padding = "8px";
-        addCell.style.textAlign = "center";
-        addCell.style.verticalAlign = "middle";
-        addCell.style.display = isEditingMeeting ? "table-cell" : "none";
+    // ✅ Column 0: Add Row Button (ซ้ายสุด)
+    const addCell = document.createElement("td");
+    addCell.style.width = "50px";
+    addCell.style.minWidth = "50px";
+    addCell.style.maxWidth = "50px";
+    addCell.style.padding = "8px";
+    addCell.style.textAlign = "center";
+    addCell.style.verticalAlign = "middle";
+    addCell.style.display = isEditingMeeting ? "table-cell" : "none";
 
-        if (isEditingMeeting) {
-          addCell.innerHTML = `
+    if (isEditingMeeting) {
+      addCell.innerHTML = `
         <button onclick="insertRowBelow(${i})" 
                 style="width:28px; height:28px; border-radius:50%; background:#000; color:#fff; border:none; cursor:pointer; font-size:16px; font-weight:bold; display:flex; align-items:center; justify-content:center; transition:0.2s; margin:0 auto;"
                 onmouseover="this.style.background='#333'; this.style.transform='scale(1.1)'"
                 onmouseout="this.style.background='#000'; this.style.transform='scale(1)'">+</button>
       `;
-        }
-        tr.appendChild(addCell);
+    }
+    tr.appendChild(addCell);
 
-        // Column 1: order
-        const orderCell = document.createElement("td");
-        orderCell.textContent = row.order || (i + 1).toString();
-        orderCell.style.width = "175px";
-        orderCell.style.minWidth = "175px";
-        orderCell.style.textAlign = "center";
-        orderCell.style.verticalAlign = "middle";
-        tr.appendChild(orderCell);
+    // Column 1: order
+    const orderCell = document.createElement("td");
+    orderCell.textContent = row.order || (i + 1).toString();
+    orderCell.style.width = "175px";
+    orderCell.style.minWidth = "175px";
+    orderCell.style.textAlign = "center";
+    orderCell.style.verticalAlign = "middle";
+    tr.appendChild(orderCell);
 
-        const days = ["mon", "tue", "wed", "thu", "fri"];
-        days.forEach(day => {
-          const cell = document.createElement("td");
+    const days = ["mon", "tue", "wed", "thu", "fri"];
+    days.forEach(day => {
+      const cell = document.createElement("td");
 
-          if (isEditingMeeting) {
-            cell.ondragover = (e) => onDragOver(e);
-            cell.ondragleave = (e) => onDragLeave(e);
-            cell.ondrop = (e) => onDrop(e, i, day);
-          }
+      if (isEditingMeeting) {
+        cell.ondragover = (e) => onDragOver(e);
+        cell.ondragleave = (e) => onDragLeave(e);
+        cell.ondrop = (e) => onDrop(e, i, day);
+      }
 
-          const items = row[day] || [];
+      const items = row[day] || [];
 
-          if (items.length > 0) {
-            const boxDiv = document.createElement("div");
-            boxDiv.className = "meeting-box" + (isEditingMeeting ? " draggable" : "");
-
-            if (isEditingMeeting) {
-              boxDiv.draggable = true;
-              boxDiv.ondragstart = (e) => onDragStart(e, i, day, 0);
-              boxDiv.ondragend = (e) => onDragEnd(e);
-
-              const deleteBtn = document.createElement("button");
-              deleteBtn.className = "delete-box-btn";
-              deleteBtn.innerHTML = '<img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000" style="width:16px;height:16px;" alt="delete">';
-              deleteBtn.onclick = (e) => {
-                e.stopPropagation();
-                if (confirm("ต้องการลบการประชุมนี้ใช่หรือไม่?")) deleteMeetingBox(i, day);
-              };
-              boxDiv.appendChild(deleteBtn);
-            }
-
-            // ✅ FIX: Process items in correct order and preserve projects
-            let personText = "";
-            let personPosition = "";
-            let personProject = "";
-
-            items.forEach((item, idx) => {
-              let itemObj;
-              if (typeof item === 'string') {
-                itemObj = { text: item, isProject: false };
-              } else if (typeof item === 'object' && item !== null) {
-                itemObj = item;
-              } else {
-                return;
-              }
-
-              // ✅ Separate person and project
-              if (itemObj.isProject) {
-                personProject = itemObj.text;
-              } else {
-                // This is person info
-                const text = itemObj.text;
-                const match = text.match(/^(.+?)\s*\((.+?)\)$/);
-
-                if (match) {
-                  const namePart = match[1].trim();
-                  const projectFromText = match[2].trim();
-                  const parts = namePart.split(/\s+/);
-                  const nickname = parts[0];
-                  const position = parts.slice(1).join(' ');
-
-                  personText = nickname;
-                  personPosition = position;
-                  // ✅ Use project from text if available
-                  if (projectFromText) personProject = projectFromText;
-                } else {
-                  const parts = text.split(/\s+/);
-                  const nickname = parts[0];
-                  const position = parts.slice(1).join(' ');
-
-                  personText = nickname;
-                  personPosition = position;
-                }
-              }
-            });
-
-            // ✅ Render person (always display)
-            if (personText) {
-              const personDiv = document.createElement("div");
-              personDiv.className = "meeting-person";
-
-              const nameSpan = document.createElement("span");
-              nameSpan.className = "meeting-person-name";
-              nameSpan.textContent = personText;
-              personDiv.appendChild(nameSpan);
-
-              if (personPosition) {
-                const positionSpan = document.createElement("span");
-                positionSpan.className = "meeting-person-position";
-                positionSpan.textContent = personPosition;
-                personDiv.appendChild(positionSpan);
-              }
-
-              boxDiv.appendChild(personDiv);
-            }
-
-            // ✅ Render project (always display if exists)
-            if (personProject) {
-              const projectColor = getProjectColor(personProject);
-              const projectSpan = document.createElement("div");
-              projectSpan.className = "meeting-project";
-              projectSpan.textContent = personProject;
-              projectSpan.style.background = projectColor.bg;
-              projectSpan.style.color = projectColor.text;
-              projectSpan.style.borderColor = projectColor.border;
-              boxDiv.appendChild(projectSpan);
-            }
-
-            cell.appendChild(boxDiv);
-          } else {
-            if (isEditingMeeting) {
-              const addBtn = document.createElement("button");
-              addBtn.className = "add-meeting-btn";
-              addBtn.innerHTML = '<img src="https://img.icons8.com/?size=100&id=bDKqvw7V0ANQ&format=png&color=000000" style="width:14px;height:14px;margin-right:4px;vertical-align:middle;" alt="add"> เพิ่มการประชุม';
-              addBtn.onclick = () => openMeetingModal(i, day);
-              cell.appendChild(addBtn);
-            } else {
-              const emptySpan = document.createElement("span");
-              emptySpan.textContent = "-";
-              emptySpan.style.color = "#ccc";
-              cell.appendChild(emptySpan);
-            }
-          }
-
-          tr.appendChild(cell);
-        });
-
-        // ✅ Column Last: Delete Row Button (ขวาสุด)
-        const deleteCell = document.createElement("td");
-        deleteCell.style.width = "50px";
-        deleteCell.style.minWidth = "50px";
-        deleteCell.style.maxWidth = "50px";
-        deleteCell.style.padding = "8px";
-        deleteCell.style.textAlign = "center";
-        deleteCell.style.verticalAlign = "middle";
-        deleteCell.style.display = isEditingMeeting ? "table-cell" : "none";
+      if (items.length > 0) {
+        const boxDiv = document.createElement("div");
+        boxDiv.className = "meeting-box" + (isEditingMeeting ? " draggable" : "");
 
         if (isEditingMeeting) {
-          deleteCell.innerHTML = `
+          boxDiv.draggable = true;
+          boxDiv.ondragstart = (e) => onDragStart(e, i, day, 0);
+          boxDiv.ondragend = (e) => onDragEnd(e);
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.className = "delete-box-btn";
+          deleteBtn.innerHTML = '<img src="https://img.icons8.com/?size=100&id=Gx6408t2AnyJ&format=png&color=000000" style="width:16px;height:16px;" alt="delete">';
+          deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            if (confirm("ต้องการลบการประชุมนี้ใช่หรือไม่?")) deleteMeetingBox(i, day);
+          };
+          boxDiv.appendChild(deleteBtn);
+        }
+
+        // ✅ FIX: Process items in correct order and preserve projects
+        let personText = "";
+        let personPosition = "";
+        let personProject = "";
+
+        items.forEach((item, idx) => {
+          let itemObj;
+          if (typeof item === 'string') {
+            itemObj = { text: item, isProject: false };
+          } else if (typeof item === 'object' && item !== null) {
+            itemObj = item;
+          } else {
+            return;
+          }
+
+          // ✅ Separate person and project
+          if (itemObj.isProject) {
+            personProject = itemObj.text;
+          } else {
+            // This is person info
+            const text = itemObj.text;
+            const match = text.match(/^(.+?)\s*\((.+?)\)$/);
+
+            if (match) {
+              const namePart = match[1].trim();
+              const projectFromText = match[2].trim();
+              const parts = namePart.split(/\s+/);
+              const nickname = parts[0];
+              const position = parts.slice(1).join(' ');
+
+              personText = nickname;
+              personPosition = position;
+              // ✅ Use project from text if available
+              if (projectFromText) personProject = projectFromText;
+            } else {
+              const parts = text.split(/\s+/);
+              const nickname = parts[0];
+              const position = parts.slice(1).join(' ');
+
+              personText = nickname;
+              personPosition = position;
+            }
+          }
+        });
+
+        // ✅ Render person (always display)
+        if (personText) {
+          const personDiv = document.createElement("div");
+          personDiv.className = "meeting-person";
+
+          const nameSpan = document.createElement("span");
+          nameSpan.className = "meeting-person-name";
+          nameSpan.textContent = personText;
+          personDiv.appendChild(nameSpan);
+
+          if (personPosition) {
+            const positionSpan = document.createElement("span");
+            positionSpan.className = "meeting-person-position";
+            positionSpan.textContent = personPosition;
+            personDiv.appendChild(positionSpan);
+          }
+
+          boxDiv.appendChild(personDiv);
+        }
+
+        // ✅ Render project (always display if exists)
+        if (personProject) {
+          const projectColor = getProjectColor(personProject);
+          const projectSpan = document.createElement("div");
+          projectSpan.className = "meeting-project";
+          projectSpan.textContent = personProject;
+          projectSpan.style.background = projectColor.bg;
+          projectSpan.style.color = projectColor.text;
+          projectSpan.style.borderColor = projectColor.border;
+          boxDiv.appendChild(projectSpan);
+        }
+
+        cell.appendChild(boxDiv);
+      } else {
+        if (isEditingMeeting) {
+          const addBtn = document.createElement("button");
+          addBtn.className = "add-meeting-btn";
+          addBtn.innerHTML = '<img src="https://img.icons8.com/?size=100&id=bDKqvw7V0ANQ&format=png&color=000000" style="width:14px;height:14px;margin-right:4px;vertical-align:middle;" alt="add"> เพิ่มการประชุม';
+          addBtn.onclick = () => openMeetingModal(i, day);
+          cell.appendChild(addBtn);
+        } else {
+          const emptySpan = document.createElement("span");
+          emptySpan.textContent = "-";
+          emptySpan.style.color = "#ccc";
+          cell.appendChild(emptySpan);
+        }
+      }
+
+      tr.appendChild(cell);
+    });
+
+    // ✅ Column Last: Delete Row Button (ขวาสุด)
+    const deleteCell = document.createElement("td");
+    deleteCell.style.width = "50px";
+    deleteCell.style.minWidth = "50px";
+    deleteCell.style.maxWidth = "50px";
+    deleteCell.style.padding = "8px";
+    deleteCell.style.textAlign = "center";
+    deleteCell.style.verticalAlign = "middle";
+    deleteCell.style.display = isEditingMeeting ? "table-cell" : "none";
+
+    if (isEditingMeeting) {
+      deleteCell.innerHTML = `
         <button onclick="deleteRowAtIndex(${i})" 
                 style="width:28px; height:28px; border-radius:50%; background:#dc2626; color:#fff; border:none; cursor:pointer; font-size:16px; font-weight:bold; display:flex; align-items:center; justify-content:center; transition:0.2s; margin:0 auto;"
                 onmouseover="this.style.background='#b91c1c'; this.style.transform='scale(1.1)'"
                 onmouseout="this.style.background='#dc2626'; this.style.transform='scale(1)'">−</button>
       `;
-        }
-        tr.appendChild(deleteCell);
-
-        tbody.appendChild(tr);
-      });
-
-      if (isEditingMeeting) {
-        setTimeout(() => {
-          addMeetingRowButtons();
-          addMeetingDeleteButtons();
-          updateMeetingRowButtons();
-          updateMeetingDeleteButtons();
-        }, 50);
-      } else {
-        removeMeetingRowButtons();
-        removeMeetingDeleteButtons();
-      }
     }
+    tr.appendChild(deleteCell);
+
+    tbody.appendChild(tr);
+  });
+
+  if (isEditingMeeting) {
+    setTimeout(() => {
+      addMeetingRowButtons();
+      addMeetingDeleteButtons();
+      updateMeetingRowButtons();
+      updateMeetingDeleteButtons();
+    }, 50);
+  } else {
+    removeMeetingRowButtons();
+    removeMeetingDeleteButtons();
+  }
+}
 
     /* ========== Row Management ========== */
     function insertRowBelow(rowIndex) {
@@ -3461,12 +3445,8 @@
 
     async function testAPIConnection() {
       console.log('🧪 Testing API Connection...');
-      console.log('API Base URL:', API_BASE);
-      console.log('Endpoints:', {
-        members: API_MEMBERS,
-        projects: API_PROJECTS,
-        weeklyTemplates: API_WEEKLY_TEMPLATES
-      });
+      console.log('API Base URL:', API_CONFIG.baseURL);
+      console.log('Endpoints:', API_CONFIG.endpoints);
 
       try {
         // Test 1: Weekly Templates
@@ -3651,78 +3631,78 @@
         itemsContainer.appendChild(div);
       });
     }
-    // ✅ เมื่อเลือกชื่อแล้ว: auto-select ตำแหน่งจาก members ทันที
-    function handleMeetingNameSelect(selectedName) {
-      try {
-        const key = normalizeName(selectedName).toLowerCase();
-        const m = window.__meetingMemberByName && window.__meetingMemberByName.get(key);
-        if (!m) return;
+// ✅ เมื่อเลือกชื่อแล้ว: auto-select ตำแหน่งจาก members ทันที
+function handleMeetingNameSelect(selectedName) {
+  try {
+    const key = normalizeName(selectedName).toLowerCase();
+    const m = window.__meetingMemberByName && window.__meetingMemberByName.get(key);
+    if (!m) return;
 
-        const pos = String(m?.position || '').trim();
-        if (!pos) return;
+    const pos = String(m?.position || '').trim();
+    if (!pos) return;
 
-        // ถ้ายังไม่ได้โหลด list ตำแหน่ง ก็โหลดก่อน (กันกรณีเลือกชื่อเร็วมาก)
-        if (!window.__meetingPositionsLoaded) {
-          // fire-and-forget
-          loadInternPositionsForMeeting().then(() => {
-            selectModalDropdownItem('meetingPosition', pos);
-          }).catch(() => {
-            selectModalDropdownItem('meetingPosition', pos);
-          });
-          return;
-        }
-
+    // ถ้ายังไม่ได้โหลด list ตำแหน่ง ก็โหลดก่อน (กันกรณีเลือกชื่อเร็วมาก)
+    if (!window.__meetingPositionsLoaded) {
+      // fire-and-forget
+      loadInternPositionsForMeeting().then(() => {
         selectModalDropdownItem('meetingPosition', pos);
-      } catch (e) {
-        // ignore
-      }
+      }).catch(() => {
+        selectModalDropdownItem('meetingPosition', pos);
+      });
+      return;
     }
+
+    selectModalDropdownItem('meetingPosition', pos);
+  } catch (e) {
+    // ignore
+  }
+}
 
 
     /* =========================
        ✅ Data loaders (NOW: BACKEND.api)
        ========================= */
     async function loadInternNamesForMeeting() {
-      try {
-        const memberList = await BACKEND.api.getInternData();
+  try {
+    const memberList = await BACKEND.api.getInternData();
 
-        // ✅ สร้าง list ชื่อ + map ชื่อ -> member (เพื่อ auto-select position)
-        const namesSet = new Set();
-        const byName = new Map();
+    // ✅ สร้าง list ชื่อ + map ชื่อ -> member (เพื่อ auto-select position)
+    const namesSet = new Set();
+    const byName = new Map();
 
-        if (Array.isArray(memberList)) {
-          memberList.forEach(m => {
-            const name = String(m?.name || '').trim();
-            if (!name) return;
+    if (Array.isArray(memberList)) {
+      memberList.forEach(m => {
+        const name = String(m?.name || '').trim();
+        if (!name) return;
 
-            namesSet.add(name);
+        namesSet.add(name);
 
-            const key = normalizeName(name).toLowerCase();
-            const pos = String(m?.position || '').trim();
+        const key = normalizeName(name).toLowerCase();
+        const pos = String(m?.position || '').trim();
 
-            // ถ้าซ้ำชื่อ: เลือกตัวที่มี position ก่อน
-            if (!byName.has(key)) {
-              byName.set(key, m);
-            } else {
-              const old = byName.get(key);
-              const oldPos = String(old?.position || '').trim();
-              if (!oldPos && pos) byName.set(key, m);
-            }
-          });
+        // ถ้าซ้ำชื่อ: เลือกตัวที่มี position ก่อน
+        if (!byName.has(key)) {
+          byName.set(key, m);
+        } else {
+          const old = byName.get(key);
+          const oldPos = String(old?.position || '').trim();
+          if (!oldPos && pos) byName.set(key, m);
         }
-
-        window.__meetingMemberByName = byName;
-        window.internNames = Array.from(namesSet).sort((a, b) => a.localeCompare(b, 'th'));
-
-        setupNameDropdown();
-        filterAndShowNames('');
-      } catch (e) {
-        window.__meetingMemberByName = new Map();
-        window.internNames = [];
-      }
+      });
     }
 
-    async function loadInternPositionsForMeeting() {
+    window.__meetingMemberByName = byName;
+    window.internNames = Array.from(namesSet).sort((a, b) => a.localeCompare(b, 'th'));
+
+    setupNameDropdown();
+    filterAndShowNames('');
+  } catch (e) {
+    window.__meetingMemberByName = new Map();
+    window.internNames = [];
+  }
+}
+
+async function loadInternPositionsForMeeting() {
       try {
         const internList = await BACKEND.api.getInternData();
         const positions = new Set();
